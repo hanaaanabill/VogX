@@ -2343,7 +2343,7 @@ async function sendVogxMessage(source) {
     } else {
       // ── Fallback: direct Gemini fetch (until Firebase AI Logic loads) ──
       var GEMINI_KEY   = 'AIzaSyCfaAOkL4su9f_KCqnnICLpzvh0ISEHQJk';
-      var GEMINI_MODEL = 'gemini-1.5-flash-latest';
+      var GEMINI_MODEL = 'gemini-2.5-flash';
       var geminiMsgs   = [
         { role:'user',  parts:[{ text: systemPrompt }] },
         { role:'model', parts:[{ text: 'Understood! I am VOGX, your AI fashion design assistant.' }] }
