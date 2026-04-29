@@ -2335,7 +2335,7 @@ async function sendVogxMessage(source) {
         });
       });
       var chat   = window._vogxModel.startChat({
-        systemInstruction: systemPrompt,
+        systemInstruction: { role: 'system', parts: [{ text: systemPrompt }] },
         history: history
       });
       var result = await chat.sendMessage(text);
