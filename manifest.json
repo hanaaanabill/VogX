@@ -1,0 +1,16 @@
+{
+  "name": "VOGX",
+  "short_name": "VOGX",
+  "description": "AI Fashion Design Assistant",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f2ee",
+  "theme_color": "#2a2621",
+  "icons": [
+    {
+      "src": "https://vogx-7c8e4.web.app/favicon.ico",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
