@@ -1,0 +1,2939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
+<script src="https://www.google.com/recaptcha/api.js?render=6LcKdYksAAAAAFpvbBNvBbVu-_bR_nSb2xascTj5"></script>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="VOGX">
+<meta name="theme-color" content="#2a2621">
+<link rel="apple-touch-icon" href="icons/icon-192.svg">
+<title>VOGX — AI Fashion Design Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold:#b89a6a; --gold-lt:rgba(184,154,106,.12); --gold-md:rgba(184,154,106,.3);
+  --charcoal:#2a2621; --charcoal2:#1e1b18; --paper:#faf8f5; --cream:#f0ede8; --white:#fff;
+  --muted:#8a8179; --text:#2a2621;
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --r-sm:6px; --r-md:10px; --r-lg:16px; --r-xl:24px;
+  --shadow-card:0 4px 20px rgba(0,0,0,.08);
+  --shadow-lift:0 12px 40px rgba(0,0,0,.14);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:var(--sans);background:var(--paper);color:var(--text);line-height:1.6;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+button{font-family:var(--sans);cursor:pointer}
+img{max-width:100%;display:block}
+.serif{font-family:var(--serif)}
+.container{max-width:1160px;margin:0 auto;padding:0 24px}
+section{padding:100px 0}
+
+/* ── ANIMATIONS ─────────────────────────────────────────── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes shimmer{0%{background-position:200% center}100%{background-position:-200% center}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
+@keyframes sciscut{0%,100%{transform:translateX(0)}50%{transform:translateX(80px)}}
+@keyframes needledrop{0%,100%{transform:translateY(0)}50%{transform:translateY(14px)}}
+@keyframes steamrise{0%{opacity:0;transform:translateY(0)}50%{opacity:.5}100%{opacity:0;transform:translateY(-20px)}}
+.fade-up{animation:fadeUp .7s ease both}
+.fade-up-2{animation:fadeUp .7s .15s ease both}
+.fade-up-3{animation:fadeUp .7s .3s ease both}
+
+/* ── SCROLLBAR ───────────────────────────────────────────── */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--cream)}
+::-webkit-scrollbar-thumb{background:var(--gold-md);border-radius:3px}
+
+/* ── NAV ─────────────────────────────────────────────────── */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:0;transition:background .3s,box-shadow .3s}
+nav.scrolled{background:rgba(250,248,245,.95);backdrop-filter:blur(12px);box-shadow:0 1px 0 rgba(184,154,106,.2)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;height:64px}
+.nav-logo{font-family:var(--serif);font-size:1.7rem;font-weight:300;letter-spacing:.08em;color:var(--charcoal)}
+.nav-logo span{color:var(--gold)}
+.nav-links{display:flex;gap:32px;list-style:none}
+.nav-links a{font-size:.82rem;font-weight:500;color:var(--muted);letter-spacing:.04em;transition:color .2s}
+.nav-links a:hover{color:var(--charcoal)}
+.nav-account-group{display:flex;align-items:center;gap:10px}
+#nav-guest{display:flex;gap:10px;align-items:center}
+.btn-login{color:var(--charcoal);font-size:.82rem;font-weight:500;padding:9px 16px;border-radius:var(--r-sm);background:none;border:none;transition:color .2s}
+.btn-login:hover{color:var(--gold)}
+.nav-cta{background:var(--charcoal);color:var(--paper);font-size:.82rem;font-weight:500;padding:9px 18px;border-radius:var(--r-sm);border:none;transition:background .2s}
+.nav-cta:hover{background:var(--gold)}
+#nav-user{display:none;align-items:center;gap:10px}
+.nav-user-btn{width:36px;height:36px;border-radius:50%;background:var(--charcoal);color:var(--gold);border:2px solid var(--gold);font-weight:700;font-size:.82rem;cursor:pointer;transition:transform .2s}
+.nav-user-btn:hover{transform:scale(1.08)}
+.nav-hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;padding:6px;cursor:pointer}
+.nav-hamburger span{display:block;width:22px;height:2px;background:var(--charcoal);border-radius:2px;transition:all .25s}
+@media(max-width:900px){.nav-links{display:none}.nav-hamburger{display:flex}}
+
+/* ── MOBILE MENU ─────────────────────────────────────────── */
+.mobile-menu{position:fixed;top:64px;left:0;right:0;background:var(--paper);border-top:1px solid var(--gold-md);padding:20px 24px;display:none;flex-direction:column;gap:14px;z-index:999;box-shadow:0 8px 30px rgba(0,0,0,.1)}
+.mobile-menu.open{display:flex}
+.mobile-menu a{font-size:.9rem;font-weight:500;color:var(--charcoal);padding:8px 0;border-bottom:1px solid var(--gold-lt)}
+
+/* ── ACCOUNT PANEL ───────────────────────────────────────── */
+#account-panel{position:fixed;top:70px;right:20px;width:320px;max-height:72vh;overflow-y:auto;background:var(--white);border-radius:var(--r-xl);box-shadow:0 16px 60px rgba(0,0,0,.18);border:1px solid var(--gold-md);z-index:9000;animation:fadeUp .2s ease both;display:none}
+#account-panel.open{display:block}
+.ap-header{background:var(--charcoal);padding:20px 22px 16px;border-radius:var(--r-xl) var(--r-xl) 0 0}
+.ap-designs{padding:14px 18px}
+.ap-design-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;border:1px solid var(--gold-md);margin-bottom:8px;cursor:pointer;transition:border-color .18s,background .18s}
+.ap-design-item:hover{border-color:var(--gold);background:var(--gold-lt)}
+.ap-design-thumb{width:40px;height:40px;border-radius:8px;object-fit:cover;flex-shrink:0}
+
+/* ── HERO ────────────────────────────────────────────────── */
+#hero{min-height:100vh;display:flex;align-items:center;padding-top:64px;background:var(--paper);position:relative;overflow:hidden}
+#hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 70% at 65% 40%,rgba(184,154,106,.08),transparent 65%);pointer-events:none}
+.hero-inner{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;width:100%}
+.hero-eyebrow{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+.eyebrow-dot{width:6px;height:6px;border-radius:50%;background:var(--gold)}
+.eyebrow-text{font-size:.72rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+.hero-title{font-family:var(--serif);font-size:clamp(2.6rem,5vw,4.2rem);font-weight:300;line-height:1.12;color:var(--charcoal);margin-bottom:22px}
+.hero-title em{font-style:italic;color:var(--gold)}
+.hero-desc{font-size:.95rem;color:var(--muted);max-width:420px;line-height:1.75;margin-bottom:36px}
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap}
+.btn-primary{background:var(--charcoal);color:var(--paper);font-size:.88rem;font-weight:500;padding:14px 28px;border-radius:var(--r-sm);border:none;transition:background .2s,transform .2s}
+.btn-primary:hover{background:var(--gold);transform:translateY(-2px)}
+.btn-outline{background:transparent;color:var(--charcoal);font-size:.88rem;font-weight:500;padding:13px 24px;border-radius:var(--r-sm);border:1.5px solid var(--gold-md);transition:border-color .2s,color .2s}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold)}
+.hero-visual{position:relative}
+.hero-card{background:var(--white);border-radius:var(--r-xl);padding:22px;box-shadow:var(--shadow-lift);border:1px solid var(--gold-lt);animation:float 4s ease-in-out infinite}
+.hero-card-label{font-size:.68rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+
+/* Hero chat mockup */
+.chat{display:flex;flex-direction:column;gap:10px}
+.msg{padding:10px 14px;border-radius:14px;font-size:.82rem;line-height:1.55;max-width:86%}
+.msg-ai{background:var(--cream);color:var(--charcoal);border-radius:14px 14px 14px 4px;align-self:flex-start}
+.msg-user{background:var(--charcoal);color:var(--paper);border-radius:14px 14px 4px 14px;align-self:flex-end}
+.msg-typing{align-self:flex-start}
+.typing-dots{display:flex;gap:4px;padding:4px 6px}
+.typing-dots span{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:pulse 1s infinite}
+.typing-dots span:nth-child(2){animation-delay:.2s}
+.typing-dots span:nth-child(3){animation-delay:.4s}
+.mockup-input{display:flex;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--gold-lt)}
+.mockup-input input{flex:1;border:1.5px solid var(--gold-md);border-radius:var(--r-sm);padding:9px 12px;font-size:.8rem;font-family:var(--sans);background:var(--paper);outline:none;color:var(--charcoal)}
+.mockup-input input:focus{border-color:var(--gold)}
+.mockup-send{width:34px;height:34px;border-radius:var(--r-sm);background:var(--charcoal);border:none;color:var(--gold);font-size:1rem;transition:background .18s;flex-shrink:0}
+.mockup-send:hover{background:var(--gold);color:var(--charcoal)}
+
+/* ── SECTION SHARED ──────────────────────────────────────── */
+.section-head{text-align:center;max-width:640px;margin:0 auto 60px}
+.section-eyebrow{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:16px}
+.eyebrow-line{height:1px;width:40px;background:var(--gold-md)}
+.tag{font-size:.68rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.section-title{font-family:var(--serif);font-size:clamp(2rem,4vw,3rem);font-weight:300;color:var(--charcoal);margin-bottom:14px}
+.section-desc{font-size:.88rem;color:var(--muted);line-height:1.75}
+
+/* ── HOW IT WORKS ────────────────────────────────────────── */
+#how-it-works{background:var(--cream)}
+.steps-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:32px;position:relative}
+.steps-grid::before{content:'';position:absolute;top:36px;left:60px;right:60px;height:1px;background:linear-gradient(90deg,transparent,var(--gold-md) 20%,var(--gold-md) 80%,transparent);z-index:0}
+.step-card{background:var(--white);border-radius:var(--r-lg);padding:28px 22px;text-align:center;border:1px solid var(--gold-lt);position:relative;z-index:1;transition:transform .25s,box-shadow .25s}
+.step-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-lift)}
+.step-num{width:52px;height:52px;border-radius:50%;background:var(--charcoal);color:var(--gold);font-family:var(--serif);font-size:1.3rem;font-weight:300;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;border:2px solid var(--gold-md)}
+.step-icon{font-size:1.5rem;margin-bottom:10px}
+.step-title{font-weight:600;font-size:.9rem;margin-bottom:8px;color:var(--charcoal)}
+.step-desc{font-size:.78rem;color:var(--muted);line-height:1.6}
+
+/* ── UPLOAD SECTION ──────────────────────────────────────── */
+#demo{background:var(--white)}
+.upload-zone{border:2px dashed var(--gold-md);border-radius:var(--r-xl);padding:48px 32px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;max-width:560px;margin:0 auto}
+.upload-zone:hover{border-color:var(--gold);background:var(--gold-lt)}
+.upload-icon{font-size:2.5rem;margin-bottom:14px}
+.upload-title{font-family:var(--serif);font-size:1.4rem;font-weight:300;margin-bottom:8px}
+.upload-hint{font-size:.8rem;color:var(--muted)}
+.progress-bar{height:6px;background:var(--gold-lt);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--gold),#d4b47a);border-radius:3px;animation:shimmer 2s linear infinite;background-size:200% auto;width:0;transition:width .3s}
+.upload-options{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;max-width:560px;margin:20px auto 0}
+.upload-opt{display:flex;flex-direction:column;align-items:center;padding:18px 10px;background:var(--paper);border-radius:var(--r-md);border:1px solid var(--gold-lt);text-align:center;cursor:pointer;transition:all .2s}
+.upload-opt:hover{border-color:var(--gold);transform:translateY(-3px);box-shadow:var(--shadow-card)}
+.upload-opt-icon{font-size:1.6rem;margin-bottom:8px}
+.upload-opt-title{font-size:.78rem;font-weight:500;margin-bottom:3px}
+.upload-opt-desc{font-size:.68rem;color:var(--muted)}
+.result-btn{background:var(--charcoal);color:var(--paper);border:none;border-radius:var(--r-sm);padding:10px 18px;font-size:.82rem;font-weight:500;cursor:pointer;transition:background .2s}
+.result-btn:hover{background:var(--gold)}
+.result-btn-outline{background:transparent;color:var(--charcoal);border:1.5px solid var(--gold-md);border-radius:var(--r-sm);padding:9px 16px;font-size:.82rem;font-weight:500;cursor:pointer;transition:all .2s}
+.result-btn-outline:hover{border-color:var(--gold);color:var(--gold)}
+#file-input{display:none}
+
+/* ── FABRIC RECS ─────────────────────────────────────────── */
+#fabric-section{background:var(--cream)}
+.fab-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:780px;margin:0 auto}
+.fab-card{background:var(--white);border-radius:var(--r-lg);padding:22px;border:1.5px solid var(--gold-lt);cursor:pointer;transition:all .22s;position:relative;overflow:hidden}
+.fab-card:hover,.fab-card.selected{border-color:var(--gold);box-shadow:var(--shadow-card)}
+.fab-card.selected::after{content:'✓';position:absolute;top:12px;right:14px;width:22px;height:22px;border-radius:50%;background:var(--gold);color:var(--white);font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+.fab-swatch{height:56px;border-radius:var(--r-sm);margin-bottom:14px}
+.fab-name{font-weight:600;font-size:.9rem;margin-bottom:4px}
+.fab-desc{font-size:.75rem;color:var(--muted);margin-bottom:10px}
+.fab-match{font-size:.72rem;font-weight:600;color:var(--gold)}
+
+/* ── VIDEO GUIDE ─────────────────────────────────────────── */
+#video-guide{background:var(--white)}
+.vguide-layout{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start}
+/* Wizard steps nav */
+.vstep-nav{display:flex;gap:0;margin-bottom:0}
+.vstep-tab{flex:1;padding:12px 8px;text-align:center;font-size:.72rem;font-weight:500;background:var(--cream);border:1px solid var(--gold-lt);border-right:none;cursor:pointer;transition:all .18s;color:var(--muted)}
+.vstep-tab:last-child{border-right:1px solid var(--gold-lt)}
+.vstep-tab.active{background:var(--charcoal);color:var(--gold);border-color:var(--charcoal)}
+.vstep-panel{background:var(--paper);border:1px solid var(--gold-lt);border-top:none;padding:22px;border-radius:0 0 var(--r-md) var(--r-md)}
+/* Design & fabric options */
+.vdesign-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.vdesign-opt{padding:12px;border-radius:var(--r-sm);border:1.5px solid var(--gold-lt);cursor:pointer;transition:all .18s;font-size:.8rem;font-weight:500;text-align:center;background:var(--white)}
+.vdesign-opt:hover,.vdesign-opt.selected{border-color:var(--gold);background:var(--gold-lt);color:var(--charcoal)}
+.vfab-opt{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r-sm);border:1.5px solid var(--gold-lt);cursor:pointer;transition:all .18s;background:var(--white);margin-bottom:8px}
+.vfab-opt:hover,.vfab-opt.selected{border-color:var(--gold);background:var(--gold-lt)}
+.skill-btn{padding:8px 14px;border-radius:20px;border:1.5px solid var(--gold-lt);font-size:.78rem;font-weight:500;cursor:pointer;background:var(--white);color:var(--muted);transition:all .18s}
+.skill-btn:hover,.skill-btn.selected{border-color:var(--gold);background:var(--charcoal);color:var(--gold)}
+/* Video player */
+.video-player{background:var(--charcoal);border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--gold-md)}
+.vplayer-bar{background:var(--charcoal2);padding:12px 18px;display:flex;align-items:center;gap:10px}
+.vdot{width:9px;height:9px;border-radius:50%}
+#video-display{position:relative;background:#1a1714;min-height:220px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+#vstep-bg{position:absolute;inset:0;transition:background 1s}
+#vstep-anim{position:relative;z-index:2;width:100%;padding:10px 8px}
+#vplay-overlay{position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(26,23,20,.6);transition:opacity .3s}
+.vplay-btn-big{width:60px;height:60px;border-radius:50%;background:var(--gold);border:none;color:var(--charcoal);font-size:1.4rem;cursor:pointer;transition:transform .2s}
+.vplay-btn-big:hover{transform:scale(1.1)}
+/* Player controls */
+.vcontrols{padding:14px 18px;display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.03);border-top:1px solid rgba(255,255,255,.05)}
+.vctrl-btn{background:rgba(255,255,255,.08);border:none;color:var(--paper);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:.8rem;transition:background .18s}
+.vctrl-btn:hover{background:var(--gold);color:var(--charcoal)}
+.vtime-bar{flex:1;height:4px;background:rgba(255,255,255,.12);border-radius:2px;cursor:pointer;position:relative}
+.vtime-fill{height:100%;background:var(--gold);border-radius:2px;width:0%;transition:width .5s linear}
+.vstep-tabs{display:flex;gap:0;overflow-x:auto;border-top:1px solid rgba(255,255,255,.06)}
+.vstep-tab-sm{flex:1;min-width:60px;padding:8px 4px;text-align:center;font-size:.63rem;color:rgba(245,242,238,.4);cursor:pointer;border-right:1px solid rgba(255,255,255,.06);transition:all .18s;background:transparent;border-bottom:none;border-top:none;border-left:none}
+.vstep-tab-sm:hover,.vstep-tab-sm.active{color:var(--gold);background:rgba(184,154,106,.08)}
+
+/* ── AUDIENCE ────────────────────────────────────────────── */
+#audience{background:var(--cream)}
+.audience-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+.audience-card{background:var(--white);border-radius:var(--r-lg);padding:30px 22px;border:1px solid var(--gold-lt);transition:all .25s;position:relative;overflow:hidden}
+.audience-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-lift)}
+.aud-icon{font-size:2rem;margin-bottom:16px}
+.aud-title{font-weight:600;font-size:.9rem;margin-bottom:8px}
+.aud-desc{font-size:.78rem;color:var(--muted);line-height:1.6}
+
+/* ── MODALS ──────────────────────────────────────────────── */
+.modal-overlay{position:fixed;inset:0;background:rgba(13,11,9,.7);z-index:9001;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(6px)}
+.modal-box{background:var(--paper);border-radius:var(--r-xl);max-width:520px;width:100%;max-height:88vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.3);animation:fadeUp .25s ease both}
+.modal-header{background:var(--charcoal);padding:20px 24px;border-radius:var(--r-xl) var(--r-xl) 0 0;display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-family:var(--serif);font-size:1.2rem;font-weight:300;color:var(--paper)}
+.modal-close{background:rgba(255,255,255,.12);border:none;width:30px;height:30px;border-radius:50%;cursor:pointer;color:rgba(245,242,238,.6);font-size:.85rem}
+.modal-body{padding:24px}
+.modal-fab-row{display:flex;align-items:center;gap:12px;padding:12px;border-radius:var(--r-sm);border:1.5px solid var(--gold-lt);margin-bottom:10px;cursor:pointer;transition:all .18s}
+.modal-fab-row:hover,.modal-fab-row.mf-sel{border-color:var(--gold);background:var(--gold-lt)}
+.modal-btn{padding:12px 20px;border-radius:var(--r-sm);font-size:.85rem;font-weight:500;cursor:pointer;transition:all .2s}
+.modal-btn-primary{background:var(--charcoal);color:var(--paper);border:none}
+.modal-btn-primary:hover{background:var(--gold)}
+.modal-btn-outline{background:transparent;border:1.5px solid var(--gold-md);color:var(--charcoal)}
+.modal-btn-outline:hover{border-color:var(--gold);color:var(--gold)}
+
+/* ── AUTH ────────────────────────────────────────────────── */
+.auth-overlay{position:fixed;inset:0;background:rgba(13,11,9,.72);z-index:9500;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(8px)}
+.auth-overlay.open{display:flex}
+.auth-modal{background:var(--paper);border-radius:var(--r-xl);max-width:420px;width:100%;box-shadow:0 24px 80px rgba(0,0,0,.3);animation:fadeUp .25s ease both;overflow:hidden}
+.auth-header{background:var(--charcoal);padding:24px;text-align:center}
+.auth-tabs{display:flex;gap:2px;background:rgba(255,255,255,.06);border-radius:var(--r-sm);padding:3px;margin-top:16px}
+.auth-tab{flex:1;padding:8px;border-radius:6px;border:none;background:transparent;color:rgba(245,242,238,.5);font-size:.82rem;font-weight:500;cursor:pointer;transition:all .18s;font-family:var(--sans)}
+.auth-tab.active{background:var(--gold);color:var(--charcoal)}
+.auth-body{padding:28px 24px}
+.auth-field{margin-bottom:16px}
+.auth-field label{display:block;font-size:.75rem;font-weight:500;color:var(--muted);margin-bottom:6px;letter-spacing:.06em;text-transform:uppercase}
+.auth-field input{width:100%;padding:11px 14px;border:1.5px solid var(--gold-md);border-radius:var(--r-sm);font-size:.88rem;font-family:var(--sans);background:var(--paper);color:var(--charcoal);outline:none;transition:border-color .18s}
+.auth-field input:focus{border-color:var(--gold)}
+.auth-submit{width:100%;padding:13px;background:var(--charcoal);color:var(--paper);border:none;border-radius:var(--r-sm);font-family:var(--sans);font-size:.9rem;font-weight:500;cursor:pointer;transition:background .2s;margin-top:8px}
+.auth-submit:hover{background:var(--gold);color:var(--charcoal)}
+.auth-success{text-align:center;padding:40px 28px}
+.auth-success-icon{font-size:3rem;margin-bottom:14px}
+
+/* ── TOAST ───────────────────────────────────────────────── */
+#toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--charcoal);color:var(--paper);padding:12px 24px;border-radius:var(--r-md);font-size:.83rem;font-weight:500;z-index:99999;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;max-width:calc(100vw - 40px);text-align:center;border-left:3px solid var(--gold)}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── FOOTER ──────────────────────────────────────────────── */
+footer{background:var(--charcoal2);padding:60px 0 30px;color:rgba(245,242,238,.5)}
+.footer-inner{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:40px;margin-bottom:48px}
+.footer-brand .nav-logo{font-size:1.4rem;margin-bottom:10px;color:var(--paper)}
+.footer-col h4{font-size:.75rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:16px}
+.footer-col a{display:block;font-size:.8rem;margin-bottom:8px;transition:color .2s}
+.footer-col a:hover{color:var(--paper)}
+.footer-bottom{padding-top:24px;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;font-size:.75rem}
+
+/* ── RESPONSIVE ──────────────────────────────────────────── */
+@media(max-width:900px){
+  .hero-inner{grid-template-columns:1fr;text-align:center}
+  .hero-desc{margin-inline:auto}
+  .hero-actions{justify-content:center}
+  .hero-visual{display:none}
+  .steps-grid{grid-template-columns:repeat(2,1fr)}
+  .steps-grid::before{display:none}
+  .vguide-layout{grid-template-columns:1fr}
+  .audience-grid{grid-template-columns:repeat(2,1fr)}
+  .fab-grid{grid-template-columns:1fr}
+  .upload-options{grid-template-columns:repeat(2,1fr)}
+  .footer-inner{grid-template-columns:1fr 1fr}
+}
+@media(max-width:540px){
+  .steps-grid{grid-template-columns:1fr}
+  .audience-grid{grid-template-columns:1fr}
+  .upload-options{grid-template-columns:1fr}
+  .vdesign-grid{grid-template-columns:1fr}
+}
+
+/* ── DARK MODE ───────────────────────────────────────────── */
+body.dark-mode {
+  --gold:#c9a870; --gold-lt:rgba(201,168,112,.12); --gold-md:rgba(201,168,112,.28);
+  --charcoal:#f0ede8; --charcoal2:#e0dbd4;
+  --paper:#1a1714; --cream:#221f1b; --white:#2a2520;
+  --muted:#a09890; --text:#f0ede8;
+  --shadow-card:0 4px 20px rgba(0,0,0,.3); --shadow-lift:0 12px 40px rgba(0,0,0,.5);
+}
+body.dark-mode nav { background:rgba(26,23,20,.95); }
+body.dark-mode nav.scrolled { background:rgba(26,23,20,.98); }
+body.dark-mode .auth-modal, body.dark-mode .modal-box { background:#221f1b; }
+body.dark-mode .auth-field input { background:#1a1714; border-color:rgba(201,168,112,.28); color:#f0ede8; }
+body.dark-mode #account-panel { background:#221f1b; }
+body.dark-mode .mobile-menu { background:#1a1714; }
+body.dark-mode .fab-card, body.dark-mode .step-card,
+body.dark-mode .upload-opt, body.dark-mode .audience-card { background:#221f1b; }
+
+/* ── DARK TOGGLE BUTTON ─────────────────────────────────── */
+#dark-toggle {
+  background:none; border:1.5px solid var(--gold-md); color:var(--muted);
+  width:34px; height:34px; border-radius:50%; font-size:1rem;
+  cursor:pointer; transition:all .2s; flex-shrink:0; display:flex;
+  align-items:center; justify-content:center;
+}
+#dark-toggle:hover { border-color:var(--gold); color:var(--gold); background:var(--gold-lt); }
+
+/* ── BACK TO TOP ─────────────────────────────────────────── */
+#back-to-top {
+  position:fixed; bottom:90px; right:20px; width:40px; height:40px;
+  border-radius:50%; background:var(--charcoal); color:var(--gold);
+  border:1.5px solid var(--gold-md); font-size:1.1rem; cursor:pointer;
+  z-index:8999; opacity:0; transform:translateY(10px);
+  transition:all .3s; pointer-events:none; display:flex;
+  align-items:center; justify-content:center;
+}
+#back-to-top.show { opacity:1; transform:translateY(0); pointer-events:auto; }
+#back-to-top:hover { background:var(--gold); color:var(--charcoal); }
+
+/* ── PWA INSTALL BANNER ──────────────────────────────────── */
+#pwa-banner {
+  position:fixed; bottom:0; left:0; right:0; background:var(--charcoal);
+  color:var(--paper); display:flex; align-items:center;
+  justify-content:space-between; padding:12px 20px; z-index:9100;
+  transform:translateY(100%); transition:transform .4s cubic-bezier(.16,1,.3,1); gap:12px;
+}
+#pwa-banner.show { transform:translateY(0); }
+.pwa-banner-text { display:flex; align-items:center; gap:10px; flex:1; min-width:0; }
+.pwa-banner-icon { font-size:1.4rem; flex-shrink:0; }
+.pwa-banner-msg { display:flex; flex-direction:column; gap:2px; }
+.pwa-banner-msg strong { font-size:.85rem; font-weight:600; }
+.pwa-banner-msg span { font-size:.75rem; opacity:.65; }
+.pwa-install-btn {
+  background:var(--gold); color:var(--charcoal); border:none;
+  padding:8px 16px; border-radius:var(--r-sm); font-size:.8rem;
+  font-weight:600; cursor:pointer; flex-shrink:0; font-family:var(--sans);
+}
+.pwa-dismiss-btn {
+  background:none; border:none; color:var(--muted);
+  font-size:1.1rem; cursor:pointer; padding:4px 8px; flex-shrink:0;
+}
+
+/* ── CHAT COUNTER ────────────────────────────────────────── */
+.chat-counter { font-size:.65rem; color:var(--muted); text-align:right; margin-top:2px; transition:color .2s; }
+.chat-counter.warn { color:#c97a1a; }
+.chat-counter.over { color:#c93a1a; }
+
+/* ── WIZARD PROGRESS BAR ─────────────────────────────────── */
+#wizard-progress { display:flex; gap:4px; margin-bottom:14px; }
+.wp-step { flex:1; height:3px; background:var(--gold-lt); border-radius:2px; transition:background .3s; }
+.wp-step.done { background:var(--gold); }
+
+/* ── DESIGN GALLERY ──────────────────────────────────────── */
+.gallery-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+.gallery-item {
+  position:relative; border-radius:var(--r-md); overflow:hidden;
+  cursor:pointer; border:1.5px solid var(--gold-lt); aspect-ratio:1;
+  background:var(--cream); display:flex; align-items:center;
+  justify-content:center; transition:all .2s; font-size:2rem;
+}
+.gallery-item:hover { border-color:var(--gold); transform:scale(1.03); box-shadow:var(--shadow-card); }
+.gallery-item img { width:100%; height:100%; object-fit:cover; }
+.gallery-item-label {
+  position:absolute; bottom:0; left:0; right:0;
+  background:rgba(42,38,33,.85); color:var(--paper);
+  font-size:.65rem; padding:5px 8px; text-align:center;
+  font-weight:500; font-family:var(--sans);
+}
+.gallery-item-del {
+  position:absolute; top:6px; right:6px; background:rgba(200,50,50,.85);
+  border:none; color:white; border-radius:50%; width:22px; height:22px;
+  font-size:.65rem; cursor:pointer; display:none;
+  align-items:center; justify-content:center; line-height:1;
+}
+.gallery-item:hover .gallery-item-del { display:flex; }
+.gallery-open-btn {
+  width:100%; margin:10px 0 4px; background:transparent;
+  border:1.5px solid var(--gold-md); color:var(--charcoal);
+  padding:10px; border-radius:var(--r-sm); font-family:var(--sans);
+  font-size:.82rem; cursor:pointer; transition:all .2s;
+}
+.gallery-open-btn:hover { border-color:var(--gold); color:var(--gold); }
+
+/* ── LANGUAGE TOGGLE ─────────────────────────────────────── */
+#lang-toggle {
+  background:none; border:1.5px solid var(--gold-md); color:var(--muted);
+  height:34px; padding:0 10px; border-radius:20px; font-size:.72rem;
+  font-family:var(--sans); font-weight:600; cursor:pointer;
+  transition:all .2s; flex-shrink:0; letter-spacing:.04em;
+}
+#lang-toggle:hover { border-color:var(--gold); color:var(--gold); background:var(--gold-lt); }
+body[dir="rtl"] { direction:rtl; text-align:right; }
+body[dir="rtl"] nav { direction:rtl; }
+body[dir="rtl"] .nav-account-group { flex-direction:row-reverse; }
+
+/* ── ACCOUNT PANEL TABS ───────────────────────────────────── */
+.ap-tabs { display:flex; border-bottom:1px solid var(--gold-lt); margin-bottom:0; }
+.ap-tab {
+  flex:1; padding:10px 6px; font-size:.72rem; font-weight:600;
+  font-family:var(--sans); letter-spacing:.06em; text-transform:uppercase;
+  background:none; border:none; color:var(--muted); cursor:pointer;
+  border-bottom:2px solid transparent; transition:all .2s; margin-bottom:-1px;
+}
+.ap-tab.active { color:var(--gold); border-bottom-color:var(--gold); }
+.ap-tab-content { display:none; padding:14px 18px; }
+.ap-tab-content.active { display:block; }
+
+/* ── PROFILE FORM ─────────────────────────────────────────── */
+.profile-field {
+  margin-bottom:10px;
+}
+.profile-field label {
+  display:block; font-size:.68rem; font-weight:600; letter-spacing:.07em;
+  text-transform:uppercase; color:var(--muted); margin-bottom:4px;
+}
+.profile-field input, .profile-field select {
+  width:100%; padding:8px 10px; background:var(--cream);
+  border:1.5px solid transparent; border-radius:var(--r-sm);
+  font-family:var(--sans); font-size:.82rem; color:var(--charcoal);
+  box-sizing:border-box; transition:border-color .2s; outline:none;
+}
+.profile-field input:focus, .profile-field select:focus {
+  border-color:var(--gold);
+}
+.profile-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.profile-save-btn {
+  width:100%; padding:10px; background:var(--charcoal); color:var(--paper);
+  border:none; border-radius:var(--r-sm); font-family:var(--sans);
+  font-size:.82rem; font-weight:600; cursor:pointer; margin-top:4px;
+  transition:background .2s;
+}
+.profile-save-btn:hover { background:var(--gold); color:var(--charcoal); }
+.profile-saved-msg {
+  text-align:center; font-size:.72rem; color:var(--gold);
+  margin-top:6px; opacity:0; transition:opacity .3s;
+}
+
+/* ── HISTORY LIST ─────────────────────────────────────────── */
+.history-item {
+  display:flex; gap:10px; align-items:center; padding:10px 0;
+  border-bottom:1px solid var(--gold-lt); cursor:pointer;
+  transition:opacity .2s;
+}
+.history-item:hover { opacity:.75; }
+.history-item:last-child { border-bottom:none; }
+.history-icon {
+  width:36px; height:36px; border-radius:var(--r-sm);
+  background:var(--cream); display:flex; align-items:center;
+  justify-content:center; font-size:1.1rem; flex-shrink:0;
+}
+.history-info { flex:1; min-width:0; }
+.history-title { font-size:.82rem; font-weight:500; color:var(--charcoal); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.history-date  { font-size:.68rem; color:var(--muted); margin-top:2px; }
+.history-empty { text-align:center; padding:20px 0; color:var(--muted); font-size:.8rem; }
+
+body.dark-mode .nav-logo-light { display: none !important; }
+body.dark-mode .nav-logo-dark  { display: inline-block !important; }
+body:not(.dark-mode) .nav-logo-dark  { display: none !important; }
+body:not(.dark-mode) .nav-logo-light { display: inline-block !important; }
+</style>
+</head>
+<body>
+
+<div id="toast"></div>
+
+<!-- ══ NAV ══════════════════════════════════════════════════ -->
+<nav id="main-nav">
+  <div class="container nav-inner">
+    <div class="nav-logo" style="display:flex;align-items:center;gap:8px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 340" width="28" height="34" style="vertical-align:middle" class="nav-logo-dark">
+
+  <!-- Background -->
+  <rect width="28" height="34" style="vertical-align:middle" class="nav-logo-dark" rx="28" fill="#2A2621"/>
+
+  <!-- Two needles forming V / dress outline -->
+  <line x1="62" y1="38" x2="110" y2="238" stroke="#B89A6A" stroke-width="4" stroke-linecap="round"/>
+  <line x1="158" y1="38" x2="110" y2="238" stroke="#B89A6A" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- Needle eyes -->
+  <ellipse cx="62" cy="36" rx="6" ry="10" fill="none" stroke="#B89A6A" stroke-width="2" transform="rotate(-18,62,36)"/>
+  <ellipse cx="158" cy="36" rx="6" ry="10" fill="none" stroke="#B89A6A" stroke-width="2" transform="rotate(18,158,36)"/>
+
+  <!-- Shoulder curve / neckline -->
+  <path d="M62,66 Q110,90 158,66" fill="none" stroke="#F5F2EE" stroke-width="2" opacity="0.7"/>
+
+  <!-- Waist taper -->
+  <path d="M75,145 Q110,137 145,145" fill="none" stroke="#F5F2EE" stroke-width="1" opacity="0.3" stroke-dasharray="3,4"/>
+
+  <!-- Center spine -->
+  <line x1="110" y1="90" x2="110" y2="200" stroke="#F5F2EE" stroke-width="1" stroke-dasharray="4,5" opacity="0.2"/>
+
+  <!-- AI spark -->
+  <circle cx="110" cy="165" r="8" fill="#B89A6A"/>
+  <line x1="110" y1="150" x2="110" y2="142" stroke="#F5F2EE" stroke-width="1.5" opacity="0.9"/>
+  <line x1="110" y1="180" x2="110" y2="188" stroke="#F5F2EE" stroke-width="1.5" opacity="0.9"/>
+  <line x1="95"  y1="165" x2="87"  y2="165" stroke="#F5F2EE" stroke-width="1.5" opacity="0.9"/>
+  <line x1="125" y1="165" x2="133" y2="165" stroke="#F5F2EE" stroke-width="1.5" opacity="0.9"/>
+  <line x1="99"  y1="154" x2="93"  y2="148" stroke="#F5F2EE" stroke-width="1.5" opacity="0.7"/>
+  <line x1="121" y1="154" x2="127" y2="148" stroke="#F5F2EE" stroke-width="1.5" opacity="0.7"/>
+  <line x1="99"  y1="176" x2="93"  y2="182" stroke="#F5F2EE" stroke-width="1.5" opacity="0.7"/>
+  <line x1="121" y1="176" x2="127" y2="182" stroke="#F5F2EE" stroke-width="1.5" opacity="0.7"/>
+
+  <!-- Thread loop at hem -->
+  <path d="M98,238 Q110,252 122,238" fill="none" stroke="#B89A6A" stroke-width="2.5" stroke-linecap="round"/>
+
+</svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 340" width="28" height="34" style="vertical-align:middle" class="nav-logo-light">
+
+  <!-- Background -->
+  <rect width="28" height="34" style="vertical-align:middle" class="nav-logo-light" rx="28" fill="#F5F2EE" stroke="#EDE9E2" stroke-width="1"/>
+
+  <!-- Two needles forming V / dress outline -->
+  <line x1="62" y1="38" x2="110" y2="238" stroke="#2A2621" stroke-width="4" stroke-linecap="round"/>
+  <line x1="158" y1="38" x2="110" y2="238" stroke="#2A2621" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- Needle eyes -->
+  <ellipse cx="62" cy="36" rx="6" ry="10" fill="none" stroke="#2A2621" stroke-width="2" transform="rotate(-18,62,36)"/>
+  <ellipse cx="158" cy="36" rx="6" ry="10" fill="none" stroke="#2A2621" stroke-width="2" transform="rotate(18,158,36)"/>
+
+  <!-- Shoulder curve / neckline -->
+  <path d="M62,66 Q110,90 158,66" fill="none" stroke="#B89A6A" stroke-width="2"/>
+
+  <!-- Waist taper -->
+  <path d="M75,145 Q110,137 145,145" fill="none" stroke="#2A2621" stroke-width="1" opacity="0.2" stroke-dasharray="3,4"/>
+
+  <!-- Center spine -->
+  <line x1="110" y1="90" x2="110" y2="200" stroke="#2A2621" stroke-width="1" stroke-dasharray="4,5" opacity="0.15"/>
+
+  <!-- AI spark -->
+  <circle cx="110" cy="165" r="8" fill="#B89A6A"/>
+  <line x1="110" y1="150" x2="110" y2="142" stroke="#2A2621" stroke-width="1.5" opacity="0.7"/>
+  <line x1="110" y1="180" x2="110" y2="188" stroke="#2A2621" stroke-width="1.5" opacity="0.7"/>
+  <line x1="95"  y1="165" x2="87"  y2="165" stroke="#2A2621" stroke-width="1.5" opacity="0.7"/>
+  <line x1="125" y1="165" x2="133" y2="165" stroke="#2A2621" stroke-width="1.5" opacity="0.7"/>
+  <line x1="99"  y1="154" x2="93"  y2="148" stroke="#2A2621" stroke-width="1.5" opacity="0.5"/>
+  <line x1="121" y1="154" x2="127" y2="148" stroke="#2A2621" stroke-width="1.5" opacity="0.5"/>
+  <line x1="99"  y1="176" x2="93"  y2="182" stroke="#2A2621" stroke-width="1.5" opacity="0.5"/>
+  <line x1="121" y1="176" x2="127" y2="182" stroke="#2A2621" stroke-width="1.5" opacity="0.5"/>
+
+  <!-- Thread loop at hem -->
+  <path d="M98,238 Q110,252 122,238" fill="none" stroke="#2A2621" stroke-width="2.5" stroke-linecap="round"/>
+
+</svg><span style="font-family:var(--serif);font-size:1.4rem;font-weight:300;letter-spacing:.08em;color:var(--charcoal)">VOG<span style="color:var(--gold)">X</span></span></div>
+    <ul class="nav-links">
+      <li><a href="#how-it-works">How It Works</a></li>
+      <li><a href="#demo">Try It</a></li>
+      <li><a href="#video-guide">Sewing Videos</a></li>
+      <li><a href="#fabric-section">Fabrics</a></li>
+      <li><a href="#audience">Who It's For</a></li>
+    </ul>
+    <div class="nav-account-group">
+      <button id="lang-toggle" onclick="toggleLanguage()" title="Toggle language">EN</button>
+      <button id="dark-toggle" title="Toggle dark mode" onclick="toggleDarkMode()">🌙</button>
+          <div id="nav-guest">
+        <button class="btn-login" onclick="openAuth('login')">Sign In</button>
+        <button class="nav-cta" onclick="openAuth('signup')">Get Started</button>
+      </div>
+      <div id="nav-user" style="display:none;align-items:center;gap:10px">
+        <span id="nav-greeting" style="font-size:.82rem;color:var(--charcoal);font-weight:500"></span>
+        <button class="nav-user-btn" id="nav-avatar-btn" onclick="toggleAccountPanel()">
+          <span id="nav-initials">?</span>
+        </button>
+      </div>
+      <button class="nav-hamburger" id="nav-hamburger" onclick="toggleMobileMenu()">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobile-menu">
+  <a href="#how-it-works" onclick="closeMobileMenu()">How It Works</a>
+  <a href="#demo" onclick="closeMobileMenu()">Try It</a>
+  <a href="#video-guide" onclick="closeMobileMenu()">Sewing Videos</a>
+  <a href="#fabric-section" onclick="closeMobileMenu()">Fabrics</a>
+  <a href="#audience" onclick="closeMobileMenu()">Who It's For</a>
+  <div style="display:flex;gap:10px;padding-top:8px">
+    <button class="btn-primary" style="flex:1" onclick="closeMobileMenu();openAuth('signup')">Get Started</button>
+    <button class="btn-outline" style="flex:1" onclick="closeMobileMenu();openAuth('login')">Sign In</button>
+  </div>
+</div>
+
+<!-- ══ ACCOUNT PANEL ════════════════════════════════════════ -->
+<div id="account-panel">
+  <div class="ap-header">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 340" width="36" height="44" style="display:block;margin:0 auto 6px">
+
+  <!-- Background -->
+  <rect width="36" height="44" style="display:block;margin:0 auto 6px" rx="28" fill="#2A2621"/>
+
+  <!-- Two needles forming V / dress outline -->
+  <line x1="62" y1="38" x2="110" y2="238" stroke="#B89A6A" stroke-width="4" stroke-linecap="round"/>
+  <line x1="158" y1="38" x2="110" y2="238" stroke="#B89A6A" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- Needle eyes -->
+  <ellipse cx="62" cy="36" rx="6" ry="10" fill="none" stroke="#B89A6A" stroke-width="2" transform="rotate(-18,62,36)"/>
+  <ellipse cx="158" cy="36" rx="6" ry="10" fill="none" stroke="#B89A6A" stroke-width="2" transform="rotate(18,158,36)"/>
+
+  <!-- Shoulder curve / neckline -->
+  <path d="M62,66 Q110,90 158,66" fill="none" stroke="#F5F2EE" stroke-width="2" opacity="0.7"/>
+
+  <!-- Waist taper -->
+  <path d="M75,145 Q110,137 145,145" fill="none" stroke="#F5F2EE" stroke-width="1" opacity="0.3" stroke-dasharray="3,4"/>
+
+  <!-- Center spine -->
+  <line x1="110" y1="90" x2="110" y2="200" stroke="#F5F2EE" stroke-width="1" stroke-dasharray="4,5" opacity="0.2"/>
+
+  <!-- AI spark -->
+  <circle cx="110" cy="165" r="8" fill="#B89A6A"/>
+  <line x1="110" y1="150" x2="110" y2="142" stroke="#F5F2EE" stroke-width="1.5" opacity="0.9"/>
+  <line x1="110" y1="180" x2="110" y2="188" stroke="#F5F2EE" stroke-width="1.5" opacity="0.9"/>
+  <line x1="95"  y1="165" x2="87"  y2="165" stroke="#F5F2EE" stroke-width="1.5" opacity="0.9"/>
+  <line x1="125" y1="165" x2="133" y2="165" stroke="#F5F2EE" stroke-width="1.5" opacity="0.9"/>
+  <line x1="99"  y1="154" x2="93"  y2="148" stroke="#F5F2EE" stroke-width="1.5" opacity="0.7"/>
+  <line x1="121" y1="154" x2="127" y2="148" stroke="#F5F2EE" stroke-width="1.5" opacity="0.7"/>
+  <line x1="99"  y1="176" x2="93"  y2="182" stroke="#F5F2EE" stroke-width="1.5" opacity="0.7"/>
+  <line x1="121" y1="176" x2="127" y2="182" stroke="#F5F2EE" stroke-width="1.5" opacity="0.7"/>
+
+  <!-- Thread loop at hem -->
+  <path d="M98,238 Q110,252 122,238" fill="none" stroke="#B89A6A" stroke-width="2.5" stroke-linecap="round"/>
+
+</svg>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div id="ap-avatar" style="width:44px;height:44px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;color:var(--charcoal);flex-shrink:0">?</div>
+      <div>
+        <div id="ap-name" style="font-family:var(--serif);font-size:1.1rem;font-weight:300;color:var(--paper)">Your Name</div>
+        <div id="ap-tagline" style="font-size:.72rem;color:rgba(245,242,238,.45);margin-top:2px">VOGX Member</div>
+      </div>
+    </div>
+  </div>
+  <div class="ap-tabs">
+    <button class="ap-tab active" onclick="switchApTab('designs',this)" id="tab-designs">Designs</button>
+    <button class="ap-tab" onclick="switchApTab('profile',this)" id="tab-profile">Profile</button>
+    <button class="ap-tab" onclick="switchApTab('history',this)" id="tab-history">History</button>
+  </div>
+
+  <!-- TAB: Designs -->
+  <div class="ap-tab-content active" id="apcontent-designs">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <span style="font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">My Designs</span>
+      <span id="ap-design-count" style="font-size:.7rem;color:var(--gold)">0 uploads</span>
+    </div>
+    <div id="ap-design-list">
+      <div style="text-align:center;padding:20px 0;color:var(--muted);font-size:.8rem">No designs yet.<br>Upload your first design below ↓</div>
+    </div>
+    <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--gold-lt);display:flex;gap:8px">
+      <button onclick="document.getElementById('file-input').click();document.getElementById('account-panel').classList.remove('open')" style="flex:1;padding:9px;background:var(--charcoal);color:var(--paper);border:none;border-radius:6px;font-family:var(--sans);font-size:.78rem;font-weight:500;cursor:pointer">+ Upload New</button>
+      <button onclick="signOut()" style="padding:9px 14px;background:transparent;border:1.5px solid var(--gold-md);border-radius:6px;font-family:var(--sans);font-size:.78rem;cursor:pointer;color:var(--muted)">Sign Out</button>
+    </div>
+  </div>
+
+  <!-- TAB: Profile -->
+  <div class="ap-tab-content" id="apcontent-profile">
+    <div class="profile-field">
+      <label>Gender</label>
+      <select id="prof-gender">
+        <option value="">Select…</option>
+        <option value="Women">Women</option>
+        <option value="Men">Men</option>
+        <option value="Non-binary">Non-binary</option>
+      </select>
+    </div>
+    <div class="profile-row">
+      <div class="profile-field">
+        <label>Age</label>
+        <input id="prof-age" type="number" placeholder="e.g. 25">
+      </div>
+      <div class="profile-field">
+        <label>Skin Tone</label>
+        <select id="prof-skin">
+          <option value="">Select…</option>
+          <option>Fair</option><option>Light</option><option>Medium</option>
+          <option>Olive</option><option>Tan</option><option>Dark</option><option>Deep</option>
+        </select>
+      </div>
+    </div>
+    <div class="profile-row">
+      <div class="profile-field">
+        <label>Height (cm)</label>
+        <input id="prof-height" type="number" placeholder="e.g. 165">
+      </div>
+      <div class="profile-field">
+        <label>Weight (kg)</label>
+        <input id="prof-weight" type="number" placeholder="e.g. 60">
+      </div>
+    </div>
+    <div class="profile-field">
+      <label>Favourite Colors</label>
+      <input id="prof-colors" type="text" placeholder="e.g. Navy, Ivory, Emerald">
+    </div>
+    <div class="profile-field">
+      <label>Favourite Fabrics</label>
+      <input id="prof-fabrics" type="text" placeholder="e.g. Silk, Linen, Cotton">
+    </div>
+    <div class="profile-field">
+      <label>Favourite Styles</label>
+      <select id="prof-style">
+        <option value="">Select…</option>
+        <option>Casual</option><option>Elegant</option><option>Streetwear</option>
+        <option>Bohemian</option><option>Minimalist</option><option>Maximalist</option>
+        <option>Vintage</option><option>Sporty</option>
+      </select>
+    </div>
+    <div class="profile-field">
+      <label>Occasions</label>
+      <input id="prof-occasions" type="text" placeholder="e.g. Gala, Office, Beach">
+    </div>
+    <button class="profile-save-btn" onclick="saveUserProfile()">Save Profile</button>
+    <div class="profile-saved-msg" id="profile-saved-msg">✓ Saved successfully</div>
+  </div>
+
+  <!-- TAB: History -->
+  <div class="ap-tab-content" id="apcontent-history">
+    <div id="ap-history-list">
+      <div class="history-empty">No design history yet.<br>Chat with VOGX to start creating.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ HERO ══════════════════════════════════════════════════ -->
+<section id="hero">
+  <div class="container hero-inner">
+    <div class="fade-up">
+      <div class="hero-eyebrow">
+        <div class="eyebrow-dot"></div>
+        <span class="eyebrow-text">Graduation Project · Sadat Academy</span>
+      </div>
+      <h1 class="hero-title serif">Design the Future<br>of <em>Fashion</em> with AI</h1>
+      <p class="hero-desc">Upload your sketch, get instant fabric recommendations, AI-generated sewing guides, and a step-by-step cutting & sewing video — all powered by intelligence.</p>
+      <div class="hero-actions">
+        <button class="btn-primary" onclick="document.getElementById('demo').scrollIntoView({behavior:'smooth'})">Start Designing ✦</button>
+        <button class="btn-outline" onclick="document.getElementById('how-it-works').scrollIntoView({behavior:'smooth'})">See How It Works</button>
+      </div>
+    </div>
+    <div class="hero-visual fade-up-2">
+      <div class="hero-card">
+        <div class="hero-card-label">✦ VOGX AI Assistant</div>
+        <div class="chat" id="hero-chat-msgs" style="max-height:200px;overflow-y:auto">
+          <div class="msg msg-ai">Hi! I'm VOGX ✦ Ask me anything about fabrics, sewing techniques, or fashion design.</div>
+        </div>
+        <div class="mockup-input">
+          <input type="text" id="hero-chat-input" placeholder="Ask about fabrics, sewing, trends…" onkeydown="if(event.key==='Enter')sendVogxMessage('hero')" />
+          <button class="mockup-send" onclick="sendVogxMessage('hero')">→</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ HOW IT WORKS ══════════════════════════════════════════ -->
+<section id="how-it-works">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow"><div class="eyebrow-line"></div><span class="tag">Process</span><div class="eyebrow-line"></div></div>
+      <h2 class="section-title serif">From Sketch to Finished Garment</h2>
+      <p class="section-desc">VOGX guides you through every step of the fashion design process with AI-powered precision.</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div class="step-icon">📤</div>
+        <div class="step-title">Upload Your Design</div>
+        <div class="step-desc">Upload a sketch, photo, or draw directly in the browser. VOGX extracts your design's silhouette, neckline, and structure.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-icon">🧵</div>
+        <div class="step-title">Get Fabric Recommendations</div>
+        <div class="step-desc">AI matches your design with the perfect fabrics — ranked by compatibility, drape, difficulty, and care requirements.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-icon">✂️</div>
+        <div class="step-title">Receive Sewing Guide</div>
+        <div class="step-desc">A fully personalised sewing guide with measurements, seam types, and step-by-step construction instructions.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">4</div>
+        <div class="step-icon">🎬</div>
+        <div class="step-title">Watch Sewing Video</div>
+        <div class="step-desc">An AI-animated cutting & sewing video shows every step visually — from measuring and cutting to draping and hemming.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ UPLOAD / DEMO ═════════════════════════════════════════ -->
+<section id="demo">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow"><div class="eyebrow-line"></div><span class="tag">Try It Now</span><div class="eyebrow-line"></div></div>
+      <h2 class="section-title serif">Upload Your Design</h2>
+      <p class="section-desc">Upload a sketch or photo and VOGX will analyse it instantly — extracting silhouette, neckline, and fabric recommendations.</p>
+    </div>
+    <input type="file" id="file-input" accept="image/*,.pdf,.svg" onchange="handleFileSelect(this)" />
+    <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()">
+      <div class="upload-icon">✦</div>
+      <div class="upload-title serif">Drop your design here</div>
+      <p class="upload-hint">Supports JPG, PNG, SVG, PDF · or choose an option below</p>
+    </div>
+    <div class="upload-options">
+      <div class="upload-opt" onclick="showToast('Camera capture coming soon!')">
+        <div class="upload-opt-icon">📸</div>
+        <div class="upload-opt-title">Take a Photo</div>
+        <div class="upload-opt-desc">Capture a sketch with your camera</div>
+      </div>
+      <div class="upload-opt" onclick="openDrawCanvas()">
+        <div class="upload-opt-icon">✏️</div>
+        <div class="upload-opt-title">Draw Online</div>
+        <div class="upload-opt-desc">Sketch directly in the browser</div>
+      </div>
+      <div class="upload-opt" onclick="openSamplePicker()">
+        <div class="upload-opt-icon">📂</div>
+        <div class="upload-opt-title">Use a Sample</div>
+        <div class="upload-opt-desc">Try with a pre-loaded design</div>
+      </div>
+      <div class="upload-opt" onclick="document.getElementById('video-guide').scrollIntoView({behavior:'smooth'})">
+        <div class="upload-opt-icon">🎬</div>
+        <div class="upload-opt-title">Sewing Video</div>
+        <div class="upload-opt-desc">Go to video generator</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FABRIC RECS ════════════════════════════════════════════ -->
+<section id="fabric-section">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow"><div class="eyebrow-line"></div><span class="tag">Feature 1</span><div class="eyebrow-line"></div></div>
+      <h2 class="section-title serif">AI Fabric Recommendations</h2>
+      <p class="section-desc">VOGX analyses your design's silhouette and recommends the best fabrics — ranked by compatibility, drape, and sewing difficulty.</p>
+    </div>
+    <div class="fab-grid" id="rc-list">
+      <div class="fab-card selected" data-fabric="Silk Chiffon" onclick="rcSelect(this)">
+        <div class="fab-swatch" style="background:linear-gradient(135deg,#e8d5c0,#c9a882)"></div>
+        <div class="fab-name">Silk Chiffon</div>
+        <div class="fab-desc">Lightweight, sheer fabric with beautiful drape. Perfect for evening and bridal wear.</div>
+        <div class="fab-match">✦ 97% Match · Hard · Dry clean</div>
+      </div>
+      <div class="fab-card" data-fabric="Duchess Satin" onclick="rcSelect(this)">
+        <div class="fab-swatch" style="background:linear-gradient(135deg,#d4c5b8,#b09b8e)"></div>
+        <div class="fab-name">Duchess Satin</div>
+        <div class="fab-desc">Smooth, heavy satin with beautiful sheen. Ideal for formal and bridal designs.</div>
+        <div class="fab-match">✦ 91% Match · Medium · Dry clean</div>
+      </div>
+      <div class="fab-card" data-fabric="Crepe">
+        <div class="fab-swatch" style="background:linear-gradient(135deg,#d8d0ca,#bfb4ae)" onclick="rcSelect(this)"></div>
+        <div class="fab-name">Crepe</div>
+        <div class="fab-desc">Matte, fluid fabric with subtle texture. Great for everyday and office wear.</div>
+        <div class="fab-match">✦ 84% Match · Easy · Machine wash</div>
+      </div>
+      <div class="fab-card" data-fabric="Organza" onclick="rcSelect(this)">
+        <div class="fab-swatch" style="background:linear-gradient(135deg,#eae4df,#cfc6bf)"></div>
+        <div class="fab-name">Organza</div>
+        <div class="fab-desc">Stiff, sheer fabric that holds its shape. Perfect for overlays and structured skirts.</div>
+        <div class="fab-match">✦ 78% Match · Hard · Dry clean</div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:28px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <button class="btn-primary" id="rc-btn" onclick="rcConfirm()">✦ Use Silk Chiffon for My Design</button>
+      <button class="btn-outline" onclick="rcCompare()">Compare All Fabrics</button>
+    </div>
+  </div>
+</section>
+
+<!-- ══ VIDEO GUIDE ═══════════════════════════════════════════ -->
+<section id="video-guide">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow"><div class="eyebrow-line"></div><span class="tag">Feature 2</span><div class="eyebrow-line"></div></div>
+      <h2 class="section-title serif">AI Sewing Video Generator</h2>
+      <p class="section-desc">VOGX generates a fully animated step-by-step sewing video showing real cutting, draping, and stitching scenes tailored to your design and fabric.</p>
+    </div>
+    <div class="vguide-layout">
+      <!-- LEFT: Wizard -->
+      <div>
+        <div class="vstep-nav">
+          <div class="vstep-tab active" id="vtab1" onclick="setVStep(1)">1 Design</div>
+          <div class="vstep-tab" id="vtab2" onclick="setVStep(2)">2 Fabric</div>
+          <div class="vstep-tab" id="vtab3" onclick="setVStep(3)">3 Skill</div>
+          <div class="vstep-tab" id="vtab4" onclick="setVStep(4)">4 Generate</div>
+        </div>
+        <div class="vstep-panel">
+          <!-- Step 1: Design -->
+          <div id="vpanel1">
+            <p style="font-size:.78rem;color:var(--muted);margin-bottom:14px">Choose your garment type:</p>
+            <div class="vdesign-grid">
+              <div class="vdesign-opt selected" id="vd-aline" onclick="selectDesign(this,'A-Line Gown')">👗 A-Line Gown</div>
+              <div class="vdesign-opt" id="vd-pencil" onclick="selectDesign(this,'Pencil Skirt')">👔 Pencil Skirt</div>
+              <div class="vdesign-opt" id="vd-maxi" onclick="selectDesign(this,'Boho Maxi')">🌸 Boho Maxi</div>
+              <div class="vdesign-opt" id="vd-cocktail" onclick="selectDesign(this,'Cocktail Dress')">✨ Cocktail Dress</div>
+              <div class="vdesign-opt" id="vd-wrap" onclick="selectDesign(this,'Wrap Dress')">🎀 Wrap Dress</div>
+              <div class="vdesign-opt" id="vd-ballgown" onclick="selectDesign(this,'Ball Gown')">👑 Ball Gown</div>
+            </div>
+            <button class="btn-primary" style="width:100%;margin-top:16px" onclick="setVStep(2)">Next: Choose Fabric →</button>
+          </div>
+          <!-- Step 2: Fabric -->
+          <div id="vpanel2" style="display:none">
+            <p style="font-size:.78rem;color:var(--muted);margin-bottom:14px">Select your fabric:</p>
+            <div class="vfab-opt selected" id="vf-chiffon" onclick="selectFabric(this,'Silk Chiffon')">
+              <div style="width:26px;height:26px;border-radius:6px;background:linear-gradient(135deg,#e8d5c0,#c9a882);flex-shrink:0"></div>
+              <div><div style="font-size:.85rem;font-weight:500">Silk Chiffon</div><div style="font-size:.72rem;color:var(--muted)">Lightweight · Elegant drape</div></div>
+            </div>
+            <div class="vfab-opt" id="vf-satin" onclick="selectFabric(this,'Duchess Satin')">
+              <div style="width:26px;height:26px;border-radius:6px;background:linear-gradient(135deg,#d4c5b8,#b09b8e);flex-shrink:0"></div>
+              <div><div style="font-size:.85rem;font-weight:500">Duchess Satin</div><div style="font-size:.72rem;color:var(--muted)">Smooth · Formal sheen</div></div>
+            </div>
+            <div class="vfab-opt" id="vf-crepe" onclick="selectFabric(this,'Crepe')">
+              <div style="width:26px;height:26px;border-radius:6px;background:linear-gradient(135deg,#d8d0ca,#bfb4ae);flex-shrink:0"></div>
+              <div><div style="font-size:.85rem;font-weight:500">Crepe</div><div style="font-size:.72rem;color:var(--muted)">Matte · Easy to sew</div></div>
+            </div>
+            <div class="vfab-opt" id="vf-organza" onclick="selectFabric(this,'Organza')">
+              <div style="width:26px;height:26px;border-radius:6px;background:linear-gradient(135deg,#eae4df,#cfc6bf);flex-shrink:0"></div>
+              <div><div style="font-size:.85rem;font-weight:500">Organza</div><div style="font-size:.72rem;color:var(--muted)">Sheer · Holds structure</div></div>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:16px">
+              <button class="btn-outline" style="flex:1" onclick="setVStep(1)">← Back</button>
+              <button class="btn-primary" style="flex:2" onclick="setVStep(3)">Next: Skill Level →</button>
+            </div>
+          </div>
+          <!-- Step 3: Skill -->
+          <div id="vpanel3" style="display:none">
+            <p style="font-size:.78rem;color:var(--muted);margin-bottom:14px">Your sewing skill level:</p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px">
+              <button class="skill-btn" id="sk-beginner" onclick="selectSkill(this,'Beginner')">🌱 Beginner</button>
+              <button class="skill-btn selected" id="sk-intermediate" onclick="selectSkill(this,'Intermediate')">⚡ Intermediate</button>
+              <button class="skill-btn" id="sk-advanced" onclick="selectSkill(this,'Advanced')">🏆 Advanced</button>
+            </div>
+            <p style="font-size:.78rem;color:var(--muted);margin-bottom:10px">Fit preference:</p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="skill-btn selected" id="fit-standard" onclick="selectFit(this,'Standard')">Standard</button>
+              <button class="skill-btn" id="fit-slim" onclick="selectFit(this,'Slim')">Slim</button>
+              <button class="skill-btn" id="fit-relaxed" onclick="selectFit(this,'Relaxed')">Relaxed</button>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:20px">
+              <button class="btn-outline" style="flex:1" onclick="setVStep(2)">← Back</button>
+              <button class="btn-primary" style="flex:2" onclick="setVStep(4)">Review & Generate →</button>
+            </div>
+          </div>
+          <!-- Step 4: Generate -->
+          <div id="vpanel4" style="display:none">
+            <div id="vgen-ready">
+              <div style="background:var(--cream);border-radius:var(--r-md);padding:16px;margin-bottom:18px;font-size:.82rem">
+                <div style="font-weight:600;margin-bottom:10px;color:var(--charcoal)">Your Video Summary</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;color:var(--muted)">
+                  <div>🎨 Design: <span id="vsumm-design" style="color:var(--charcoal);font-weight:500">A-Line Gown</span></div>
+                  <div>🧵 Fabric: <span id="vsumm-fabric" style="color:var(--charcoal);font-weight:500">Silk Chiffon</span></div>
+                  <div>⚡ Skill: <span id="vsumm-skill" style="color:var(--charcoal);font-weight:500">Intermediate</span></div>
+                  <div>📐 Fit: <span id="vsumm-fit" style="color:var(--charcoal);font-weight:500">Standard</span></div>
+                </div>
+              </div>
+              <div style="display:flex;gap:10px">
+                <button class="btn-outline" style="flex:1" onclick="setVStep(3)">← Back</button>
+                <button class="btn-primary" style="flex:2" onclick="generateVideo()">🎬 Generate Video</button>
+              </div>
+            </div>
+            <div id="vgen-loading" style="display:none">
+              <div style="text-align:center;padding:20px 0">
+                <div style="width:48px;height:48px;border:3px solid var(--gold-lt);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 16px"></div>
+                <div style="font-size:.85rem;font-weight:500;margin-bottom:8px" id="vgen-status">Analysing design structure…</div>
+                <div style="height:6px;background:var(--gold-lt);border-radius:3px;overflow:hidden;max-width:280px;margin:0 auto">
+                  <div style="height:100%;background:var(--gold);border-radius:3px;transition:width .4s" id="vgen-bar" style="width:0%"></div>
+                </div>
+              </div>
+            </div>
+            <div id="vgen-done" style="display:none">
+              <div style="background:rgba(184,154,106,.1);border:1px solid var(--gold-md);border-radius:var(--r-md);padding:14px;margin-bottom:16px;font-size:.8rem;color:var(--charcoal);text-align:center">
+                ✦ Video ready — press Play in the player →
+              </div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <button class="btn-primary" style="flex:1" onclick="downloadSewingGuide()">⬇ Download Guide</button>
+                <button class="btn-outline" style="flex:1" onclick="openFinalLookModal()">✨ Final Look</button>
+                <button class="btn-outline" style="width:100%" onclick="resetVideoGen()">↺ Generate Another Video</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- RIGHT: Video Player -->
+      <div>
+        <div class="video-player">
+          <div class="vplayer-bar">
+            <div class="vdot" style="background:#ff6b6b"></div>
+            <div class="vdot" style="background:#ffd93d"></div>
+            <div class="vdot" style="background:#6bcb77"></div>
+            <span style="font-size:.72rem;color:rgba(245,242,238,.4);margin-left:8px;font-family:var(--sans)">VOGX Sewing Video · AI Generated</span>
+          </div>
+          <div id="video-display">
+            <div id="vstep-bg" style="position:absolute;inset:0;transition:background 1s"></div>
+            <div id="vstep-anim" style="position:relative;z-index:2;width:100%;padding:10px 8px"></div>
+            <div id="vplay-overlay" style="position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(26,23,20,.75)">
+              <div style="font-family:var(--serif);font-size:.9rem;color:rgba(245,242,238,.5);margin-bottom:16px;letter-spacing:.08em">Generate a video to begin</div>
+              <button class="vplay-btn-big" onclick="startPlay()">▶</button>
+            </div>
+          </div>
+          <div class="vcontrols">
+            <button class="vctrl-btn" onclick="prevStep()">⏮</button>
+            <button class="vctrl-btn" id="vplay-pause-btn" onclick="togglePlay()">▶</button>
+            <button class="vctrl-btn" onclick="nextStep()">⏭</button>
+            <div class="vtime-bar" onclick="seekVideo(event)">
+              <div class="vtime-fill" id="vplay-bar"></div>
+            </div>
+            <span style="font-size:.7rem;color:rgba(245,242,238,.4);white-space:nowrap" id="vtime-label">0:00</span>
+          </div>
+          <div class="vstep-tabs" id="vstep-tabs-container"></div>
+          <div style="padding:14px 18px;border-top:1px solid rgba(255,255,255,.06)">
+            <div id="vstep-title" style="font-family:var(--serif);font-size:1rem;font-weight:300;color:var(--paper);margin-bottom:6px">Generate a video to see steps</div>
+            <div id="vstep-desc" style="font-size:.75rem;color:rgba(245,242,238,.5);line-height:1.6"></div>
+            <div id="vstep-safety" style="font-size:.72rem;color:rgba(184,154,106,.7);margin-top:8px"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ AUDIENCE ══════════════════════════════════════════════ -->
+<section id="audience">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow"><div class="eyebrow-line"></div><span class="tag">Who It's For</span><div class="eyebrow-line"></div></div>
+      <h2 class="section-title serif">Built for Every Creator</h2>
+      <p class="section-desc">Whether you're learning to sew or running a fashion label, VOGX adapts to your level and workflow.</p>
+    </div>
+    <div class="audience-grid">
+      <div class="audience-card">
+        <div class="aud-icon">🎓</div>
+        <div class="aud-title">Fashion Students</div>
+        <div class="aud-desc">Learn pattern making, fabric properties, and construction techniques with AI guidance at every step.</div>
+      </div>
+      <div class="audience-card">
+        <div class="aud-icon">✂️</div>
+        <div class="aud-title">Home Sewers</div>
+        <div class="aud-desc">Turn your creative ideas into real garments with step-by-step video instructions tailored to your skill level.</div>
+      </div>
+      <div class="audience-card">
+        <div class="aud-icon">👗</div>
+        <div class="aud-title">Designers</div>
+        <div class="aud-desc">Prototype faster. Get instant fabric sourcing recommendations and construction feasibility analysis.</div>
+      </div>
+      <div class="audience-card">
+        <div class="aud-icon">🏭</div>
+        <div class="aud-title">Ateliers & Studios</div>
+        <div class="aud-desc">Streamline production planning with AI-generated cutting layouts, seam guides, and material estimates.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ════════════════════════════════════════════════ -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="nav-logo" style="color:var(--paper)">VOG<span>X</span></div>
+        <p style="font-size:.78rem;line-height:1.7;margin-top:10px">AI-powered fashion design assistant. Graduation project — Sadat Academy for Management Sciences.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Features</h4>
+        <a href="#demo">Design Upload</a>
+        <a href="#fabric-section">Fabric Recommendations</a>
+        <a href="#video-guide">Sewing Videos</a>
+      </div>
+      <div class="footer-col">
+        <h4>Learn</h4>
+        <a href="#">Sewing Basics</a>
+        <a href="#">Fabric Guide</a>
+        <a href="#">Pattern Making</a>
+      </div>
+      <div class="footer-col">
+        <h4>Project</h4>
+        <a href="#">About VOGX</a>
+        <a href="#">Research</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 VOGX — Sadat Academy for Management Sciences</span>
+      <span>Made with ✦ and AI</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ══ AUTH OVERLAY ══════════════════════════════════════════ -->
+<div class="auth-overlay" id="auth-overlay" onclick="if(event.target===this)closeAuth()">
+  <div class="auth-modal">
+    <div class="auth-header">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 340" width="48" height="58" style="display:block;margin:0 auto 8px">
+
+  <!-- Background -->
+  <rect width="48" height="58" style="display:block;margin:0 auto 8px" rx="28" fill="#2A2621"/>
+
+  <!-- Two needles forming V / dress outline -->
+  <line x1="62" y1="38" x2="110" y2="238" stroke="#B89A6A" stroke-width="4" stroke-linecap="round"/>
+  <line x1="158" y1="38" x2="110" y2="238" stroke="#B89A6A" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- Needle eyes -->
+  <ellipse cx="62" cy="36" rx="6" ry="10" fill="none" stroke="#B89A6A" stroke-width="2" transform="rotate(-18,62,36)"/>
+  <ellipse cx="158" cy="36" rx="6" ry="10" fill="none" stroke="#B89A6A" stroke-width="2" transform="rotate(18,158,36)"/>
+
+  <!-- Shoulder curve / neckline -->
+  <path d="M62,66 Q110,90 158,66" fill="none" stroke="#F5F2EE" stroke-width="2" opacity="0.7"/>
+
+  <!-- Waist taper -->
+  <path d="M75,145 Q110,137 145,145" fill="none" stroke="#F5F2EE" stroke-width="1" opacity="0.3" stroke-dasharray="3,4"/>
+
+  <!-- Center spine -->
+  <line x1="110" y1="90" x2="110" y2="200" stroke="#F5F2EE" stroke-width="1" stroke-dasharray="4,5" opacity="0.2"/>
+
+  <!-- AI spark -->
+  <circle cx="110" cy="165" r="8" fill="#B89A6A"/>
+  <line x1="110" y1="150" x2="110" y2="142" stroke="#F5F2EE" stroke-width="1.5" opacity="0.9"/>
+  <line x1="110" y1="180" x2="110" y2="188" stroke="#F5F2EE" stroke-width="1.5" opacity="0.9"/>
+  <line x1="95"  y1="165" x2="87"  y2="165" stroke="#F5F2EE" stroke-width="1.5" opacity="0.9"/>
+  <line x1="125" y1="165" x2="133" y2="165" stroke="#F5F2EE" stroke-width="1.5" opacity="0.9"/>
+  <line x1="99"  y1="154" x2="93"  y2="148" stroke="#F5F2EE" stroke-width="1.5" opacity="0.7"/>
+  <line x1="121" y1="154" x2="127" y2="148" stroke="#F5F2EE" stroke-width="1.5" opacity="0.7"/>
+  <line x1="99"  y1="176" x2="93"  y2="182" stroke="#F5F2EE" stroke-width="1.5" opacity="0.7"/>
+  <line x1="121" y1="176" x2="127" y2="182" stroke="#F5F2EE" stroke-width="1.5" opacity="0.7"/>
+
+  <!-- Thread loop at hem -->
+  <path d="M98,238 Q110,252 122,238" fill="none" stroke="#B89A6A" stroke-width="2.5" stroke-linecap="round"/>
+
+</svg>
+      <div style="font-family:var(--serif);font-size:1.4rem;font-weight:300;color:var(--paper)">VOG<span style="color:var(--gold)">X</span></div>
+      <div class="auth-tabs" id="auth-tabs">
+        <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Sign In</button>
+        <button class="auth-tab" id="tab-signup" onclick="switchAuthTab('signup')">Create Account</button>
+      </div>
+    </div>
+    <!-- Login -->
+    <div class="auth-body" id="auth-login">
+      <div class="auth-field"><label>Email</label><input type="email" id="login-email" placeholder="your@email.com"></div>
+      <div class="auth-field"><label>Password</label><input type="password" id="login-password" placeholder="••••••••"></div>
+      <button class="auth-submit" onclick="handleLogin()">Sign In →</button>
+      <p style="text-align:center;font-size:.75rem;color:var(--muted);margin-top:14px">Don't have an account? <a onclick="switchAuthTab('signup')" style="color:var(--gold);cursor:pointer">Create one</a></p>
+    </div>
+    <!-- Signup -->
+    <div class="auth-body" id="auth-signup" style="display:none">
+      <div class="auth-field"><label>Full Name</label><input type="text" id="signup-name" placeholder="Sara Hassan"></div>
+      <div class="auth-field"><label>Email</label><input type="email" id="signup-email" placeholder="your@email.com"></div>
+      <div class="auth-field"><label>Password</label><input type="password" id="signup-password" placeholder="Min. 8 characters"></div>
+      <button class="auth-submit" onclick="handleSignup()">Create My Account →</button>
+    </div>
+    <!-- Success -->
+    <div class="auth-success" id="auth-success" style="display:none">
+      <div class="auth-success-icon">✦</div>
+      <h3 class="serif" id="auth-success-title">Welcome!</h3>
+      <p id="auth-success-msg">You're now signed in to VOGX.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ── BACK TO TOP ── -->
+<button id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">↑</button>
+
+<!-- ── PWA INSTALL BANNER ── -->
+<div id="pwa-banner">
+  <div class="pwa-banner-text">
+    <div class="pwa-banner-icon">✦</div>
+    <div class="pwa-banner-msg">
+      <strong>Install VOGX App</strong>
+      <span>Works offline · No browser bar · Feels native</span>
+    </div>
+  </div>
+  <button class="pwa-install-btn" id="pwa-install-btn">Install</button>
+  <button class="pwa-dismiss-btn" id="pwa-dismiss-btn" title="Dismiss">✕</button>
+</div>
+
+
+<script>
+/* ════════════════════════════════════════════════════════════
+   CORE STATE
+════════════════════════════════════════════════════════════ */
+var vDesign = 'A-Line Gown', vFabric = 'Silk Chiffon', vSkill = 'Intermediate', vFit = 'Standard';
+var vCurrentStep = 0, vIsPlaying = false, vPlayTimer = null, vElapsed = 0;
+var rcCurrent = 'Silk Chiffon';
+var _chatHistory = [];
+
+var vSteps = [
+  { title:'Step 1 — Take Measurements', desc:'Measure bust, waist, hips, and desired length. Add 2 cm seam allowance on all edges. Mark notches on your pattern pieces using tailor chalk.', safety:'📏 Double-check all measurements before cutting. Errors here affect the entire garment.', duration:33 },
+  { title:'Step 2 — Cut the Fabric', desc:'Pin pattern pieces on the fabric bias. Use sharp fabric scissors only. Cut smoothly without stopping mid-stroke to ensure clean, precise edges.', safety:'✂️ Keep fingers clear of scissor blades. Use a cutting mat if using a rotary cutter.', duration:45 },
+  { title:'Step 3 — Sew French Seams', desc:'Silk Chiffon frays easily. Sew wrong sides together first at 0.5 cm, trim carefully, then fold and sew right sides at 1 cm to fully enclose all raw edges.', safety:'🪡 Set machine tension to low. Always test on a fabric scrap before sewing the garment.', duration:60 },
+  { title:'Step 4 — Drape & Attach Skirt', desc:'Gather the skirt panel evenly. Pin to the bodice waist seam every 2 cm. Baste first, check fit on mannequin, then sew with a standard straight stitch.', safety:'📌 Remove pins as you sew. Never sew over pins — it can break your needle.', duration:50 },
+  { title:'Step 5 — Hem & Press', desc:'Use a narrow rolled hem for chiffon. Press lightly using a pressing cloth between the iron and fabric. Set iron to silk temperature only.', safety:'🔥 Low heat only on chiffon. Never place iron directly on fabric — use a pressing cloth always.', duration:40 }
+];
+
+/* ════════════════════════════════════════════════════════════
+   NAV SCROLL
+════════════════════════════════════════════════════════════ */
+window.addEventListener('scroll', function() {
+  document.getElementById('main-nav').classList.toggle('scrolled', window.scrollY > 20);
+});
+
+/* ════════════════════════════════════════════════════════════
+   TOAST
+════════════════════════════════════════════════════════════ */
+var _toastTimer;
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(function() { t.classList.remove('show'); }, 3000);
+}
+
+/* ════════════════════════════════════════════════════════════
+   MOBILE MENU
+════════════════════════════════════════════════════════════ */
+function toggleMobileMenu() {
+  document.getElementById('mobile-menu').classList.toggle('open');
+}
+function closeMobileMenu() {
+  document.getElementById('mobile-menu').classList.remove('open');
+}
+
+/* ════════════════════════════════════════════════════════════
+   AUTH
+════════════════════════════════════════════════════════════ */
+function openAuth(tab) {
+  document.getElementById('auth-overlay').classList.add('open');
+  switchAuthTab(tab || 'login');
+}
+function closeAuth() {
+  document.getElementById('auth-overlay').classList.remove('open');
+  // Reset form
+  setTimeout(function() {
+    document.getElementById('auth-login').style.display = 'block';
+    document.getElementById('auth-signup').style.display = 'none';
+    document.getElementById('auth-success').style.display = 'none';
+  }, 300);
+}
+function switchAuthTab(tab) {
+  document.getElementById('auth-login').style.display  = tab === 'login'  ? 'block' : 'none';
+  document.getElementById('auth-signup').style.display = tab === 'signup' ? 'block' : 'none';
+  document.getElementById('auth-success').style.display = 'none';
+  document.getElementById('tab-login').classList.toggle('active',  tab === 'login');
+  document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
+}
+async function handleSignup() {
+  var name  = document.getElementById('signup-name').value.trim();
+  var email = document.getElementById('signup-email').value.trim();
+  var pass  = document.getElementById('signup-password').value;
+  if (!name)  { showToast('Please enter your full name.'); return; }
+  if (!email || !email.includes('@')) { showToast('Please enter a valid email.'); return; }
+  if (pass.length < 8) { showToast('Password must be at least 8 characters.'); return; }
+  var firstName = name.split(' ')[0];
+  var btn = document.querySelector('#auth-signup .auth-submit');
+  if (btn) { btn.disabled = true; btn.textContent = 'Creating account…'; }
+  try {
+    if (window.firebaseSignUp) {
+      var user = await window.firebaseSignUp(name, email, pass);
+      window._vogxUser = { name: firstName, uid: user.uid, email: user.email };
+    } else {
+      localStorage.setItem('vogx_account', JSON.stringify({ name, firstName, email, pass }));
+      window._vogxUser = { name: firstName };
+    }
+    showAuthSuccessUI('Welcome to VOGX! ✦', 'Your account is ready. Start designing!', firstName);
+  } catch(err) {
+    var msg = err.code === 'auth/email-already-in-use' ? 'This email is already registered.'
+            : err.code === 'auth/weak-password' ? 'Password must be at least 8 characters.'
+            : 'Could not create account. Please try again.';
+    showToast(msg);
+  }
+  if (btn) { btn.disabled = false; btn.textContent = 'Create Account'; }
+}
+async function handleLogin() {
+  var email = document.getElementById('login-email').value.trim();
+  var pass  = document.getElementById('login-password').value;
+  if (!email || !email.includes('@')) { showToast('Please enter your email.'); return; }
+  if (!pass) { showToast('Please enter your password.'); return; }
+  var btn = document.querySelector('#auth-login .auth-submit');
+  if (btn) { btn.disabled = true; btn.textContent = 'Signing in…'; }
+  try {
+    if (window.firebaseSignIn) {
+      var user = await window.firebaseSignIn(email, pass);
+      var firstName = (user.displayName || email.split('@')[0]).split(' ')[0];
+      window._vogxUser = { name: firstName, uid: user.uid, email: user.email };
+      showAuthSuccessUI('Welcome back, ' + firstName + '! 👋', 'Your designs have been restored.', firstName);
+    } else {
+      var savedName = 'Member';
+      try {
+        var acct = JSON.parse(localStorage.getItem('vogx_account') || '{}');
+        if (acct.firstName) savedName = acct.firstName;
+        var sd = JSON.parse(localStorage.getItem('vogx_designs') || '[]');
+        if (sd.length) { window._vogxSavedDesigns = sd; renderAccountDesigns(); }
+      } catch(e) {}
+      window._vogxUser = { name: savedName };
+      showAuthSuccessUI('Welcome back, ' + savedName + '! 👋', 'Your designs have been restored.', savedName);
+    }
+  } catch(err) {
+    var msg = err.code === 'auth/user-not-found' ? 'No account found with this email.'
+            : err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential' ? 'Incorrect email or password.'
+            : 'Could not sign in. Please try again.';
+    showToast(msg);
+  }
+  if (btn) { btn.disabled = false; btn.textContent = 'Sign In'; }
+}
+function showAuthSuccessUI(title, msg, firstName) {
+  document.getElementById('auth-login').style.display   = 'none';
+  document.getElementById('auth-signup').style.display  = 'none';
+  document.getElementById('auth-success').style.display = 'block';
+  document.getElementById('auth-success-title').textContent = title;
+  document.getElementById('auth-success-msg').textContent   = msg;
+  if (firstName) {
+    window._vogxUser = { name: firstName };
+    setTimeout(function() { closeAuth(); updateNavForUser(firstName); }, 1800);
+  }
+}
+
+/* ════════════════════════════════════════════════════════════
+   USER SESSION & ACCOUNT PANEL
+════════════════════════════════════════════════════════════ */
+window._vogxUser = null;
+window._vogxSavedDesigns = [];
+
+function getGreeting() {
+  var h = new Date().getHours();
+  return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+}
+function updateNavForUser(firstName) {
+  window._vogxUser = window._vogxUser || { name: firstName };
+  window._vogxUser.name = firstName;
+  var initials = firstName.slice(0, 2).toUpperCase();
+  var g = document.getElementById('nav-guest');
+  var u = document.getElementById('nav-user');
+  if (g) g.style.display = 'none';
+  if (u) u.style.display = 'flex';
+  var greet = document.getElementById('nav-greeting');
+  var navInit = document.getElementById('nav-initials');
+  if (greet) greet.textContent = getGreeting() + ', ' + firstName + ' 👋';
+  if (navInit) navInit.textContent = initials;
+  var apName = document.getElementById('ap-name');
+  var apTag  = document.getElementById('ap-tagline');
+  var apAv   = document.getElementById('ap-avatar');
+  if (apName) apName.textContent = firstName;
+  if (apTag)  apTag.textContent  = getGreeting() + '! Ready to design?';
+  if (apAv)   apAv.textContent   = initials;
+  renderAccountDesigns();
+}
+function toggleAccountPanel() {
+  document.getElementById('account-panel').classList.toggle('open');
+}
+document.addEventListener('click', function(e) {
+  var panel = document.getElementById('account-panel');
+  var btn = document.getElementById('nav-avatar-btn');
+  if (!panel || !panel.classList.contains('open')) return;
+  if (!panel.contains(e.target) && btn && !btn.contains(e.target)) {
+    panel.classList.remove('open');
+  }
+});
+async function saveDesignToAccount(name, thumbDataUrl, type) {
+  if (!window._vogxUser) return;
+  var entry = { id: Date.now(), name: name, thumb: thumbDataUrl,
+    date: new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'}), type: type||'Upload' };
+  window._vogxSavedDesigns.unshift(entry);
+  renderAccountDesigns();
+  if (window._vogxUser.uid && window.saveDesignToFirestore) {
+    var fid = await window.saveDesignToFirestore(window._vogxUser.uid, name, thumbDataUrl, type);
+    if (fid) entry.firestoreId = fid;
+  } else {
+    try {
+      var toStore = window._vogxSavedDesigns.slice(0,20).map(function(d){
+        return { id:d.id, name:d.name, thumb:d.thumb?d.thumb.slice(0,300):null, date:d.date, type:d.type };
+      });
+      localStorage.setItem('vogx_designs', JSON.stringify(toStore));
+    } catch(e) {}
+  }
+}
+function renderAccountDesigns() {
+  var list  = document.getElementById('ap-design-list');
+  var count = document.getElementById('ap-design-count');
+  if (!list) return;
+  var designs = window._vogxSavedDesigns;
+  if (count) count.textContent = designs.length + ' upload' + (designs.length !== 1 ? 's' : '');
+  if (designs.length === 0) {
+    list.innerHTML = '<div style="text-align:center;padding:20px 0;color:var(--muted);font-size:.8rem">No designs yet.<br>Upload your first design ↓</div>';
+    return;
+  }
+  list.innerHTML = designs.map(function(d) {
+    return '<div class="ap-design-item" onclick="reloadDesign(' + d.id + ')">'
+      + (d.thumb ? '<img src="' + d.thumb + '" class="ap-design-thumb" onerror="this.style.display=\'none\'">' : '<div class="ap-design-thumb" style="background:linear-gradient(135deg,#e8d5c0,#c9a882);display:flex;align-items:center;justify-content:center;font-size:1.1rem">👗</div>')
+      + '<div style="flex:1;min-width:0"><div style="font-size:.82rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + d.name + '</div><div style="font-size:.7rem;color:var(--muted);margin-top:2px">' + d.type + ' · ' + d.date + '</div></div>'
+      + '<button onclick="event.stopPropagation();quickVideoDesign(' + d.id + ')" title="Generate Video" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--gold-md);background:transparent;cursor:pointer;font-size:.75rem;flex-shrink:0;color:var(--muted)">▶</button>'
+      + '</div>';
+  }).join('');
+}
+function reloadDesign(id) {
+  var d = window._vogxSavedDesigns.find(function(x) { return x.id === id; });
+  if (!d) return;
+  document.getElementById('account-panel').classList.remove('open');
+  document.getElementById('demo').scrollIntoView({ behavior: 'smooth' });
+  setTimeout(function() {
+    var zone = document.getElementById('upload-zone');
+    if (!zone) return;
+    zone.onclick = null;
+    zone.style.cursor = 'default';
+    var thumbHtml = d.thumb ? '<img src="' + d.thumb + '" style="max-height:70px;border-radius:8px;margin-bottom:12px" onerror="this.remove()">' : '<div class="upload-icon">👗</div>';
+    zone.innerHTML = thumbHtml
+      + '<div class="upload-title serif">' + d.name + '</div>'
+      + '<p class="upload-hint">Detected: A-line silhouette · Sweetheart neckline · Cap sleeves</p>'
+      + '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px">'
+      + '<button class="result-btn" onclick="openModal(\'fabric\')">🧵 Fabric Recs</button>'
+      + '<button class="result-btn-outline" onclick="openModal(\'guide\')">✂️ Sewing Guide</button>'
+      + '<button class="result-btn-outline" onclick="openModal(\'styling\')">💍 Styling</button>'
+      + '<button class="result-btn-outline" onclick="launchVideoFromUpload()" style="border-color:var(--gold);color:var(--gold)">🎬 Generate Video</button>'
+      + '</div>'
+      + '<p style="font-size:.73rem;color:var(--muted);margin-top:14px;cursor:pointer;text-decoration:underline" onclick="resetUpload()">Upload different design</p>';
+    showToast(d.name + ' reloaded!');
+  }, 500);
+}
+function quickVideoDesign(id) {
+  document.getElementById('account-panel').classList.remove('open');
+  launchVideoFromUpload();
+}
+async function signOut() {
+  try { if (window.firebaseSignOutUser) await window.firebaseSignOutUser(); } catch(e) {}
+  window._vogxUser = null; window._vogxSavedDesigns = [];
+  var g = document.getElementById('nav-guest'), u = document.getElementById('nav-user');
+  if (g) g.style.display = ''; if (u) u.style.display = 'none';
+  document.getElementById('account-panel').classList.remove('open');
+  showToast('Signed out. See you soon! 👋');
+}
+
+/* ════════════════════════════════════════════════════════════
+   FILE UPLOAD
+════════════════════════════════════════════════════════════ */
+function handleFileSelect(input) {
+  if (input.files[0]) processFile(input.files[0]);
+}
+async function processFile(file) {
+  var HF_TOKEN = '';
+  try {
+    const { getRemoteConfig, fetchAndActivate, getString } =
+      await import('https://www.gstatic.com/firebasejs/12.10.0/firebase-remote-config.js');
+    const rc = getRemoteConfig(window._fbApp);
+    rc.settings = { minimumFetchIntervalMillis: 3600000 };
+    await fetchAndActivate(rc);
+    HF_TOKEN = getString(rc, 'HF_TOKEN');
+  } catch(e) { console.warn('Remote config unavailable:', e); }
+  var allowed = ['image/jpeg','image/png','image/svg+xml','application/pdf'];
+  if (!allowed.includes(file.type)) { showToast('Unsupported format. Use JPG, PNG, PDF, or SVG.'); return; }
+  var zone = document.getElementById('upload-zone');
+  zone.onclick = null; zone.style.cursor = 'default';
+  var fname = file.name.replace(/\.[^.]+$/, '');
+  zone.innerHTML = '<div class="upload-icon">🔍</div>'
+    + '<div class="upload-title serif">Analysing "' + fname + '"…</div>'
+    + '<p class="upload-hint">AI vision is reading your design</p>'
+    + '<div class="progress-bar" style="max-width:300px;margin:16px auto 0"><div class="progress-fill" id="up-bar"></div></div>';
+  var bar = document.getElementById('up-bar'), pct = 0;
+  var barInt = setInterval(function() {
+    pct = Math.min(pct+2, 85); if (bar) bar.style.width = pct+'%';
+    if (pct >= 85) clearInterval(barInt);
+  }, 80);
+  if (file.type.startsWith('image/')) {
+    var reader2 = new FileReader();
+    reader2.onload = function(e) {
+      if (window._vogxUser) saveDesignToAccount(fname, e.target.result, 'Upload');
+    };
+    reader2.readAsDataURL(file);
+  } else if (window._vogxUser) { saveDesignToAccount(fname, null, 'Upload'); }
+  var detectedDetails = 'Silhouette detected · Neckline identified · Structure analysed';
+  var fabricRec = 'Silk Chiffon', fabricPct = '97';
+  try {
+    if (file.type.startsWith('image/')) {
+      var buf = await file.arrayBuffer();
+      var hfRes = await fetch('https://api-inference.huggingface.co/models/openai/clip-vit-base-patch32',
+        { method:'POST', headers:{'Authorization':'Bearer '+HF_TOKEN,'Content-Type':file.type}, body:buf });
+      var hfData = await hfRes.json();
+      if (Array.isArray(hfData) && hfData.length > 0) {
+        var top = hfData[0].label||'', score = Math.round((hfData[0].score||0.8)*100);
+        detectedDetails = 'Detected: ' + top + ' (' + score + '% confidence) · Structure analysed';
+        var lbl = top.toLowerCase();
+        if (lbl.includes('evening')||lbl.includes('gown')||lbl.includes('bride')) { fabricRec='Silk Chiffon'; fabricPct='97'; }
+        else if (lbl.includes('suit')||lbl.includes('formal')) { fabricRec='Duchess Satin'; fabricPct='93'; }
+        else if (lbl.includes('casual')||lbl.includes('dress')) { fabricRec='Crepe'; fabricPct='89'; }
+        else if (lbl.includes('sheer')||lbl.includes('layer')) { fabricRec='Organza'; fabricPct='85'; }
+      } else if (hfData.error && hfData.error.includes('loading')) {
+        detectedDetails = 'AI vision warming up — using smart defaults';
+      }
+    }
+  } catch(e) {}
+  clearInterval(barInt); if (bar) bar.style.width='100%';
+  rcCurrent = fabricRec;
+  var fabMap = {'Silk Chiffon':'vf-chiffon','Duchess Satin':'vf-satin','Crepe':'vf-crepe','Organza':'vf-organza'};
+  var fabEl = document.getElementById(fabMap[fabricRec]);
+  if (fabEl) { document.querySelectorAll('.vfab-opt').forEach(function(e){e.classList.remove('selected');}); fabEl.classList.add('selected'); vFabric=fabricRec; }
+  var rcBtn = document.getElementById('rc-btn');
+  if (rcBtn) rcBtn.textContent = '✦ Use '+fabricRec+' for My Design';
+  document.querySelectorAll('#rc-list .fab-card').forEach(function(c){c.classList.toggle('selected',c.dataset.fabric===fabricRec);});
+  setTimeout(function() {
+    var zone2 = document.getElementById('upload-zone');
+    if (!zone2) return;
+    zone2.innerHTML = '<div class="upload-icon">✅</div>'
+      + '<div class="upload-title serif">Design Analysed!</div>'
+      + '<p class="upload-hint">' + detectedDetails + ' · Recommended: ' + fabricRec + ' (' + fabricPct + '%)</p>'
+      + '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px">'
+      + '<button class="result-btn" onclick="openModal(\'fabric\')">🧵 Fabric Recs</button>'
+      + '<button class="result-btn-outline" onclick="openModal(\'guide\')">✂️ Sewing Guide</button>'
+      + '<button class="result-btn-outline" onclick="openModal(\'styling\')">💍 Styling</button>'
+      + '<button class="result-btn-outline" onclick="launchVideoFromUpload()" style="border-color:var(--gold);color:var(--gold);font-weight:600">🎬 Generate Video</button>'
+      + '</div>'
+      + '<p style="font-size:.73rem;color:var(--muted);margin-top:14px;cursor:pointer;text-decoration:underline" onclick="resetUpload()">Upload different design</p>';
+    showToast('AI analysis complete! '+fabricRec+' is your top match ('+fabricPct+'%)');
+  }, 400);
+}
+function resetUpload() {
+  var zone = document.getElementById('upload-zone');
+  zone.style.cursor = 'pointer';
+  zone.onclick = function() { document.getElementById('file-input').click(); };
+  zone.innerHTML = '<div class="upload-icon">✦</div>'
+    + '<div class="upload-title serif">Drop your design here</div>'
+    + '<p class="upload-hint">Supports JPG, PNG, SVG, PDF · or choose an option below</p>';
+}
+
+/* ════════════════════════════════════════════════════════════
+   LAUNCH VIDEO FROM UPLOAD  —  auto-fills all wizard fields
+   and immediately generates the video
+════════════════════════════════════════════════════════════ */
+function launchVideoFromUpload(fabricChoice) {
+  var el = document.getElementById('video-guide');
+  if (el) el.scrollIntoView({ behavior: 'smooth' });
+  setTimeout(function() {
+    // Step 1: select design
+    var dopt = document.getElementById('vd-aline');
+    if (dopt) selectDesign(dopt, 'A-Line Gown');
+    // Step 2: select fabric from what was detected
+    var fab = fabricChoice || rcCurrent || 'Silk Chiffon';
+    document.querySelectorAll('.vfab-opt').forEach(function(el) { el.classList.remove('selected'); });
+    var fabMap = { 'Silk Chiffon':'vf-chiffon', 'Duchess Satin':'vf-satin', 'Crepe':'vf-crepe', 'Organza':'vf-organza' };
+    var fabEl = document.getElementById(fabMap[fab] || 'vf-chiffon');
+    if (fabEl) { fabEl.classList.add('selected'); vFabric = fab; }
+    // Step 3: skill stays Intermediate
+    var skEl = document.getElementById('sk-intermediate');
+    if (skEl) { document.querySelectorAll('.skill-btn').forEach(function(b){ b.classList.remove('selected'); }); skEl.classList.add('selected'); vSkill = 'Intermediate'; }
+    // Jump straight to step 4 and trigger generation
+    setVStep(4);
+    updateSummary();
+    setTimeout(function() { generateVideo(); }, 400);
+  }, 700);
+}
+
+/* ════════════════════════════════════════════════════════════
+   FABRIC SECTION
+════════════════════════════════════════════════════════════ */
+function rcSelect(row) {
+  document.querySelectorAll('#rc-list .fab-card').forEach(function(c) { c.classList.remove('selected'); });
+  if (!row.classList.contains('fab-card')) row = row.closest('.fab-card');
+  row.classList.add('selected');
+  rcCurrent = row.dataset.fabric;
+  var btn = document.getElementById('rc-btn');
+  if (btn) btn.textContent = '✦ Use ' + rcCurrent + ' for My Design';
+}
+function rcConfirm() {
+  showToast(rcCurrent + ' selected for your design!');
+  // Sync to video fabric picker
+  var fabMap = { 'Silk Chiffon':'vf-chiffon', 'Duchess Satin':'vf-satin', 'Crepe':'vf-crepe', 'Organza':'vf-organza' };
+  var el = document.getElementById(fabMap[rcCurrent]);
+  if (el) selectFabric(el, rcCurrent);
+}
+function rcCompare() {
+  var fabrics = [
+    { name:'Silk Chiffon',  match:97, diff:'Hard',   fray:'High', care:'Dry clean / hand wash cold', best:'Evening, Bridal' },
+    { name:'Duchess Satin', match:91, diff:'Medium', fray:'Low',  care:'Dry clean recommended',      best:'Formal, Gala' },
+    { name:'Crepe',         match:84, diff:'Easy',   fray:'Low',  care:'Machine wash cold / gentle', best:'Everyday, Office' },
+    { name:'Organza',       match:78, diff:'Hard',   fray:'High', care:'Dry clean only',             best:'Overlay, Bridal' }
+  ];
+  var ov = document.createElement('div');
+  ov.className = 'modal-overlay';
+  ov.id = 'cmp-ov';
+  var diffColor = { Easy:'#6bcb77', Medium:'#ffd93d', Hard:'#ff6b6b' };
+  ov.innerHTML = '<div class="modal-box">'
+    + '<div class="modal-header"><span class="modal-title">Compare Fabrics</span><button class="modal-close" onclick="document.getElementById(\'cmp-ov\').remove()">✕</button></div>'
+    + '<div class="modal-body">'
+    + '<table style="width:100%;border-collapse:collapse;font-size:.78rem">'
+    + '<thead><tr>' + ['Fabric','Match','Difficulty','Fraying','Care','Best For'].map(function(h) { return '<th style="text-align:left;padding:8px 6px;border-bottom:1.5px solid var(--gold-md);color:var(--muted);font-weight:600">' + h + '</th>'; }).join('') + '</tr></thead>'
+    + '<tbody>' + fabrics.map(function(f) {
+      var isSel = f.name === rcCurrent;
+      return '<tr style="' + (isSel ? 'background:var(--gold-lt)' : '') + '">'
+        + '<td style="padding:9px 6px;font-weight:500;border-bottom:1px solid var(--gold-lt)">' + f.name + (isSel ? ' ✓' : '') + '</td>'
+        + '<td style="padding:9px 6px;border-bottom:1px solid var(--gold-lt);color:var(--gold);font-weight:600">' + f.match + '%</td>'
+        + '<td style="padding:9px 6px;border-bottom:1px solid var(--gold-lt)"><span style="background:' + diffColor[f.diff] + '33;color:' + diffColor[f.diff] + ';padding:2px 8px;border-radius:10px;font-size:.7rem;font-weight:600">' + f.diff + '</span></td>'
+        + '<td style="padding:9px 6px;border-bottom:1px solid var(--gold-lt)">' + f.fray + '</td>'
+        + '<td style="padding:9px 6px;border-bottom:1px solid var(--gold-lt)">' + f.care + '</td>'
+        + '<td style="padding:9px 6px;border-bottom:1px solid var(--gold-lt)">' + f.best + '</td>'
+        + '</tr>';
+    }).join('') + '</tbody></table>'
+    + '<div style="margin-top:18px;display:flex;gap:8px;flex-wrap:wrap">' + fabrics.map(function(f) {
+      return '<button onclick="document.querySelectorAll(\'#rc-list .fab-card\').forEach(function(c){c.classList.remove(\'selected\')});var el=document.querySelector(\'[data-fabric=\\\'' + f.name + '\\\']\');if(el){el.classList.add(\'selected\');rcCurrent=\'' + f.name + '\'};document.getElementById(\'rc-btn\').textContent=\'✦ Use ' + f.name + ' for My Design\';document.getElementById(\'cmp-ov\').remove();showToast(\'' + f.name + ' selected!\')" style="padding:8px 14px;border-radius:6px;border:1.5px solid var(--gold-md);background:transparent;font-family:var(--sans);font-size:.78rem;cursor:pointer">' + f.name + '</button>';
+    }).join('') + '</div>'
+    + '</div></div>';
+  ov.addEventListener('click', function(e) { if (e.target === ov) ov.remove(); });
+  document.body.appendChild(ov);
+}
+
+/* ════════════════════════════════════════════════════════════
+   VIDEO WIZARD
+════════════════════════════════════════════════════════════ */
+function setVStep(n) {
+  for (var i = 1; i <= 4; i++) {
+    var tab   = document.getElementById('vtab' + i);
+    var panel = document.getElementById('vpanel' + i);
+    if (tab)   tab.classList.toggle('active', i === n);
+    if (panel) panel.style.display = (i === n) ? 'block' : 'none';
+  }
+  if (n === 4) updateSummary();
+}
+function updateSummary() {
+  var els = { 'vsumm-design': vDesign, 'vsumm-fabric': vFabric, 'vsumm-skill': vSkill, 'vsumm-fit': vFit };
+  Object.keys(els).forEach(function(id) { var el = document.getElementById(id); if (el) el.textContent = els[id]; });
+}
+function selectDesign(el, name) {
+  document.querySelectorAll('.vdesign-opt').forEach(function(e) { e.classList.remove('selected'); });
+  el.classList.add('selected');
+  vDesign = name;
+  // Update step descriptions for the selected design
+  vSteps[0].title = 'Step 1 — Take Measurements (' + name + ')';
+}
+function selectFabric(el, name) {
+  document.querySelectorAll('.vfab-opt').forEach(function(e) { e.classList.remove('selected'); });
+  el.classList.add('selected');
+  vFabric = name;
+  // Update step 3 description to match fabric
+  vSteps[2].desc = name + ' requires careful seam finishing. Sew wrong sides together at 0.5 cm, trim, fold and sew right sides at 1 cm to enclose raw edges.';
+}
+function selectSkill(el, name) {
+  document.querySelectorAll('.skill-btn[id^="sk-"]').forEach(function(e) { e.classList.remove('selected'); });
+  el.classList.add('selected');
+  vSkill = name;
+}
+function selectFit(el, name) {
+  document.querySelectorAll('.skill-btn[id^="fit-"]').forEach(function(e) { e.classList.remove('selected'); });
+  el.classList.add('selected');
+  vFit = name;
+}
+function generateVideo() {
+  document.getElementById('vgen-ready').style.display   = 'none';
+  document.getElementById('vgen-loading').style.display = 'block';
+  document.getElementById('vgen-done').style.display    = 'none';
+  var bar    = document.getElementById('vgen-bar');
+  var status = document.getElementById('vgen-status');
+  var steps  = [
+    [15, 'Analysing design structure…'],
+    [32, 'Calculating measurements and seam allowances…'],
+    [52, 'Generating cutting layout for ' + vFabric + '…'],
+    [70, 'Building draping and sewing sequences…'],
+    [88, 'Adding ' + vSkill.toLowerCase() + '-level adjustments…'],
+    [100, 'Finalising animated video…']
+  ];
+  var i = 0;
+  function nextStep() {
+    if (i < steps.length) {
+      if (bar) bar.style.width = steps[i][0] + '%';
+      if (status) status.textContent = steps[i][1];
+      i++;
+      setTimeout(nextStep, 650);
+    } else {
+      setTimeout(function() {
+        document.getElementById('vgen-loading').style.display = 'none';
+        document.getElementById('vgen-done').style.display    = 'block';
+        vCurrentStep = 0; vElapsed = 0; vIsPlaying = false;
+        buildStepTabs();
+        renderStepVisual();
+        updateStepInfo();
+        // Show play overlay with prompt
+        var ov = document.getElementById('vplay-overlay');
+        if (ov) {
+          ov.style.display = 'flex';
+          ov.style.opacity = '1';
+          ov.querySelector('div').textContent = 'Video ready — press Play';
+        }
+        showToast('Sewing video generated! Press Play to watch.');
+      }, 500);
+    }
+  }
+  setTimeout(nextStep, 300);
+}
+function resetVideoGen() {
+  stopPlay();
+  vCurrentStep = 0; vElapsed = 0; vIsPlaying = false;
+  document.getElementById('vgen-done').style.display    = 'none';
+  document.getElementById('vgen-loading').style.display = 'none';
+  document.getElementById('vgen-ready').style.display   = 'block';
+  var gb = document.getElementById('vgen-bar');
+  if (gb) { gb.style.transition = 'none'; gb.style.width = '0%'; }
+  var gs = document.getElementById('vgen-status');
+  if (gs) gs.textContent = 'Analysing design structure…';
+  var pb = document.getElementById('vplay-bar');
+  if (pb) pb.style.width = '0%';
+  var ov = document.getElementById('vplay-overlay');
+  if (ov) { ov.style.display = 'flex'; ov.style.opacity = '1'; ov.querySelector('div').textContent = 'Generate a video to begin'; }
+  document.getElementById('vstep-title').textContent = 'Generate a video to see steps';
+  document.getElementById('vstep-desc').textContent  = '';
+  document.getElementById('vstep-safety').textContent = '';
+  document.getElementById('vstep-tabs-container').innerHTML = '';
+  setVStep(1);
+  showToast('Ready to generate a new video!');
+}
+
+/* ════════════════════════════════════════════════════════════
+   VIDEO PLAYER
+════════════════════════════════════════════════════════════ */
+function buildStepTabs() {
+  var container = document.getElementById('vstep-tabs-container');
+  if (!container) return;
+  container.innerHTML = vSteps.map(function(s, i) {
+    return '<button class="vstep-tab-sm' + (i === vCurrentStep ? ' active' : '') + '" onclick="goToStep(' + i + ')">'
+      + 'Step ' + (i + 1) + '</button>';
+  }).join('');
+}
+function goToStep(n) {
+  vCurrentStep = Math.max(0, Math.min(n, vSteps.length - 1));
+  vElapsed = 0;
+  renderStepVisual();
+  updateStepInfo();
+  updatePlayerBar();
+  buildStepTabs();
+}
+function updateStepInfo() {
+  var s = vSteps[vCurrentStep];
+  if (!s) return;
+  document.getElementById('vstep-title').textContent  = s.title;
+  document.getElementById('vstep-desc').textContent   = s.desc;
+  document.getElementById('vstep-safety').textContent = s.safety;
+}
+function updatePlayerBar() {
+  var s = vSteps[vCurrentStep];
+  if (!s) return;
+  var pct = Math.min((vElapsed / s.duration) * 100, 100);
+  var pb = document.getElementById('vplay-bar');
+  if (pb) pb.style.width = pct + '%';
+  var mins = Math.floor(vElapsed / 60), secs = vElapsed % 60;
+  var tlbl = document.getElementById('vtime-label');
+  if (tlbl) tlbl.textContent = mins + ':' + (secs < 10 ? '0' : '') + secs;
+}
+function togglePlay() {
+  if (vIsPlaying) stopPlay(); else startPlay();
+}
+function startPlay() {
+  var ov = document.getElementById('vplay-overlay');
+  if (ov) ov.style.opacity = '0';
+  setTimeout(function() { if (ov) ov.style.display = 'none'; }, 300);
+  vIsPlaying = true;
+  document.getElementById('vplay-pause-btn').textContent = '⏸';
+  vPlayTimer = setInterval(function() {
+    var s = vSteps[vCurrentStep];
+    if (!s) { stopPlay(); return; }
+    vElapsed++;
+    updatePlayerBar();
+    if (vElapsed >= s.duration) {
+      vElapsed = 0;
+      if (vCurrentStep < vSteps.length - 1) {
+        vCurrentStep++;
+        buildStepTabs();
+        renderStepVisual();
+        updateStepInfo();
+      } else {
+        stopPlay();
+        showToast('Video complete! 🎉');
+      }
+    }
+  }, 1000);
+}
+function stopPlay() {
+  vIsPlaying = false;
+  clearInterval(vPlayTimer);
+  var btn = document.getElementById('vplay-pause-btn');
+  if (btn) btn.textContent = '▶';
+}
+function prevStep() {
+  stopPlay();
+  goToStep(vCurrentStep - 1);
+}
+function nextStep() {
+  stopPlay();
+  goToStep(vCurrentStep + 1);
+}
+function seekVideo(e) {
+  var bar = e.currentTarget;
+  var pct = e.offsetX / bar.offsetWidth;
+  var s = vSteps[vCurrentStep];
+  if (s) { vElapsed = Math.floor(pct * s.duration); updatePlayerBar(); }
+}
+
+/* ════════════════════════════════════════════════════════════
+   RICH ANIMATED STEP VISUALS — Cutting, Draping, Sewing
+════════════════════════════════════════════════════════════ */
+function renderStepVisual() {
+  var anim = document.getElementById('vstep-anim');
+  if (!anim) return;
+  var fabColors = { 'Silk Chiffon':'#e8d5c0', 'Duchess Satin':'#d4c5b8', 'Crepe':'#d8d0ca', 'Organza':'#eae4df', 'Denim':'#8fa3bf' };
+  var fc = fabColors[vFabric] || '#e8d5c0';
+
+  var scenes = [
+    // ── STEP 1: MEASURING ───────────────────────────────────
+    '<svg viewBox="0 0 300 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">'
+    + '<defs><linearGradient id="g1a" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="' + fc + '" stop-opacity=".95"/><stop offset="100%" stop-color="' + fc + '" stop-opacity=".5"/></linearGradient></defs>'
+    + '<rect x="0" y="0" width="300" height="130" fill="#1a1714"/>'
+    // Table
+    + '<rect x="10" y="90" width="280" height="8" rx="2" fill="#3a3430"/>'
+    + '<rect x="18" y="98" width="7" height="28" rx="2" fill="#2a2420"/>'
+    + '<rect x="275" y="98" width="7" height="28" rx="2" fill="#2a2420"/>'
+    // Fabric on table
+    + '<path d="M18,52 Q80,46 150,50 Q220,54 282,48 L282,90 Q220,86 150,88 Q80,90 18,90 Z" fill="url(#g1a)"/>'
+    // Grid lines on fabric
+    + '<line x1="70" y1="50" x2="70" y2="89" stroke="rgba(255,255,255,.12)" stroke-width=".6" stroke-dasharray="3,3"/>'
+    + '<line x1="120" y1="48" x2="120" y2="88" stroke="rgba(255,255,255,.12)" stroke-width=".6" stroke-dasharray="3,3"/>'
+    + '<line x1="180" y1="48" x2="180" y2="88" stroke="rgba(255,255,255,.12)" stroke-width=".6" stroke-dasharray="3,3"/>'
+    + '<line x1="230" y1="49" x2="230" y2="89" stroke="rgba(255,255,255,.12)" stroke-width=".6" stroke-dasharray="3,3"/>'
+    // Tape measure
+    + '<rect x="30" y="62" width="220" height="10" rx="5" fill="#f5e6c0" stroke="#c9a870" stroke-width=".8"/>'
+    + '<text x="36" y="70" font-size="5.5" fill="#8a6a30" font-family="monospace">5    10   15   20   25   30   35   40</text>'
+    // Hands holding tape
+    + '<ellipse cx="30" cy="67" rx="10" ry="7" fill="#c8956a"/>'
+    + '<ellipse cx="252" cy="67" rx="10" ry="7" fill="#c8956a"/>'
+    // Chalk marks
+    + '<line x1="120" y1="50" x2="120" y2="89" stroke="rgba(255,255,255,.5)" stroke-width="1.2"/>'
+    + '<line x1="180" y1="48" x2="180" y2="88" stroke="rgba(255,255,255,.5)" stroke-width="1.2"/>'
+    + '<text x="150" y="30" text-anchor="middle" font-size="10" fill="rgba(184,154,106,.9)" font-family="Georgia,serif" font-style="italic">Taking Measurements</text>'
+    + '<text x="150" y="44" text-anchor="middle" font-size="8" fill="rgba(245,242,238,.5)" font-family="Georgia,serif">Bust 88 · Waist 68 · Hip 94 · Length 120 cm</text>'
+    + '</svg>',
+
+    // ── STEP 2: CUTTING ──────────────────────────────────────
+    '<svg viewBox="0 0 300 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">'
+    + '<defs>'
+    + '<linearGradient id="g2a" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="' + fc + '" stop-opacity=".95"/><stop offset="100%" stop-color="' + fc + '" stop-opacity=".45"/></linearGradient>'
+    + '</defs>'
+    + '<rect width="300" height="130" fill="#1a1714"/>'
+    // Cutting mat
+    + '<rect x="8" y="24" width="284" height="96" rx="3" fill="#1e2820" stroke="rgba(100,180,100,.08)" stroke-width="1"/>'
+    // Mat grid
+    + [30,60,90,120,150,180,210,240,270].map(function(x) { return '<line x1="' + x + '" y1="24" x2="' + x + '" y2="120" stroke="rgba(80,160,80,.12)" stroke-width=".5"/>'; }).join('')
+    + [40,56,72,88,104].map(function(y) { return '<line x1="8" y1="' + y + '" x2="292" y2="' + y + '" stroke="rgba(80,160,80,.12)" stroke-width=".5"/>'; }).join('')
+    // Fabric piece
+    + '<path d="M28,30 Q150,26 272,30 L268,110 Q150,114 32,110 Z" fill="url(#g2a)"/>'
+    // Cut line
+    + '<line x1="28" y1="70" x2="272" y2="70" stroke="rgba(255,255,255,.6)" stroke-width="1.5" stroke-dasharray="10,5"/>'
+    // Pins
+    + [55,90,130,170,210,245].map(function(x) {
+        return '<line x1="' + x + '" y1="40" x2="' + (x+2) + '" y2="62" stroke="#d48080" stroke-width="1.5" stroke-linecap="round"/>'
+          + '<circle cx="' + x + '" cy="40" r="3" fill="#e05050" opacity=".85"/>';
+      }).join('')
+    // Animated scissors
+    + '<g><animateTransform attributeName="transform" type="translate" values="20,0;210,0" dur="3s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1"/>'
+    + '<path d="M0,64 Q10,68 24,72" stroke="#d0ccc8" stroke-width="3.5" fill="none" stroke-linecap="round"/>'
+    + '<circle cx="0" cy="64" r="6" fill="#a0a0a0" stroke="#888" stroke-width="1.2"/>'
+    + '<path d="M0,76 Q10,72 24,68" stroke="#d0ccc8" stroke-width="3.5" fill="none" stroke-linecap="round"/>'
+    + '<circle cx="0" cy="76" r="6" fill="#a0a0a0" stroke="#888" stroke-width="1.2"/>'
+    + '<circle cx="12" cy="70" r="3" fill="#b89a6a"/>'
+    + '</g>'
+    // Labels
+    + '<text x="150" y="18" text-anchor="middle" font-size="9.5" fill="rgba(184,154,106,.9)" font-family="Georgia,serif" font-style="italic">Cutting on the Bias</text>'
+    + '<text x="150" y="124" text-anchor="middle" font-size="7.5" fill="rgba(245,242,238,.4)" font-family="Georgia,serif">' + vFabric + ' · Sharp fabric scissors · No stopping mid-stroke</text>'
+    + '</svg>',
+
+    // ── STEP 3: SEWING MACHINE ───────────────────────────────
+    '<svg viewBox="0 0 300 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">'
+    + '<defs><linearGradient id="g3a" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="' + fc + '"/><stop offset="100%" stop-color="' + fc + '" stop-opacity=".6"/></linearGradient></defs>'
+    + '<rect width="300" height="130" fill="#1a1714"/>'
+    // Machine body
+    + '<rect x="95" y="22" width="110" height="70" rx="12" fill="#3a3430" stroke="rgba(184,154,106,.35)" stroke-width="1.5"/>'
+    + '<rect x="100" y="35" width="65" height="40" rx="8" fill="#2a2420" stroke="rgba(184,154,106,.15)" stroke-width="1"/>'
+    // Needle arm
+    + '<rect x="162" y="24" width="9" height="36" rx="4" fill="#4a4440"/>'
+    // Animated needle
+    + '<line x1="166" y1="60" x2="166" y2="80" stroke="#ccc" stroke-width="1.8" stroke-linecap="round"><animate attributeName="y2" values="80;65;80" dur=".45s" repeatCount="indefinite"/></line>'
+    // Thread spool
+    + '<ellipse cx="178" cy="30" rx="7" ry="12" fill="#b89a6a" opacity=".85"/>'
+    + '<line x1="178" y1="30" x2="166" y2="52" stroke="rgba(184,154,106,.5)" stroke-width=".9"/>'
+    // Bobbin wheel
+    + '<circle cx="122" cy="52" r="10" fill="#1e1c1a" stroke="rgba(184,154,106,.25)" stroke-width="1.2"/>'
+    + '<circle cx="122" cy="52" r="4.5" fill="#b89a6a" opacity=".7"><animateTransform attributeName="transform" type="rotate" from="0 122 52" to="360 122 52" dur="1.1s" repeatCount="indefinite"/></circle>'
+    // Fabric going through  
+    + '<path d="M8,75 Q50,71 95,75 L95,88 Q50,84 8,88 Z" fill="url(#g3a)" opacity=".9"/>'
+    + '<path d="M205,75 Q250,71 292,75 L292,88 Q250,84 205,88 Z" fill="' + fc + '" opacity=".75"/>'
+    // Stitch line
+    + '<line x1="8" y1="81" x2="292" y2="81" stroke="rgba(255,255,255,.3)" stroke-width="1.2" stroke-dasharray="5,4"/>'
+    // Hands
+    + '<ellipse cx="52" cy="81" rx="14" ry="8" fill="#c8956a" opacity=".9"/>'
+    + '<ellipse cx="248" cy="81" rx="14" ry="8" fill="#c8956a" opacity=".9"/>'
+    // Presser foot
+    + '<rect x="160" y="73" x2="173" y2="82" rx="2" width="14" height="6" fill="#888" rx="2"/>'
+    + '<text x="150" y="15" text-anchor="middle" font-size="9.5" fill="rgba(184,154,106,.9)" font-family="Georgia,serif" font-style="italic">Sewing French Seams</text>'
+    + '<text x="150" y="118" text-anchor="middle" font-size="7.5" fill="rgba(245,242,238,.4)" font-family="Georgia,serif">0.5 cm first pass · trim · fold · 1.0 cm second pass</text>'
+    + '</svg>',
+
+    // ── STEP 4: DRAPING ON MANNEQUIN ─────────────────────────
+    '<svg viewBox="0 0 300 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">'
+    + '<defs>'
+    + '<linearGradient id="g4a" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="' + fc + '"/><stop offset="100%" stop-color="' + fc + '" stop-opacity=".55"/></linearGradient>'
+    + '<linearGradient id="g4b" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="' + fc + '" stop-opacity=".85"/><stop offset="100%" stop-color="' + fc + '" stop-opacity=".3"/></linearGradient>'
+    + '</defs>'
+    + '<rect width="300" height="130" fill="#1a1714"/>'
+    // Mannequin stand
+    + '<line x1="150" y1="110" x2="150" y2="126" stroke="#4a4440" stroke-width="4" stroke-linecap="round"/>'
+    + '<ellipse cx="150" cy="127" rx="22" ry="5" fill="#3a3430"/>'
+    // Mannequin body (torso silhouette)
+    + '<path d="M133,18 Q128,28 126,50 Q122,65 118,80 Q114,95 116,110 L135,112 Q138,96 138,80" fill="#4a4440" stroke="rgba(184,154,106,.2)" stroke-width="1"/>'
+    + '<path d="M167,18 Q172,28 174,50 Q178,65 182,80 Q186,95 184,110 L165,112 Q162,96 162,80" fill="#4a4440" stroke="rgba(184,154,106,.2)" stroke-width="1"/>'
+    + '<ellipse cx="150" cy="18" rx="17" ry="9" fill="#4a4440" stroke="rgba(184,154,106,.2)" stroke-width="1"/>'
+    // Bodice draped on mannequin
+    + '<path d="M130,18 Q124,32 122,52 Q128,57 150,60 Q172,57 178,52 Q176,32 170,18 Q160,14 150,14 Q140,14 130,18 Z" fill="url(#g4a)" opacity=".92" stroke="rgba(184,154,106,.35)" stroke-width=".8"/>'
+    // Sweetheart neckline
+    + '<path d="M136,18 Q142,24 150,22 Q158,24 164,18" fill="none" stroke="rgba(184,154,106,.6)" stroke-width="1.4"/>'
+    // Gathered skirt
+    + '<path d="M122,52 Q85,58 62,65 Q52,85 58,115 L115,118 L185,118 L242,115 Q248,85 238,65 Q215,58 178,52 Q165,70 150,72 Q135,70 122,52 Z" fill="url(#g4b)" stroke="rgba(184,154,106,.2)" stroke-width=".8"/>'
+    // Gathering lines
+    + [82,100,118,150,168,186,204,218].map(function(x) {
+        return '<line x1="' + x + '" y1="58" x2="' + Math.round(x * 0.92 + 12) + '" y2="115" stroke="rgba(184,154,106,.15)" stroke-width=".8"/>';
+      }).join('')
+    // Waist pins
+    + [100,120,140,160,175,192].map(function(x) {
+        return '<circle cx="' + x + '" cy="57" r="2.5" fill="#e05050" opacity=".75"/>';
+      }).join('')
+    // Tailor hands pinning
+    + '<ellipse cx="88" cy="62" rx="12" ry="7" fill="#c8956a" opacity=".85"/>'
+    + '<ellipse cx="212" cy="62" rx="12" ry="7" fill="#c8956a" opacity=".85"/>'
+    // Animated pin being placed
+    + '<g><animateTransform attributeName="transform" type="translate" values="0,-8;0,0;0,-8" dur="1.8s" repeatCount="indefinite"/>'
+    + '<line x1="150" y1="52" x2="152" y2="62" stroke="#d48080" stroke-width="1.5" stroke-linecap="round"/>'
+    + '<circle cx="150" cy="52" r="3" fill="#e86060"/>'
+    + '</g>'
+    + '<text x="150" y="10" text-anchor="middle" font-size="9.5" fill="rgba(184,154,106,.9)" font-family="Georgia,serif" font-style="italic">Draping &amp; Attaching Skirt</text>'
+    + '</svg>',
+
+    // ── STEP 5: HEMMING & PRESSING ───────────────────────────
+    '<svg viewBox="0 0 300 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">'
+    + '<defs><linearGradient id="g5a" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="' + fc + '"/><stop offset="100%" stop-color="' + fc + '" stop-opacity=".65"/></linearGradient></defs>'
+    + '<rect width="300" height="130" fill="#1a1714"/>'
+    // Ironing board
+    + '<path d="M18,80 Q55,74 280,77 L278,93 Q55,90 16,93 Z" fill="#c8c0b8" stroke="#a8a098" stroke-width="1"/>'
+    // Board legs
+    + '<line x1="60" y1="93" x2="45" y2="126" stroke="#888" stroke-width="2" stroke-linecap="round"/>'
+    + '<line x1="220" y1="93" x2="240" y2="126" stroke="#888" stroke-width="2" stroke-linecap="round"/>'
+    // Fabric on board
+    + '<path d="M22,78 Q150,72 278,75 L276,83 Q150,79 20,82 Z" fill="url(#g5a)" opacity=".92"/>'
+    // Hem fold
+    + '<path d="M22,80 Q150,77 278,80 L276,86 Q150,82 20,86 Z" fill="' + fc + '" opacity=".55" stroke="rgba(184,154,106,.3)" stroke-width=".5"/>'
+    // Pressing cloth
+    + '<path d="M75,60 Q150,56 225,60 L223,78 Q150,74 73,78 Z" fill="rgba(255,255,255,.55)" stroke="rgba(184,154,106,.2)" stroke-width=".8"/>'
+    + '<text x="150" y="70" text-anchor="middle" font-size="7.5" fill="rgba(100,80,50,.5)" font-family="Georgia,serif">pressing cloth</text>'
+    // Iron
+    + '<path d="M85,28 Q100,18 190,18 Q214,18 228,28 L225,54 Q175,58 150,58 Q125,58 88,54 Z" fill="#5a5450" stroke="rgba(245,242,238,.15)" stroke-width="1.2"/>'
+    // Iron sole
+    + '<path d="M88,52 Q150,56 225,52 L223,58 Q150,62 90,58 Z" fill="#8a8480"/>'
+    // Handle
+    + '<rect x="125" y="10" width="50" height="16" rx="8" fill="#3a3430" stroke="rgba(184,154,106,.3)" stroke-width="1"/>'
+    // Steam holes
+    + [108,128,148,168,188].map(function(x) {
+        return '<circle cx="' + x + '" cy="55" r="2" fill="#444"/>';
+      }).join('')
+    // Steam wisps
+    + [108,128,148,168,188].map(function(x, i) {
+        return '<path d="M' + x + ',50 Q' + (x+4) + ',38 ' + (x-2) + ',28 Q' + (x+3) + ',18 ' + x + ',10" stroke="rgba(255,255,255,.22)" stroke-width="1.8" fill="none"><animate attributeName="opacity" values="0;.6;0" dur="' + (1.2 + i*0.22) + 's" repeatCount="indefinite"/><animate attributeName="d" values="M' + x + ',50 Q' + (x+4) + ',38 ' + (x-2) + ',28;M' + x + ',50 Q' + (x-3) + ',38 ' + (x+3) + ',28" dur="' + (1.4 + i*0.15) + 's" repeatCount="indefinite"/></path>';
+      }).join('')
+    // Tailor hand on iron
+    + '<ellipse cx="155" cy="16" rx="16" ry="8" fill="#c8956a" opacity=".88"/>'
+    + '<text x="150" y="12" text-anchor="middle" font-size="9.5" fill="rgba(184,154,106,.9)" font-family="Georgia,serif" font-style="italic">Hemming &amp; Pressing</text>'
+    + '<text x="150" y="122" text-anchor="middle" font-size="7.5" fill="rgba(245,242,238,.4)" font-family="Georgia,serif">Silk setting · Pressing cloth always · 2 cm rolled hem</text>'
+    + '</svg>'
+  ];
+
+  var step = Math.min(vCurrentStep, scenes.length - 1);
+  anim.innerHTML = scenes[step];
+
+  // Ambient background
+  var bgColors = [
+    'radial-gradient(ellipse 70% 55% at 50% 40%,rgba(184,154,106,.45),transparent)',
+    'radial-gradient(ellipse 70% 55% at 35% 50%,rgba(200,110,80,.38),transparent)',
+    'radial-gradient(ellipse 70% 55% at 60% 40%,rgba(80,130,200,.35),transparent)',
+    'radial-gradient(ellipse 70% 55% at 50% 55%,rgba(100,170,90,.32),transparent)',
+    'radial-gradient(ellipse 70% 55% at 50% 35%,rgba(220,160,80,.42),transparent)'
+  ];
+  var bg = document.getElementById('vstep-bg');
+  if (bg) bg.style.background = bgColors[step] || bgColors[0];
+}
+
+/* ════════════════════════════════════════════════════════════
+   DRAW CANVAS
+════════════════════════════════════════════════════════════ */
+function openDrawCanvas() {
+  if (document.getElementById('draw-modal')) return;
+  var ov = document.createElement('div');
+  ov.id = 'draw-modal';
+  ov.className = 'modal-overlay';
+  var modal = document.createElement('div');
+  modal.style.cssText = 'background:#faf8f5;border-radius:20px;max-width:680px;width:100%;max-height:94vh;display:flex;flex-direction:column;box-shadow:0 28px 90px rgba(0,0,0,.35);overflow:hidden';
+  // Header
+  var hdr = document.createElement('div');
+  hdr.style.cssText = 'background:#2a2621;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0';
+  hdr.innerHTML = '<div style="font-family:var(--serif);font-size:1.1rem;font-weight:300;color:#f5f2ee">✏️ Draw Your Design</div>';
+  var xBtn = document.createElement('button');
+  xBtn.textContent = '✕'; xBtn.style.cssText = 'background:rgba(255,255,255,.12);border:none;width:30px;height:30px;border-radius:50%;cursor:pointer;color:rgba(245,242,238,.7);font-size:.85rem';
+  xBtn.onclick = function() { ov.remove(); }; hdr.appendChild(xBtn);
+  // Toolbar
+  var toolbar = document.createElement('div');
+  toolbar.style.cssText = 'display:flex;align-items:center;gap:6px;padding:10px 14px;background:#f0ede8;border-bottom:1px solid rgba(184,154,106,.2);flex-wrap:wrap;flex-shrink:0';
+  var colors = ['#1a1714','#b89a6a','#8a6a5a','#2a4a6a','#6a2a2a','#f5f2ee'];
+  var activeColor = '#1a1714', activeSize = 4, eraserActive = false;
+  var colorBtns = document.createElement('div');
+  colorBtns.style.cssText = 'display:flex;gap:4px';
+  colors.forEach(function(c) {
+    var cb = document.createElement('button');
+    cb.style.cssText = 'width:22px;height:22px;border-radius:50%;background:' + c + ';border:2.5px solid ' + (c === activeColor ? 'var(--gold)' : 'transparent') + ';cursor:pointer;flex-shrink:0';
+    cb.onclick = function() { activeColor = c; colorBtns.querySelectorAll('button').forEach(function(b) { b.style.borderColor = 'transparent'; }); cb.style.borderColor = 'var(--gold)'; if (ctx) { ctx.strokeStyle = c; eraserActive = false; eraserBtn.style.background = 'transparent'; } };
+    colorBtns.appendChild(cb);
+  });
+  var sizes = [2,5,10,18];
+  var sizeBtns = document.createElement('div');
+  sizeBtns.style.cssText = 'display:flex;gap:4px;align-items:center;margin-left:4px';
+  sizes.forEach(function(s) {
+    var sb = document.createElement('button');
+    var d = s + 4;
+    sb.style.cssText = 'width:' + d + 'px;height:' + d + 'px;border-radius:50%;background:#1a1714;border:2px solid ' + (s === activeSize ? 'var(--gold)' : 'rgba(184,154,106,.3)') + ';cursor:pointer;flex-shrink:0';
+    sb.onclick = function() { activeSize = s; sizeBtns.querySelectorAll('button').forEach(function(b) { b.style.borderColor = 'rgba(184,154,106,.3)'; }); sb.style.borderColor = 'var(--gold)'; if (ctx) ctx.lineWidth = s; };
+    sizeBtns.appendChild(sb);
+  });
+  var eraserBtn = document.createElement('button');
+  eraserBtn.textContent = '⌫ Eraser';
+  eraserBtn.style.cssText = 'padding:5px 10px;border-radius:6px;border:1.5px solid rgba(184,154,106,.3);background:transparent;font-size:.75rem;cursor:pointer;font-family:inherit;margin-left:4px';
+  eraserBtn.onclick = function() { eraserActive = !eraserActive; eraserBtn.style.background = eraserActive ? 'rgba(184,154,106,.15)' : 'transparent'; };
+  var undoStack = [];
+  var undoBtn = document.createElement('button');
+  undoBtn.textContent = '↩ Undo';
+  undoBtn.style.cssText = 'padding:5px 10px;border-radius:6px;border:1.5px solid rgba(184,154,106,.3);background:transparent;font-size:.75rem;cursor:pointer;font-family:inherit';
+  undoBtn.onclick = function() { if (ctx && undoStack.length) ctx.putImageData(undoStack.pop(), 0, 0); };
+  var clearBtn = document.createElement('button');
+  clearBtn.textContent = '🗑 Clear';
+  clearBtn.style.cssText = undoBtn.style.cssText;
+  clearBtn.onclick = function() { if (ctx) { ctx.clearRect(0, 0, canvas.width, canvas.height); drawGrid(); } };
+  toolbar.append(colorBtns, sizeBtns, eraserBtn, undoBtn, clearBtn);
+  // Canvas
+  var canvasWrap = document.createElement('div');
+  canvasWrap.style.cssText = 'flex:1;overflow:hidden;position:relative;background:#fff;min-height:320px';
+  var canvas = document.createElement('canvas');
+  canvas.style.cssText = 'display:block;cursor:crosshair;touch-action:none;width:100%;height:100%';
+  canvasWrap.appendChild(canvas);
+  var ctx = canvas.getContext('2d');
+  function drawGrid() {
+    ctx.save(); ctx.strokeStyle = 'rgba(184,154,106,.1)'; ctx.lineWidth = .5;
+    for (var x = 0; x < canvas.width; x += 28) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,canvas.height); ctx.stroke(); }
+    for (var y = 0; y < canvas.height; y += 28) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(canvas.width,y); ctx.stroke(); }
+    ctx.restore(); ctx.strokeStyle = activeColor; ctx.lineWidth = activeSize; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  }
+  function resizeCanvas() {
+    var w = canvasWrap.offsetWidth, h = Math.min(canvasWrap.offsetHeight || 380, window.innerHeight * .48);
+    canvas.width = w; canvas.height = h || 380; ctx.strokeStyle = activeColor; ctx.lineWidth = activeSize; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; drawGrid();
+  }
+  var drawing = false, lastX = 0, lastY = 0;
+  function getPos(e) { var r = canvas.getBoundingClientRect(); var src = e.touches ? e.touches[0] : e; return { x: (src.clientX - r.left) * (canvas.width / r.width), y: (src.clientY - r.top) * (canvas.height / r.height) }; }
+  canvas.addEventListener('mousedown', function(e) { e.preventDefault(); drawing = true; undoStack.push(ctx.getImageData(0,0,canvas.width,canvas.height)); if (undoStack.length > 20) undoStack.shift(); var p = getPos(e); lastX = p.x; lastY = p.y; });
+  canvas.addEventListener('mousemove', function(e) { if (!drawing) return; var p = getPos(e); ctx.globalCompositeOperation = eraserActive ? 'destination-out' : 'source-over'; ctx.strokeStyle = eraserActive ? 'rgba(0,0,0,1)' : activeColor; ctx.lineWidth = eraserActive ? activeSize * 3 : activeSize; ctx.beginPath(); ctx.moveTo(lastX,lastY); ctx.lineTo(p.x,p.y); ctx.stroke(); lastX = p.x; lastY = p.y; });
+  canvas.addEventListener('mouseup', function() { drawing = false; ctx.globalCompositeOperation = 'source-over'; });
+  canvas.addEventListener('mouseleave', function() { drawing = false; });
+  canvas.addEventListener('touchstart', function(e) { e.preventDefault(); drawing = true; undoStack.push(ctx.getImageData(0,0,canvas.width,canvas.height)); var p = getPos(e); lastX = p.x; lastY = p.y; }, {passive:false});
+  canvas.addEventListener('touchmove', function(e) { e.preventDefault(); if (!drawing) return; var p = getPos(e); ctx.beginPath(); ctx.moveTo(lastX,lastY); ctx.lineTo(p.x,p.y); ctx.stroke(); lastX = p.x; lastY = p.y; }, {passive:false});
+  canvas.addEventListener('touchend', function() { drawing = false; });
+  // Footer
+  var foot = document.createElement('div');
+  foot.style.cssText = 'padding:12px 18px;background:#f0ede8;border-top:1px solid rgba(184,154,106,.2);display:flex;gap:10px;flex-shrink:0;align-items:center';
+  foot.innerHTML = '<span style="font-size:.75rem;color:var(--muted);flex:1">Sketch your garment — silhouette, neckline, sleeves</span>';
+  var analyzeBtn = document.createElement('button');
+  analyzeBtn.textContent = '✦ Analyse My Drawing';
+  analyzeBtn.style.cssText = 'padding:10px 20px;background:#2a2621;color:#f5f2ee;border:none;border-radius:8px;font-family:inherit;font-size:.85rem;font-weight:500;cursor:pointer';
+  analyzeBtn.onclick = function() {
+    var thumb = canvas.toDataURL('image/png');
+    saveDesignToAccount('My Sketch — ' + new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'}), thumb, 'Sketch');
+    ov.remove();
+    var zone = document.getElementById('upload-zone');
+    if (!zone) return;
+    zone.onclick = null; zone.style.cursor = 'default';
+    zone.innerHTML = '<div class="upload-icon">⏳</div><div class="upload-title serif">Analysing your sketch…</div><p class="upload-hint">Extracting silhouette, neckline, and structural elements</p><div class="progress-bar" style="max-width:300px;margin:16px auto 0"><div class="progress-fill" style="width:0%"></div></div>';
+    var bar = zone.querySelector('.progress-fill'); var pct2 = 0;
+    var iv = setInterval(function() { pct2 = Math.min(pct2+4, 90); if (bar) bar.style.width=pct2+'%'; if (pct2>=90) clearInterval(iv); }, 70);
+    setTimeout(function() {
+      clearInterval(iv);
+      zone.innerHTML = '<div class="upload-icon">✅</div><div class="upload-title serif">Sketch Analysed!</div><p class="upload-hint">Detected: Custom silhouette · Hand-drawn neckline · Flowing skirt</p>'
+        + '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px">'
+        + '<button class="result-btn" onclick="openModal(\'fabric\')">🧵 Fabric Recs</button>'
+        + '<button class="result-btn-outline" onclick="openModal(\'guide\')">✂️ Sewing Guide</button>'
+        + '<button class="result-btn-outline" onclick="openModal(\'styling\')">💍 Styling</button>'
+        + '<button class="result-btn-outline" onclick="launchVideoFromUpload()" style="border-color:var(--gold);color:var(--gold)">🎬 Generate Video</button>'
+        + '</div><p style="font-size:.73rem;color:var(--muted);margin-top:14px;cursor:pointer;text-decoration:underline" onclick="resetUpload()">Try again</p>';
+      showToast('Sketch analysis complete!');
+    }, 2800);
+  };
+  foot.appendChild(analyzeBtn);
+  modal.append(hdr, toolbar, canvasWrap, foot);
+  ov.appendChild(modal);
+  ov.addEventListener('click', function(e) { if (e.target === ov) ov.remove(); });
+  document.body.appendChild(ov);
+  requestAnimationFrame(resizeCanvas);
+}
+
+/* ════════════════════════════════════════════════════════════
+   SAMPLE PICKER
+════════════════════════════════════════════════════════════ */
+var SAMPLES = [
+  { id:'aline',    emoji:'👗', name:'A-Line Evening Gown',    desc:'Fitted bodice, flared skirt · Sweetheart neckline',  style:'Formal', color:'#e8d5c0' },
+  { id:'pencil',   emoji:'👔', name:'Pencil Skirt Suit',      desc:'Structured blazer + pencil skirt · Minimalist',      style:'Office', color:'#d4c5b8' },
+  { id:'maxi',     emoji:'🌸', name:'Boho Maxi Dress',        desc:'Relaxed fit, tiered skirt · V-neckline',             style:'Casual', color:'#d8c9b8' },
+  { id:'cocktail', emoji:'✨', name:'Cocktail Dress',         desc:'Knee-length, structured · Off-shoulder neckline',    style:'Party',  color:'#c9b8d4' },
+  { id:'wrap',     emoji:'🎀', name:'Wrap Dress',             desc:'Self-tie waist, draped · V-neckline',                style:'Casual', color:'#b8d4c9' },
+  { id:'ballgown', emoji:'👑', name:'Ball Gown',              desc:'Full skirt, corseted bodice · Strapless neckline',   style:'Bridal', color:'#f0e8d8' }
+];
+function openSamplePicker() {
+  if (document.getElementById('sample-modal')) return;
+  var ov = document.createElement('div');
+  ov.id = 'sample-modal'; ov.className = 'modal-overlay';
+  var modal = document.createElement('div');
+  modal.className = 'modal-box';
+  var hdrHtml = '<div class="modal-header"><span class="modal-title">📂 Choose a Sample Design</span><button class="modal-close" onclick="document.getElementById(\'sample-modal\').remove()">✕</button></div>';
+  var gridHtml = '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;padding:20px">'
+    + SAMPLES.map(function(s) {
+        return '<div style="border-radius:12px;overflow:hidden;border:1.5px solid rgba(184,154,106,.15);cursor:pointer;transition:border-color .18s;background:var(--paper)" onmouseover="this.style.borderColor=\'var(--gold)\'" onmouseout="this.style.borderColor=\'rgba(184,154,106,.15)\'" onclick="loadSample(' + JSON.stringify(s) + ');document.getElementById(\'sample-modal\').remove()">'
+          + '<div style="height:72px;background:' + s.color + ';display:flex;align-items:center;justify-content:center;font-size:2rem;position:relative">'
+          + s.emoji
+          + '<span style="position:absolute;top:6px;right:8px;background:rgba(42,38,33,.7);color:rgba(245,242,238,.85);font-size:.6rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:2px 7px;border-radius:10px">' + s.style + '</span>'
+          + '</div>'
+          + '<div style="padding:10px 12px"><div style="font-weight:500;font-size:.85rem">' + s.name + '</div><div style="font-size:.72rem;color:var(--muted);margin-top:2px">' + s.desc + '</div></div>'
+          + '<button style="width:100%;padding:8px;background:transparent;border:none;border-top:1px solid rgba(184,154,106,.12);font-family:inherit;font-size:.78rem;font-weight:500;color:var(--gold);cursor:pointer">Use This Design →</button>'
+          + '</div>';
+      }).join('')
+    + '</div>';
+  modal.innerHTML = hdrHtml + gridHtml;
+  ov.appendChild(modal);
+  ov.addEventListener('click', function(e) { if (e.target === ov) ov.remove(); });
+  document.body.appendChild(ov);
+}
+function loadSample(sample) {
+  saveDesignToAccount(sample.name, null, 'Sample');
+  var zone = document.getElementById('upload-zone');
+  if (!zone) return;
+  zone.onclick = null; zone.style.cursor = 'default';
+  zone.innerHTML = '<div class="upload-icon">⏳</div><div class="upload-title serif">Loading "' + sample.name + '"…</div><p class="upload-hint">Extracting design elements</p><div class="progress-bar" style="max-width:300px;margin:16px auto 0"><div class="progress-fill" style="width:0%"></div></div>';
+  var bar = zone.querySelector('.progress-fill'), pct = 0;
+  var iv = setInterval(function() { pct = Math.min(pct+5,90); if (bar) bar.style.width=pct+'%'; if(pct>=90) clearInterval(iv); }, 60);
+  setTimeout(function() {
+    clearInterval(iv);
+    zone.innerHTML = '<div class="upload-icon">✅</div>'
+      + '<div class="upload-title serif">' + sample.name + ' loaded!</div>'
+      + '<p class="upload-hint">Detected: ' + sample.desc + '</p>'
+      + '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px">'
+      + '<button class="result-btn" onclick="openModal(\'fabric\')">🧵 Fabric Recs</button>'
+      + '<button class="result-btn-outline" onclick="openModal(\'guide\')">✂️ Sewing Guide</button>'
+      + '<button class="result-btn-outline" onclick="openModal(\'styling\')">💍 Styling</button>'
+      + '<button class="result-btn-outline" onclick="launchVideoFromUpload()" style="border-color:var(--gold);color:var(--gold)">🎬 Generate Video</button>'
+      + '</div><p style="font-size:.73rem;color:var(--muted);margin-top:14px;cursor:pointer;text-decoration:underline" onclick="resetUpload()">Upload different design</p>';
+    showToast(sample.name + ' loaded!');
+  }, 2200);
+}
+
+/* ════════════════════════════════════════════════════════════
+   MODALS
+════════════════════════════════════════════════════════════ */
+function openModal(type) {
+  if (document.getElementById('main-modal')) document.getElementById('main-modal').remove();
+  var ov = document.createElement('div'); ov.className = 'modal-overlay'; ov.id = 'main-modal';
+  var content = '';
+  if (type === 'fabric') {
+    content = '<div class="modal-header"><span class="modal-title">🧵 Fabric Recommendations</span><button class="modal-close" onclick="document.getElementById(\'main-modal\').remove()">✕</button></div>'
+      + '<div class="modal-body">'
+      + [['Silk Chiffon','linear-gradient(135deg,#e8d5c0,#c9a882)','Lightweight, sheer with beautiful drape. Perfect for evening wear.',97,true],
+         ['Duchess Satin','linear-gradient(135deg,#d4c5b8,#b09b8e)','Smooth heavy satin with beautiful sheen. Ideal for formal wear.',91,false],
+         ['Crepe','linear-gradient(135deg,#d8d0ca,#bfb4ae)','Matte fluid fabric with subtle texture. Great for everyday wear.',84,false],
+         ['Organza','linear-gradient(135deg,#eae4df,#cfc6bf)','Stiff sheer fabric that holds shape. Perfect for overlays.',78,false]]
+        .map(function(f) {
+          return '<div class="modal-fab-row ' + (f[4] ? 'mf-sel' : '') + '" onclick="this.closest(\'.modal-body\').querySelectorAll(\'.modal-fab-row\').forEach(function(r){r.classList.remove(\'mf-sel\')});this.classList.add(\'mf-sel\')">'
+            + '<div style="width:36px;height:36px;border-radius:8px;background:' + f[1] + ';flex-shrink:0"></div>'
+            + '<div style="flex:1"><div style="font-weight:500;font-size:.88rem">' + f[0] + '</div><div style="font-size:.73rem;color:var(--muted);margin-top:2px">' + f[2] + '</div></div>'
+            + '<span style="font-size:.78rem;font-weight:600;color:var(--gold)">' + f[3] + '%</span>'
+            + '</div>';
+        }).join('')
+      + '<div style="display:flex;gap:10px;margin-top:18px">'
+      + '<button class="modal-btn modal-btn-primary" style="flex:2" onclick="var sel=document.querySelector(\'.mf-sel\');if(sel){rcCurrent=sel.querySelector(\'div div div\').textContent;showToast(rcCurrent+\' selected!\');document.getElementById(\'main-modal\').remove();}">Confirm Selection</button>'
+      + '<button class="modal-btn modal-btn-outline" onclick="document.getElementById(\'main-modal\').remove()">Close</button>'
+      + '</div></div>';
+  } else if (type === 'guide') {
+    content = '<div class="modal-header"><span class="modal-title">Sewing Guide - ' + vDesign + '</span><button class="modal-close" onclick="document.getElementById(\'main-modal\').remove()">✕</button></div>'
+      + '<div class="modal-body">'
+      + vSteps.map(function(s, i) {
+          return '<div style="padding:14px;border-radius:10px;border:1px solid rgba(184,154,106,.15);margin-bottom:10px">'
+            + '<div style="font-weight:600;font-size:.85rem;color:var(--charcoal);margin-bottom:6px">' + s.title + '</div>'
+            + '<div style="font-size:.8rem;color:var(--muted);line-height:1.6;margin-bottom:6px">' + s.desc + '</div>'
+            + '<div style="font-size:.75rem;color:#b89a6a">' + s.safety + '</div>'
+            + '</div>';
+        }).join('')
+      + '<div style="display:flex;gap:10px;margin-top:16px">'
+      + '<button class="modal-btn modal-btn-primary" style="flex:2" onclick="document.getElementById(\'main-modal\').remove();downloadSewingGuide()">⬇ Download Guide</button>'
+      + '<button class="modal-btn modal-btn-outline" onclick="document.getElementById(\'main-modal\').remove()">Close</button>'
+      + '</div></div>';
+  } else if (type === 'styling') {
+    content = '<div class="modal-header"><span class="modal-title">💍 Styling Guide</span><button class="modal-close" onclick="document.getElementById(\'main-modal\').remove()">✕</button></div>'
+      + '<div class="modal-body">'
+      + '<div style="background:var(--cream);border-radius:10px;padding:18px;line-height:1.9;font-size:.85rem">'
+      + '👠 Strappy heeled sandals in nude or metallic gold<br>'
+      + '💎 Delicate drop earrings — skip chunky necklaces<br>'
+      + '👜 Small satin clutch in champagne or antique gold<br>'
+      + '🌸 Soft updo or loose waves for an elegant finish<br>'
+      + '💄 Nude or rose lip, defined lashes, glowing skin'
+      + '</div>'
+      + '<button class="modal-btn modal-btn-primary" style="width:100%;margin-top:16px" onclick="document.getElementById(\'main-modal\').remove()">Close</button>'
+      + '</div>';
+  }
+  var box = document.createElement('div'); box.className = 'modal-box'; box.innerHTML = content;
+  ov.appendChild(box);
+  ov.addEventListener('click', function(e) { if (e.target === ov) ov.remove(); });
+  document.body.appendChild(ov);
+}
+
+/* ════════════════════════════════════════════════════════════
+   FINAL LOOK MODAL
+════════════════════════════════════════════════════════════ */
+function closeLookModal() { var m = document.getElementById('look-modal'); if (m) m.remove(); }
+function openFinalLookModal() {
+  closeLookModal();
+  var fabColors = { 'Silk Chiffon':'#e8d5c0','Duchess Satin':'#d4c5b8','Crepe':'#d8d0ca','Organza':'#eae4df','Denim':'#8fa3bf' };
+  var fc = fabColors[vFabric] || '#e8d5c0';
+  function makeDressSVG(label) {
+    return '<svg width="85" height="140" viewBox="0 0 85 140" xmlns="http://www.w3.org/2000/svg">'
+      + '<defs><linearGradient id="dg' + label + '" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="' + fc + '" stop-opacity=".9"/><stop offset="100%" stop-color="' + fc + '" stop-opacity=".5"/></linearGradient></defs>'
+      + '<path d="M42,7 Q56,9 55,22 Q63,30 60,44 L66,122 Q60,134 42,136 Q24,134 18,122 L24,44 Q21,30 29,22 Q28,9 42,7 Z" fill="url(#dg' + label + ')" stroke="rgba(184,154,106,.45)" stroke-width="1.1"/>'
+      + '<path d="M32,9 Q42,18 52,9" fill="none" stroke="rgba(184,154,106,.5)" stroke-width="1.1"/>'
+      + '<line x1="20" y1="46" x2="64" y2="46" stroke="rgba(184,154,106,.3)" stroke-width=".7" stroke-dasharray="3,3"/>'
+      + '<text x="42" y="140" font-size="7.5" fill="#8a8179" text-anchor="middle" font-family="Georgia">' + label + '</text>'
+      + '</svg>';
+  }
+  var ov = document.createElement('div'); ov.id = 'look-modal'; ov.className = 'modal-overlay';
+  var modal = document.createElement('div'); modal.className = 'modal-box';
+  modal.innerHTML = '<div class="modal-header"><span class="modal-title">Final Look - AI Render</span><button class="modal-close" onclick="closeLookModal()">✕</button></div>'
+    + '<div class="modal-body">'
+    + '<div style="display:flex;gap:14px;justify-content:center;background:var(--cream);border-radius:12px;padding:20px;margin-bottom:18px">' + makeDressSVG('Front') + makeDressSVG('Side') + makeDressSVG('Back') + '</div>'
+    + '<div style="margin-bottom:14px"><p style="font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Fabric Colour</p><div style="display:flex;align-items:center;gap:10px"><div style="width:26px;height:26px;border-radius:50%;background:' + fc + ';border:2px solid rgba(184,154,106,.4)"></div><span style="font-size:.82rem;color:var(--muted)">' + vFabric + ' natural tone</span></div></div>'
+    + '<div style="background:var(--cream);border-radius:10px;padding:14px;margin-bottom:16px;font-size:.82rem;line-height:1.75">👠 Strappy heeled sandals in nude or metallic gold<br>💎 Delicate drop earrings — skip chunky necklaces<br>👜 Small satin clutch in champagne or antique gold<br>🌸 Soft updo or loose waves</div>'
+    + '<div style="display:flex;gap:10px"><button class="modal-btn modal-btn-primary" style="flex:2" onclick="downloadFinalLook()">⬇ Download Render</button><button class="modal-btn modal-btn-outline" onclick="closeLookModal()">Close</button></div>'
+    + '</div>';
+  ov.appendChild(modal);
+  ov.addEventListener('click', function(e) { if (e.target === ov) closeLookModal(); });
+  document.body.appendChild(ov);
+}
+function downloadFinalLook() {
+  var svg = '<?xml version="1.0"?><svg width="400" height="280" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="280" fill="#f5f2ee"/><rect width="400" height="56" fill="#2a2621"/><text x="20" y="26" font-family="Georgia" font-size="17" fill="#f5f2ee">VOGX Final Look</text><text x="20" y="46" font-family="Georgia" font-size="10" fill="rgba(245,242,238,.4)">' + vDesign + ' · ' + vFabric + ' · ' + vFit + '</text><text x="200" y="175" font-family="Georgia" font-size="13" fill="#8a8179" text-anchor="middle">AI-rendered outfit — ' + vFabric + '</text><text x="200" y="270" font-family="Georgia" font-size="9" fill="#8a8179" text-anchor="middle">Generated by VOGX · ' + new Date().toLocaleDateString() + '</text></svg>';
+  var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([svg],{type:'image/svg+xml'})); a.download = 'VOGX-Look-' + vDesign.replace(/\s+/g,'-') + '.svg'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  showToast('Render downloaded!');
+}
+
+/* ════════════════════════════════════════════════════════════
+   DOWNLOAD SEWING GUIDE
+════════════════════════════════════════════════════════════ */
+function downloadSewingGuide() {
+  var content = ['<!DOCTYPE html><html><head><meta charset="UTF-8"><title>VOGX Sewing Guide — ' + vDesign + '</title>',
+    '<style>body{font-family:Georgia,serif;max-width:680px;margin:40px auto;padding:0 24px;color:#2a2621;background:#faf8f5}',
+    'h1{font-size:2rem;font-weight:300;border-bottom:1px solid #b89a6a;padding-bottom:12px;margin-bottom:24px}',
+    '.step{margin-bottom:28px;padding:20px;border:1px solid rgba(184,154,106,.2);border-radius:10px;background:#fff}',
+    '.step h3{color:#b89a6a;margin-bottom:8px;font-weight:400}.safety{color:#8a8179;font-size:.9em;margin-top:8px}',
+    '</style></head><body>',
+    '<h1>VOGX Sewing Guide</h1>',
+    '<p><strong>Design:</strong> ' + vDesign + ' &nbsp;·&nbsp; <strong>Fabric:</strong> ' + vFabric + ' &nbsp;·&nbsp; <strong>Skill:</strong> ' + vSkill + ' &nbsp;·&nbsp; <strong>Fit:</strong> ' + vFit + '</p><br>'];
+  vSteps.forEach(function(s, i) {
+    content.push('<div class="step"><h3>Step ' + (i+1) + ' — ' + s.title.replace(/Step \d+ — /,'') + '</h3><p>' + s.desc + '</p><p class="safety">' + s.safety + '</p></div>');
+  });
+  content.push('<p style="color:#8a8179;font-size:.8em;margin-top:32px">Generated by VOGX · ' + new Date().toLocaleString() + '</p></body></html>');
+  var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([content.join('\n')],{type:'text/html'})); a.download = 'VOGX-Guide-' + vDesign.replace(/\s+/g,'-') + '.html'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  showToast('Sewing guide downloaded!');
+}
+
+/* ════════════════════════════════════════════════════════════
+   AI CHAT  —  Claude API with web search
+════════════════════════════════════════════════════════════ */
+async function sendVogxMessage(source) {
+  var inputId = source === 'hero' ? 'hero-chat-input' : 'float-chat-input';
+  var msgsId  = source === 'hero' ? 'hero-chat-msgs'  : 'float-chat-msgs';
+  var input = document.getElementById(inputId);
+  var msgs  = document.getElementById(msgsId);
+  if (!input || !msgs) return;
+  var text = input.value.trim();
+  if (!text) return;
+  input.value = ''; input.disabled = true;
+
+  // User bubble
+  var ub = document.createElement('div');
+  ub.className = 'msg msg-user'; ub.textContent = text;
+  msgs.appendChild(ub);
+
+  // AI typing bubble
+  var tb = document.createElement('div');
+  tb.className = 'msg msg-ai';
+  tb.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
+  msgs.appendChild(tb);
+  msgs.scrollTop = msgs.scrollHeight;
+
+  _chatHistory.push({ role:'user', content: text });
+  if (_chatHistory.length > 12) _chatHistory = _chatHistory.slice(-12);
+
+  var p = window._vogxProfile || {};
+  var profileCtx = '';
+  if (p.gender)   profileCtx += ' Gender: ' + p.gender + '.';
+  if (p.age)      profileCtx += ' Age: ' + p.age + '.';
+  if (p.height)   profileCtx += ' Height: ' + p.height + 'cm.';
+  if (p.weight)   profileCtx += ' Weight: ' + p.weight + 'kg.';
+  if (p.skinTone) profileCtx += ' Skin tone: ' + p.skinTone + '.';
+  if (p.colors)   profileCtx += ' Favourite colors: ' + p.colors + '.';
+  if (p.fabrics)  profileCtx += ' Favourite fabrics: ' + p.fabrics + '.';
+  if (p.style)    profileCtx += ' Preferred style: ' + p.style + '.';
+  if (p.occasions)profileCtx += ' Occasions: ' + p.occasions + '.';
+
+  var systemPrompt = 'You are VOGX, a warm and knowledgeable AI fashion design assistant. '
+    + 'You specialise in fashion design, sewing techniques, fabric selection, garment construction, '
+    + 'pattern making, draping, alterations, styling advice, and sustainable fashion. '
+    + 'Keep responses concise (under 120 words) unless asked for detail. '
+    + 'Be warm, encouraging, and practical. '
+    + 'Current context: design=' + vDesign + ', fabric=' + vFabric + ', skill=' + vSkill + '.'
+    + (profileCtx ? ' User styling profile — ' + profileCtx + ' Always tailor your suggestions to this profile.' : '');
+
+  try {
+    var replyText = '';
+
+    if (window._vogxModel) {
+      // ── Firebase AI Logic path (secure — no exposed key) ──
+      var history = [];
+      _chatHistory.slice(0, -1).forEach(function(m) {
+        history.push({
+          role:  m.role === 'assistant' ? 'model' : 'user',
+          parts: [{ text: m.content }]
+        });
+      });
+      var chat   = window._vogxModel.startChat({
+        systemInstruction: systemPrompt,
+        history: history
+      });
+      var result = await chat.sendMessage(text);
+      replyText  = result.response.text();
+    } else {
+      // ── Fallback: direct Gemini fetch (until Firebase AI Logic loads) ──
+      var GEMINI_KEY   = 'AIzaSyCfaAOkL4su9f_KCqnnICLpzvh0ISEHQJk';
+      var GEMINI_MODEL = 'gemini-1.5-flash-latest';
+      var geminiMsgs   = [
+        { role:'user',  parts:[{ text: systemPrompt }] },
+        { role:'model', parts:[{ text: 'Understood! I am VOGX, your AI fashion design assistant.' }] }
+      ];
+      _chatHistory.forEach(function(m) {
+        var role = m.role === 'assistant' ? 'model' : 'user';
+        if (geminiMsgs[geminiMsgs.length-1].role === role) return;
+        geminiMsgs.push({ role:role, parts:[{ text:m.content }] });
+      });
+      if (geminiMsgs[geminiMsgs.length-1].role !== 'user')
+        geminiMsgs.push({ role:'user', parts:[{ text:text }] });
+      var resp = await fetch(
+        'https://generativelanguage.googleapis.com/v1beta/models/' + GEMINI_MODEL + ':generateContent?key=' + GEMINI_KEY,
+        { method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ contents: geminiMsgs, generationConfig:{ maxOutputTokens:800, temperature:0.7 } }) }
+      );
+      var data = await resp.json();
+      if (data.candidates && data.candidates[0] && data.candidates[0].content)
+        replyText = data.candidates[0].content.parts.map(function(p){ return p.text||''; }).join('');
+      if (!replyText) replyText = 'Sorry, I could not get a response. Please try again.';
+    }
+
+    _chatHistory.push({ role:'assistant', content: replyText });
+    tb.innerHTML = ''; tb.textContent = replyText;
+    // Save to history if response contains design details
+    if (replyText.length > 60 && window._saveToHistory) {
+      window._saveToHistory({ title: text.slice(0,60), notes: replyText.slice(0,200), type:'Chat' });
+    }
+
+  } catch(err) {
+    console.error('Chat error:', err);
+    tb.innerHTML = ''; tb.textContent = 'Connection error — please check your internet and try again.';
+  }
+
+  input.disabled = false; input.focus();
+  msgs.scrollTop = msgs.scrollHeight;
+}
+/* ════════════════════════════════════════════════════════════
+   FLOATING CHAT WIDGET
+════════════════════════════════════════════════════════════ */
+(function buildFloatChat() {
+  var style = document.createElement('style');
+  style.textContent = '#float-chat-btn{position:fixed;bottom:26px;right:26px;width:54px;height:54px;border-radius:50%;background:var(--charcoal);border:2px solid var(--gold);color:var(--gold);font-size:1.3rem;cursor:pointer;z-index:9500;box-shadow:0 8px 28px rgba(0,0,0,.25);transition:transform .2s;display:flex;align-items:center;justify-content:center;} #float-chat-btn:hover{transform:scale(1.1)} #float-chat-panel{position:fixed;bottom:90px;right:26px;width:340px;height:460px;background:var(--paper);border-radius:18px;box-shadow:0 16px 60px rgba(0,0,0,.2);border:1px solid var(--gold-md);z-index:9500;display:none;flex-direction:column;overflow:hidden;animation:fadeUp .2s ease both} #float-chat-panel.open{display:flex} #float-chat-msgs{flex:1;overflow-y:auto;padding:12px 12px 6px;display:flex;flex-direction:column;gap:8px} #float-chat-msgs .msg{font-size:.8rem;padding:9px 12px} #float-chat-row{padding:10px 12px;border-top:1px solid var(--gold-lt);display:flex;gap:8px;background:var(--cream)} #float-chat-input{flex:1;border:1.5px solid var(--gold-md);border-radius:8px;padding:9px 12px;font-size:.8rem;font-family:var(--sans);background:var(--paper);outline:none;color:var(--charcoal)} #float-chat-input:focus{border-color:var(--gold)} #float-chat-send{width:36px;height:36px;border-radius:8px;background:var(--charcoal);border:none;color:var(--gold);font-size:1rem;cursor:pointer;flex-shrink:0} #float-chat-send:hover{background:var(--gold);color:var(--charcoal)} @media(max-width:420px){#float-chat-panel{right:10px;left:10px;width:auto}}';
+  document.head.appendChild(style);
+  var btn = document.createElement('button');
+  btn.id = 'float-chat-btn'; btn.title = 'Chat with VOGX AI'; btn.innerHTML = '💬';
+  btn.onclick = function() { var p = document.getElementById('float-chat-panel'); p.classList.toggle('open'); if (p.classList.contains('open')) document.getElementById('float-chat-input').focus(); };
+  var panel = document.createElement('div'); panel.id = 'float-chat-panel';
+  panel.innerHTML = '<div style="background:var(--charcoal);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">'
+    + '<div style="display:flex;align-items:center;gap:10px"><div style="width:32px;height:32px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:.9rem;color:var(--charcoal);font-weight:700">V</div><div><div style="font-family:var(--serif);font-size:.95rem;color:#f5f2ee;font-weight:300">VOGX AI</div><div style="font-size:.65rem;color:rgba(245,242,238,.4)">Fashion Assistant · Web Search On</div></div></div>'
+    + '<button onclick="document.getElementById(\'float-chat-panel\').classList.remove(\'open\')" style="background:rgba(255,255,255,.1);border:none;width:26px;height:26px;border-radius:50%;cursor:pointer;color:rgba(245,242,238,.6);font-size:.8rem">✕</button>'
+    + '</div>'
+    + '<div id="float-chat-msgs"><div class="msg msg-ai">Hi! I\'m VOGX ✦ Ask me anything about fashion design, fabrics, sewing, or styling. I can search the web for the latest trends too!</div></div>'
+    + '<div id="float-chat-row"><input type="text" id="float-chat-input" placeholder="Ask about fabrics, sewing, trends…" onkeydown="if(event.key===\'Enter\')sendVogxMessage(\'float\')"><button id="float-chat-send" onclick="sendVogxMessage(\'float\')">→</button></div>';
+  document.body.appendChild(btn);
+  document.body.appendChild(panel);
+})();
+
+// Close float panel on outside click
+document.addEventListener('click', function(e) {
+  var panel = document.getElementById('float-chat-panel');
+  var btn = document.getElementById('float-chat-btn');
+  if (!panel || !panel.classList.contains('open')) return;
+  if (!panel.contains(e.target) && e.target !== btn && !btn.contains(e.target)) panel.classList.remove('open');
+});
+</script>
+
+<!-- ── FIREBASE SDK ── -->
+<script type="module">
+  import { initializeApp }
+    from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+           onAuthStateChanged, signOut as fbSignOut, updateProfile }
+    from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+  import { getFirestore, doc, setDoc, collection,
+           addDoc, getDocs, query, orderBy, deleteDoc, serverTimestamp }
+    from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+  import { getAI, getGenerativeModel, GoogleAIBackend }
+    from "https://www.gstatic.com/firebasejs/12.10.0/firebase-ai.js";
+
+  // ── REAL CONFIG ─────────────────────────────────
+  const firebaseConfig = {
+    apiKey:            "AIzaSyByFhGMtM66xUCuoPcmobeHQ3rfUxvPMcM",
+    authDomain:        "vogx-7c8e4.firebaseapp.com",
+    projectId:         "vogx-7c8e4",
+    storageBucket:     "vogx-7c8e4.firebasestorage.app",
+    messagingSenderId: "475913842185",
+    appId:             "1:475913842185:web:647b60c5e0269ab7e452d8",
+    measurementId:     "G-F68VXGGE1R"
+  };
+
+  const app  = initializeApp(firebaseConfig);
+  window._fbApp = app;
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+
+  // ── APP CHECK (reCAPTCHA v3) ─────────────────────
+  import("https://www.gstatic.com/firebasejs/12.10.0/firebase-app-check.js").then(({ initializeAppCheck, ReCaptchaV3Provider }) => {
+    initializeAppCheck(app, {
+      provider: new ReCaptchaV3Provider('6LcKdYksAAAAAFpvbBNvBbVu-_bR_nSb2xascTj5'),
+      isTokenAutoRefreshEnabled: true
+    });
+  });
+
+  // ── FIREBASE AI LOGIC (Gemini — no exposed key) ─
+  const ai    = getAI(app, { backend: new GoogleAIBackend() });
+  const model = getGenerativeModel(ai, {
+    model: "gemini-2.5-flash",
+    generationConfig: { maxOutputTokens: 800, temperature: 0.7 }
+  });
+  window._vogxModel = model;
+
+  // ── AUTH ────────────────────────────────────────
+  window.firebaseSignUp = async (name, email, pass) => {
+    const cred = await createUserWithEmailAndPassword(auth, email, pass);
+    await updateProfile(cred.user, { displayName: name });
+    await setDoc(doc(db,'users',cred.user.uid), {
+      name, email, plan:'free', createdAt: serverTimestamp()
+    });
+    return cred.user;
+  };
+  window.firebaseSignIn = async (email, pass) => {
+    const cred = await signInWithEmailAndPassword(auth, email, pass);
+    return cred.user;
+  };
+  window.firebaseSignOutUser = async () => await fbSignOut(auth);
+
+  // ── FIRESTORE: Save design ───────────────────────
+  window.saveDesignToFirestore = async (uid, name, thumb, type) => {
+    const ref = await addDoc(collection(db,'users',uid,'designs'), {
+      name,
+      thumb: thumb ? thumb.slice(0,500) : null,
+      type:  type || 'Upload',
+      date:  new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'}),
+      createdAt: serverTimestamp()
+    });
+    return ref.id;
+  };
+
+  // ── FIRESTORE: Delete design ─────────────────────
+  window.deleteDesignFromFirestore = async (uid, id) => {
+    await deleteDoc(doc(db,'users',uid,'designs',id));
+  };
+
+  // ── FIRESTORE: Save user profile ─────────────────
+  window.saveProfileToFirestore = async (uid, profile) => {
+    await setDoc(doc(db,'users',uid,'meta','profile'), profile, { merge: true });
+  };
+
+  // ── FIRESTORE: Load user profile ─────────────────
+  window.loadProfileFromFirestore = async (uid) => {
+    try {
+      const { getDoc } = await import("https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js");
+      const snap = await getDoc(doc(db,'users',uid,'meta','profile'));
+      return snap.exists() ? snap.data() : null;
+    } catch(e) { return null; }
+  };
+
+  // ── FIRESTORE: Save chat history entry ───────────
+  window.saveChatHistoryToFirestore = async (uid, entry) => {
+    try {
+      await addDoc(collection(db,'users',uid,'history'), {
+        ...entry, createdAt: serverTimestamp()
+      });
+    } catch(e) { console.log('History save error:', e.message); }
+  };
+
+  // ── FIRESTORE: Load chat history ─────────────────
+  window.loadChatHistoryFromFirestore = async (uid) => {
+    try {
+      const q = query(collection(db,'users',uid,'history'), orderBy('createdAt','desc'));
+      const snap = await getDocs(q);
+      const items = [];
+      snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+      return items;
+    } catch(e) { return []; }
+  };
+
+  // ── AUTH STATE LISTENER ──────────────────────────
+  // Auto-restores session on every page load
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      const firstName = (user.displayName || user.email.split('@')[0]).split(' ')[0];
+      window._vogxUser = { name: firstName, uid: user.uid, email: user.email };
+      updateNavForUser(firstName);
+      try {
+        const q    = query(collection(db,'users',user.uid,'designs'), orderBy('createdAt','desc'));
+        const snap = await getDocs(q);
+        window._vogxSavedDesigns = [];
+        snap.forEach(d => window._vogxSavedDesigns.push({ id:d.id, firestoreId:d.id, ...d.data() }));
+        renderAccountDesigns();
+      } catch(e) { console.log('Firestore load error:', e.message); }
+      // Load profile
+      try {
+        const pSnap = await getDocs(collection(db,'users',user.uid,'meta'));
+        pSnap.forEach(d => { if(d.id==='profile') window._vogxProfile = d.data(); });
+        if(window._vogxProfile) populateProfileForm(window._vogxProfile);
+      } catch(e) {}
+      // Load history
+      try {
+        const hq   = query(collection(db,'users',user.uid,'history'), orderBy('createdAt','desc'));
+        const hsnap = await getDocs(hq);
+        window._vogxHistory = [];
+        hsnap.forEach(d => window._vogxHistory.push({ id:d.id, ...d.data() }));
+        renderHistoryList();
+      } catch(e) {}
+    }
+  });
+</script>
+
+<!-- ── NEW FEATURES JS ── -->
+<script>
+// ── DARK MODE ────────────────────────────────────────────
+function toggleDarkMode() {
+  var dark = document.body.classList.toggle('dark-mode');
+  localStorage.setItem('vogx-dark', dark ? '1' : '0');
+  document.getElementById('dark-toggle').textContent = dark ? '☀️' : '🌙';
+}
+(function() {
+  if (localStorage.getItem('vogx-dark') === '1') {
+    document.body.classList.add('dark-mode');
+    document.addEventListener('DOMContentLoaded', function() {
+      var btn = document.getElementById('dark-toggle');
+      if (btn) btn.textContent = '☀️';
+    });
+  }
+})();
+
+// ── BACK TO TOP ──────────────────────────────────────────
+window.addEventListener('scroll', function() {
+  var btn = document.getElementById('back-to-top');
+  if (btn) btn.classList.toggle('show', window.scrollY > 400);
+});
+
+// ── CHAT CHARACTER COUNTER ───────────────────────────────
+function addChatCounter(inputId) {
+  var input = document.getElementById(inputId);
+  if (!input || input.dataset.counterAdded) return;
+  input.dataset.counterAdded = '1';
+  var counter = document.createElement('div');
+  counter.className = 'chat-counter';
+  counter.textContent = '0 / 300';
+  input.parentNode.insertBefore(counter, input.nextSibling);
+  input.addEventListener('input', function() {
+    var len = input.value.length;
+    counter.textContent = len + ' / 300';
+    counter.className = 'chat-counter' + (len > 280 ? ' over' : len > 240 ? ' warn' : '');
+    if (len > 300) input.value = input.value.slice(0, 300);
+  });
+}
+
+// ── DESIGN GALLERY / LOOKBOOK ────────────────────────────
+function openGallery() {
+  var existing = document.getElementById('gallery-modal');
+  if (existing) existing.remove();
+  var designs = window._vogxSavedDesigns || [];
+  var ov = document.createElement('div');
+  ov.id = 'gallery-modal'; ov.className = 'modal-overlay';
+  ov.style.cssText = 'display:flex;align-items:center;justify-content:center;';
+  var box = document.createElement('div');
+  box.className = 'modal-box'; box.style.cssText = 'max-width:560px;width:90vw';
+  var hdr = document.createElement('div'); hdr.className = 'modal-header';
+  var ttl = document.createElement('span'); ttl.className = 'modal-title serif';
+  ttl.textContent = 'My Design Gallery (' + designs.length + ')';
+  var cls = document.createElement('button'); cls.className = 'modal-close'; cls.textContent = '✕';
+  cls.onclick = function() { ov.remove(); };
+  hdr.appendChild(ttl); hdr.appendChild(cls);
+  var bdy = document.createElement('div'); bdy.className = 'modal-body';
+  var grid = document.createElement('div'); grid.className = 'gallery-grid';
+  if (!designs.length) {
+    var msg = document.createElement('p');
+    msg.style.cssText = 'color:var(--muted);text-align:center;padding:40px 20px;grid-column:1/-1';
+    msg.innerHTML = 'No saved designs yet.<br>Upload a sketch to get started!';
+    grid.appendChild(msg);
+  } else {
+    designs.forEach(function(d) {
+      var id = String(d.firestoreId || d.id);
+      var item = document.createElement('div');
+      item.className = 'gallery-item'; item.dataset.designId = id;
+      if (d.thumb && d.thumb.length > 80) {
+        var img = document.createElement('img');
+        img.src = d.thumb; img.alt = d.name; img.style.cssText = 'width:100%;height:100%;object-fit:cover';
+        item.appendChild(img);
+      } else {
+        var em = document.createElement('span');
+        em.style.fontSize = '2rem';
+        em.textContent = d.type === 'Sketch' ? '✏️' : d.type === 'Sample' ? '👗' : '📸';
+        item.appendChild(em);
+      }
+      var lbl = document.createElement('div'); lbl.className = 'gallery-item-label';
+      lbl.textContent = d.name; item.appendChild(lbl);
+      var del = document.createElement('button'); del.className = 'gallery-item-del';
+      del.textContent = '✕'; del.dataset.delId = id;
+      del.addEventListener('click', function(e) {
+        e.stopPropagation();
+        deleteGalleryItem(del.dataset.delId, item);
+      });
+      item.appendChild(del);
+      grid.appendChild(item);
+    });
+  }
+  bdy.appendChild(grid); box.appendChild(hdr); box.appendChild(bdy); ov.appendChild(box);
+  document.body.appendChild(ov);
+  ov.addEventListener('click', function(e) { if (e.target === ov) ov.remove(); });
+}
+async function deleteGalleryItem(id, el) {
+  if (el) el.remove();
+  window._vogxSavedDesigns = window._vogxSavedDesigns.filter(function(d) {
+    return String(d.firestoreId || d.id) !== id;
+  });
+  renderAccountDesigns();
+  if (window._vogxUser && window._vogxUser.uid && window.deleteDesignFromFirestore) {
+    await window.deleteDesignFromFirestore(window._vogxUser.uid, id);
+  }
+  showToast('Design removed from gallery');
+}
+
+// ── WIZARD PROGRESS BAR ──────────────────────────────────
+function updateWizardProgress(step) {
+  for (var i = 1; i <= 4; i++) {
+    var s = document.getElementById('wp-' + i);
+    if (s) s.className = 'wp-step' + (i < step ? ' done' : '');
+  }
+}
+// Patch setVStep
+document.addEventListener('DOMContentLoaded', function() {
+  var _orig = window.setVStep;
+  if (_orig) {
+    window.setVStep = function(n) {
+      _orig(n);
+      updateWizardProgress(n);
+    };
+  }
+
+  // Add progress bar above wizard nav
+  var wizNav = document.querySelector('.vstep-nav');
+  if (wizNav) {
+    var prog = document.createElement('div');
+    prog.id = 'wizard-progress';
+    prog.innerHTML = '<div class="wp-step" id="wp-1"></div>'
+      + '<div class="wp-step" id="wp-2"></div>'
+      + '<div class="wp-step" id="wp-3"></div>'
+      + '<div class="wp-step" id="wp-4"></div>';
+    wizNav.parentNode.insertBefore(prog, wizNav);
+  }
+
+  // Add "Open Gallery" button above the saved designs list
+  var apHeader = document.querySelector('.ap-header');
+  if (apHeader) {
+    var gb = document.createElement('button');
+    gb.className = 'gallery-open-btn';
+    gb.textContent = '🖼️  Open Full Gallery';
+    gb.onclick = openGallery;
+    apHeader.insertAdjacentElement('afterend', gb);
+  }
+
+  // Init chat counters
+  addChatCounter('hero-chat-input');
+  setTimeout(function() { addChatCounter('float-chat-input'); }, 800);
+
+  // PWA banner
+  setTimeout(function() {
+    var banner = document.getElementById('pwa-banner');
+    if (banner && !localStorage.getItem('vogx-pwa-dismissed')) {
+      banner.classList.add('show');
+    }
+  }, 3000);
+
+  // PWA install button
+  var installBtn = document.getElementById('pwa-install-btn');
+  var dismissBtn = document.getElementById('pwa-dismiss-btn');
+  var banner     = document.getElementById('pwa-banner');
+  if (installBtn) {
+    installBtn.addEventListener('click', function() {
+      if (window._pwaPrompt) {
+        window._pwaPrompt.prompt();
+        window._pwaPrompt.userChoice.then(function() {
+          window._pwaPrompt = null;
+          if (banner) banner.classList.remove('show');
+        });
+      } else {
+        showToast('On iOS: tap Share → "Add to Home Screen" to install VOGX');
+      }
+    });
+  }
+  if (dismissBtn) {
+    dismissBtn.addEventListener('click', function() {
+      if (banner) banner.classList.remove('show');
+      localStorage.setItem('vogx-pwa-dismissed', '1');
+    });
+  }
+});
+
+// PWA install prompt capture
+window._pwaPrompt = null;
+window.addEventListener('beforeinstallprompt', function(e) {
+  e.preventDefault();
+  window._pwaPrompt = e;
+});
+
+// Service worker registration
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('./sw.js').catch(function(){});
+  });
+}
+
+
+// ═══════════════════════════════════════════════════════
+// LANGUAGE TOGGLE (EN / AR)
+// ═══════════════════════════════════════════════════════
+var _vogxLang = localStorage.getItem('vogx-lang') || 'en';
+
+var _vogxStrings = {
+  en: {
+    heroTitle:   'Design Without Limits.',
+    heroSub:     'Describe your vision — VOGX brings it to life with AI-powered fabric recommendations, sewing guides, and style insights.',
+    chatPlaceholder: 'Describe your dream design…',
+    navNew:      'New Design',
+    navFabric:   'Fabric Guide',
+    navVideo:    'Video Tutorial',
+    navWho:      "Who It's For",
+    langBtn:     'AR',
+  },
+  ar: {
+    heroTitle:   'صمّم بلا حدود.',
+    heroSub:     'صف رؤيتك — VOGX يجسّدها بتوصيات أقمشة مدعومة بالذكاء الاصطناعي، وأدلة خياطة، ورؤى أسلوبية.',
+    chatPlaceholder: 'صف تصميم أحلامك…',
+    navNew:      'تصميم جديد',
+    navFabric:   'دليل الأقمشة',
+    navVideo:    'درس فيديو',
+    navWho:      'لمن هو',
+    langBtn:     'EN',
+  }
+};
+
+function applyLanguage(lang) {
+  _vogxLang = lang;
+  localStorage.setItem('vogx-lang', lang);
+  var s = _vogxStrings[lang];
+  var isRTL = lang === 'ar';
+  document.body.setAttribute('dir', isRTL ? 'rtl' : 'ltr');
+
+  // Update lang toggle button
+  var btn = document.getElementById('lang-toggle');
+  if (btn) btn.textContent = s.langBtn;
+
+  // Hero title/subtitle
+  var ht = document.querySelector('#hero h1, .hero-title');
+  if (ht) ht.textContent = s.heroTitle;
+  var hs = document.querySelector('.hero-sub, #hero p');
+  if (hs) hs.textContent = s.heroSub;
+
+  // Chat placeholders
+  ['hero-chat-input','float-chat-input'].forEach(function(id){
+    var el = document.getElementById(id);
+    if (el) el.placeholder = s.chatPlaceholder;
+  });
+
+  // Nav links
+  var navLinks = document.querySelectorAll('nav .nav-links a');
+  var keys = ['navNew','navFabric','navVideo','navWho'];
+  navLinks.forEach(function(a,i){ if(keys[i]) a.textContent = s[keys[i]]; });
+}
+
+function toggleLanguage() {
+  applyLanguage(_vogxLang === 'en' ? 'ar' : 'en');
+}
+
+// ═══════════════════════════════════════════════════════
+// ACCOUNT PANEL TABS
+// ═══════════════════════════════════════════════════════
+function switchApTab(tab, btn) {
+  document.querySelectorAll('.ap-tab').forEach(function(t){ t.classList.remove('active'); });
+  document.querySelectorAll('.ap-tab-content').forEach(function(c){ c.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+  var content = document.getElementById('apcontent-' + tab);
+  if (content) content.classList.add('active');
+  if (tab === 'history') renderHistoryList();
+}
+
+// ═══════════════════════════════════════════════════════
+// PROFILE — save / load / populate
+// ═══════════════════════════════════════════════════════
+window._vogxProfile = null;
+
+function getProfileFormData() {
+  return {
+    gender:    document.getElementById('prof-gender')  ? document.getElementById('prof-gender').value  : '',
+    age:       document.getElementById('prof-age')     ? document.getElementById('prof-age').value     : '',
+    skinTone:  document.getElementById('prof-skin')    ? document.getElementById('prof-skin').value    : '',
+    height:    document.getElementById('prof-height')  ? document.getElementById('prof-height').value  : '',
+    weight:    document.getElementById('prof-weight')  ? document.getElementById('prof-weight').value  : '',
+    colors:    document.getElementById('prof-colors')  ? document.getElementById('prof-colors').value  : '',
+    fabrics:   document.getElementById('prof-fabrics') ? document.getElementById('prof-fabrics').value : '',
+    style:     document.getElementById('prof-style')   ? document.getElementById('prof-style').value   : '',
+    occasions: document.getElementById('prof-occasions')? document.getElementById('prof-occasions').value: '',
+  };
+}
+
+function populateProfileForm(p) {
+  if (!p) return;
+  var fields = {
+    'prof-gender': p.gender, 'prof-age': p.age, 'prof-skin': p.skinTone,
+    'prof-height': p.height, 'prof-weight': p.weight, 'prof-colors': p.colors,
+    'prof-fabrics': p.fabrics, 'prof-style': p.style, 'prof-occasions': p.occasions
+  };
+  Object.keys(fields).forEach(function(id){
+    var el = document.getElementById(id);
+    if (el && fields[id]) el.value = fields[id];
+  });
+}
+
+async function saveUserProfile() {
+  var profile = getProfileFormData();
+  window._vogxProfile = profile;
+  // Save to localStorage as fallback
+  localStorage.setItem('vogx-profile', JSON.stringify(profile));
+  // Save to Firestore if logged in
+  if (window._vogxUser && window._vogxUser.uid && window.saveProfileToFirestore) {
+    try { await window.saveProfileToFirestore(window._vogxUser.uid, profile); } catch(e) {}
+  }
+  // Show saved message
+  var msg = document.getElementById('profile-saved-msg');
+  if (msg) { msg.style.opacity = '1'; setTimeout(function(){ msg.style.opacity = '0'; }, 2500); }
+}
+
+// Load profile from localStorage on page load (before Firebase resolves)
+(function(){
+  var stored = localStorage.getItem('vogx-profile');
+  if (stored) { try { window._vogxProfile = JSON.parse(stored); } catch(e) {} }
+})();
+
+// ═══════════════════════════════════════════════════════
+// HISTORY — render list
+// ═══════════════════════════════════════════════════════
+window._vogxHistory = [];
+
+function renderHistoryList() {
+  var list = document.getElementById('ap-history-list');
+  if (!list) return;
+  if (!window._vogxHistory || window._vogxHistory.length === 0) {
+    list.innerHTML = '<div class="history-empty">No design history yet.<br>Chat with VOGX to start creating.</div>';
+    return;
+  }
+  list.innerHTML = window._vogxHistory.map(function(item){
+    var title   = item.title || item.name || 'Design Concept';
+    var dateStr = item.date  || (item.createdAt && item.createdAt.toDate ? item.createdAt.toDate().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '');
+    var icon    = item.type === 'Chat' ? '💬' : (item.type === 'Upload' ? '📸' : '✦');
+    return '<div class="history-item" onclick="showHistoryDetail('+JSON.stringify(JSON.stringify(item))+')">'
+      + '<div class="history-icon">' + icon + '</div>'
+      + '<div class="history-info">'
+      + '<div class="history-title">' + title + '</div>'
+      + '<div class="history-date">' + dateStr + '</div>'
+      + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+function showHistoryDetail(itemJson) {
+  try {
+    var item = JSON.parse(itemJson);
+    var msg  = (item.fabric ? 'Fabric: ' + item.fabric + '\n' : '')
+             + (item.tailoring ? 'Tailoring: ' + item.tailoring + '\n' : '')
+             + (item.accessories ? 'Accessories: ' + item.accessories + '\n' : '')
+             + (item.notes ? 'Notes: ' + item.notes : '');
+    alert((item.title || item.name || 'Design Concept') + '\n\n' + (msg || 'No details saved.'));
+  } catch(e) {}
+}
+
+// Save a chat design to history when AI generates one
+window._saveToHistory = async function(entry) {
+  window._vogxHistory = window._vogxHistory || [];
+  var full = Object.assign({ type:'Chat', date: new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) }, entry);
+  window._vogxHistory.unshift(full);
+  if (window._vogxUser && window._vogxUser.uid && window.saveChatHistoryToFirestore) {
+    try { await window.saveChatHistoryToFirestore(window._vogxUser.uid, full); } catch(e) {}
+  }
+};
+
+// ═══════════════════════════════════════════════════════
+// INIT ON LOAD
+// ═══════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', function() {
+  // Apply saved language
+  applyLanguage(_vogxLang);
+  // Populate profile if cached
+  if (window._vogxProfile) populateProfileForm(window._vogxProfile);
+});
+</script>
+
+</body>
+</html>
