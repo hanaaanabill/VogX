@@ -2342,15 +2342,7 @@ async function sendVogxMessage(source) {
       replyText  = result.response.text();
     } else {
       // ── Fallback: direct Gemini fetch (until Firebase AI Logic loads) ──
-      var GEMINI_KEY = '';
-      try {
-        const { getRemoteConfig, fetchAndActivate, getString } =
-          await import('https://www.gstatic.com/firebasejs/12.10.0/firebase-remote-config.js');
-        const rc = getRemoteConfig(window._fbApp);
-        rc.settings = { minimumFetchIntervalMillis: 3600000 };
-        await fetchAndActivate(rc);
-        GEMINI_KEY = getString(rc, 'GEMINI_KEY');
-      } catch(e) { console.warn('Remote config unavailable:', e); }
+      var GEMINI_KEY   = 'AIzaSyCfaAOkL4su9f_KCqnnICLpzvh0ISEHQJk';
       var GEMINI_MODEL = 'gemini-2.5-flash';
       var geminiMsgs   = [
         { role:'user',  parts:[{ text: systemPrompt }] },
