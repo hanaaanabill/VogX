@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="manifest" href="manifest.json">
 <meta name="mobile-web-app-capable" content="yes">
-<script src="https://www.google.com/recaptcha/api.js?render=6LcKdYksAAAAAFpvbBNvBbVu-_bR_nSb2xascTj5"></script>
+<!-- reCAPTCHA script removed for privacy compliance -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="VOGX">
@@ -80,6 +80,7 @@ nav.scrolled{background:rgba(250,248,245,.95);backdrop-filter:blur(12px);box-sha
 .mobile-menu{position:fixed;top:64px;left:0;right:0;background:var(--paper);border-top:1px solid var(--gold-md);padding:20px 24px;display:none;flex-direction:column;gap:14px;z-index:999;box-shadow:0 8px 30px rgba(0,0,0,.1)}
 .mobile-menu.open{display:flex}
 .mobile-menu a{font-size:.9rem;font-weight:500;color:var(--charcoal);padding:8px 0;border-bottom:1px solid var(--gold-lt)}
+.mobile-menu .mobile-auth-signed-in{display:none}.user-logged-in .mobile-menu .mobile-auth-signed-out{display:none}.user-logged-in .mobile-menu .mobile-auth-signed-in{display:block}
 
 /* ── ACCOUNT PANEL ───────────────────────────────────────── */
 #account-panel{position:fixed;top:70px;right:20px;width:320px;max-height:72vh;overflow-y:auto;background:var(--white);border-radius:var(--r-xl);box-shadow:0 16px 60px rgba(0,0,0,.18);border:1px solid var(--gold-md);z-index:9000;animation:fadeUp .2s ease both;display:none}
@@ -260,11 +261,11 @@ nav.scrolled{background:rgba(250,248,245,.95);backdrop-filter:blur(12px);box-sha
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 /* ── FOOTER ──────────────────────────────────────────────── */
-footer{background:var(--charcoal2);padding:60px 0 30px;color:rgba(245,242,238,.5)}
+footer{background:var(--charcoal2);padding:60px 0 30px;color:rgba(245,242,238,.8)}
 .footer-inner{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:40px;margin-bottom:48px}
 .footer-brand .nav-logo{font-size:1.4rem;margin-bottom:10px;color:var(--paper)}
 .footer-col h4{font-size:.75rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:16px}
-.footer-col a{display:block;font-size:.8rem;margin-bottom:8px;transition:color .2s}
+.footer-col a{display:block;font-size:.8rem;margin-bottom:8px;transition:color .2s;color:rgba(245,242,238,.75)}
 .footer-col a:hover{color:var(--paper)}
 .footer-bottom{padding-top:24px;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;font-size:.75rem}
 
@@ -1006,6 +1007,7 @@ body:not(.dark-mode) .nav-logo-light { display: inline-block !important; }
           <div class="vcontrols">
             <button class="vctrl-btn" onclick="prevStep()">⏮</button>
             <button class="vctrl-btn" id="vplay-pause-btn" onclick="togglePlay()">▶</button>
+            <button class="vctrl-btn" title="Stop" onclick="stopPlay();vElapsed=0;updateScreen();">■</button>
             <button class="vctrl-btn" onclick="nextStep()">⏭</button>
             <div class="vtime-bar" onclick="seekVideo(event)">
               <div class="vtime-fill" id="vplay-bar"></div>
@@ -1186,6 +1188,21 @@ var vDesign = 'A-Line Gown', vFabric = 'Silk Chiffon', vSkill = 'Intermediate', 
 var vCurrentStep = 0, vIsPlaying = false, vPlayTimer = null, vElapsed = 0;
 var rcCurrent = 'Silk Chiffon';
 var _chatHistory = [];
+// Sync chat history between hero and float chat windows
+window._syncChatWindows = function() {
+  ['hero-chat-msgs','float-chat-msgs'].forEach(function(id){
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = '';
+    _chatHistory.forEach(function(m){
+      var d = document.createElement('div');
+      d.className = m.role === 'user' ? 'chat-msg user' : 'chat-msg bot';
+      d.textContent = m.content;
+      el.appendChild(d);
+    });
+    el.scrollTop = el.scrollHeight;
+  });
+};
 
 var vSteps = [
   { title:'Step 1 — Take Measurements', desc:'Measure bust, waist, hips, and desired length. Add 2 cm seam allowance on all edges. Mark notches on your pattern pieces using tailor chalk.', safety:'📏 Double-check all measurements before cutting. Errors here affect the entire garment.', duration:33 },
@@ -1425,7 +1442,20 @@ function quickVideoDesign(id) {
 }
 async function signOut() {
   try { if (window.firebaseSignOutUser) await window.firebaseSignOutUser(); } catch(e) {}
-  window._vogxUser = null; window._vogxSavedDesigns = [];
+  window._vogxUser = null; window._vogxSavedDesigns = []; window._vogxHistory = [];
+  // Clear designs UI
+  var dg = document.getElementById('ap-designs-grid');
+  if (dg) dg.innerHTML = '<div class="history-empty">Sign in to view your saved designs.</div>';
+  // Clear history UI
+  var hl = document.getElementById('ap-history-list');
+  if (hl) hl.innerHTML = '<div class="history-empty">No design history yet.</div>';
+  // Reset upload zone
+  var zone = document.getElementById('upload-zone');
+  if (zone && !zone.querySelector('.upload-title')) {
+    zone.innerHTML = '<div class="upload-icon">🎨</div><div class="upload-title serif">Drop your dress design here</div><p class="upload-hint">or <span>browse files</span> from your device</p>';
+    zone.onclick = function(){ document.getElementById('file-input').click(); };
+    zone.style.cursor = 'pointer';
+  }
   var g = document.getElementById('nav-guest'), u = document.getElementById('nav-user');
   if (g) g.style.display = ''; if (u) u.style.display = 'none';
   document.getElementById('account-panel').classList.remove('open');
@@ -1444,7 +1474,7 @@ async function processFile(file) {
     const { getRemoteConfig, fetchAndActivate, getString } =
       await import('https://www.gstatic.com/firebasejs/12.10.0/firebase-remote-config.js');
     const rc = getRemoteConfig(window._fbApp);
-    rc.settings = { minimumFetchIntervalMillis: 3600000 };
+    rc.settings = { minimumFetchIntervalMillis: 43200000 }; // 12h cache to reduce throttling
     await fetchAndActivate(rc);
     HF_TOKEN = getString(rc, 'HF_TOKEN');
   } catch(e) { console.warn('Remote config unavailable:', e); }
@@ -1474,7 +1504,7 @@ async function processFile(file) {
   try {
     if (file.type.startsWith('image/')) {
       var buf = await file.arrayBuffer();
-      var hfRes = await fetch('https://api-inference.huggingface.co/models/openai/clip-vit-base-patch32',
+      var hfRes = await fetch('https://corsproxy.io/?https://api-inference.huggingface.co/models/openai/clip-vit-base-patch32',
         { method:'POST', headers:{'Authorization':'Bearer '+HF_TOKEN,'Content-Type':file.type}, body:buf });
       var hfData = await hfRes.json();
       if (Array.isArray(hfData) && hfData.length > 0) {
@@ -1492,6 +1522,20 @@ async function processFile(file) {
   } catch(e) {}
   clearInterval(barInt); if (bar) bar.style.width='100%';
   rcCurrent = fabricRec;
+  // Update video generator to use detected fabric & design (Fix 7 & 8)
+  vFabric = fabricRec;
+  if (detectedDetails && detectedDetails.includes('Detected:')) {
+    var detLabel = detectedDetails.replace('Detected:','').split('(')[0].trim();
+    if (detLabel.includes('gown') || detLabel.includes('evening')) { vDesign = 'A-Line Gown'; }
+    else if (detLabel.includes('mermaid')) { vDesign = 'Mermaid Dress'; }
+    else if (detLabel.includes('shirt') || detLabel.includes('blouse')) { vDesign = 'Tailored Shirt'; }
+    else if (detLabel.includes('skirt')) { vDesign = 'Midi Skirt'; }
+    // Update video summary display
+    var vs = document.getElementById('vsum-design'); if (vs) vs.textContent = vDesign;
+    var vf2 = document.getElementById('vsum-fabric'); if (vf2) vf2.textContent = vFabric;
+    // Update system prompt context for chat
+    window._uploadedDesignContext = 'Uploaded design detected: ' + vDesign + ', fabric: ' + vFabric;
+  }
   var fabMap = {'Silk Chiffon':'vf-chiffon','Duchess Satin':'vf-satin','Crepe':'vf-crepe','Organza':'vf-organza'};
   var fabEl = document.getElementById(fabMap[fabricRec]);
   if (fabEl) { document.querySelectorAll('.vfab-opt').forEach(function(e){e.classList.remove('selected');}); fabEl.classList.add('selected'); vFabric=fabricRec; }
@@ -2342,7 +2386,15 @@ async function sendVogxMessage(source) {
       replyText  = result.response.text();
     } else {
       // ── Fallback: direct Gemini fetch (until Firebase AI Logic loads) ──
-      var GEMINI_KEY   = 'AIzaSyCfaAOkL4su9f_KCqnnICLpzvh0ISEHQJk';
+      var GEMINI_KEY = '';
+      try {
+        const { getRemoteConfig, fetchAndActivate, getString } =
+          await import('https://www.gstatic.com/firebasejs/12.10.0/firebase-remote-config.js');
+        const rc = getRemoteConfig(window._fbApp);
+        rc.settings = { minimumFetchIntervalMillis: 43200000 }; // 12h cache to reduce throttling
+        await fetchAndActivate(rc);
+        GEMINI_KEY = getString(rc, 'GEMINI_KEY');
+      } catch(e) { console.warn('Remote config unavailable:', e); }
       var GEMINI_MODEL = 'gemini-2.5-flash';
       var geminiMsgs   = [
         { role:'user',  parts:[{ text: systemPrompt }] },
@@ -2371,11 +2423,17 @@ async function sendVogxMessage(source) {
     // Save to history if response contains design details
     if (replyText.length > 60 && window._saveToHistory) {
       window._saveToHistory({ title: text.slice(0,60), notes: replyText.slice(0,200), type:'Chat' });
+      renderHistoryList();
     }
 
   } catch(err) {
     console.error('Chat error:', err);
-    tb.innerHTML = ''; tb.textContent = 'Connection error — please check your internet and try again.';
+    tb.innerHTML = '';
+    var errMsg = err && err.message ? err.message : '';
+    tb.textContent = errMsg.includes('overload') || errMsg.includes('503') || errMsg.includes('429')
+      ? ((_vogxStrings[_vogxLang] && _vogxStrings[_vogxLang].errorOverloaded) || 'The AI is currently overloaded — please wait a moment and try again.')
+      : errMsg.includes('400') ? 'AI configuration error — please refresh and try again.'
+      : (_vogxStrings[_vogxLang] && _vogxStrings[_vogxLang].errorConnection) || 'Connection error — please check your internet and try again.';
   }
 
   input.disabled = false; input.focus();
@@ -2759,24 +2817,66 @@ var _vogxLang = localStorage.getItem('vogx-lang') || 'en';
 
 var _vogxStrings = {
   en: {
-    heroTitle:   'Design Without Limits.',
-    heroSub:     'Describe your vision — VOGX brings it to life with AI-powered fabric recommendations, sewing guides, and style insights.',
-    chatPlaceholder: 'Describe your dream design…',
-    navNew:      'New Design',
-    navFabric:   'Fabric Guide',
-    navVideo:    'Video Tutorial',
-    navWho:      "Who It's For",
-    langBtn:     'AR',
+    heroTitle:        'Design Without Limits.',
+    heroSub:          'Describe your vision — VOGX brings it to life with AI-powered fabric recommendations, sewing guides, and style insights.',
+    chatPlaceholder:  'Describe your dream design…',
+    navNew:           'New Design',
+    navFabric:        'Fabric Guide',
+    navVideo:         'Video Tutorial',
+    navWho:           "Who It's For",
+    langBtn:          'AR',
+    uploadTitle:      'Drop your dress design here',
+    uploadHint:       'or browse files from your device',
+    uploadBtn:        'Upload Design',
+    howTitle:         'How It Works',
+    fabricTitle:      'Fabric Recommendations',
+    videoTitle:       'Sewing Video Generator',
+    audienceTitle:    'Who Is VOGX For?',
+    signIn:           'Sign In',
+    signOut:          'Sign Out',
+    saveDesign:       'Save Design',
+    generateVideo:    'Generate Sewing Video',
+    chatSend:         'Send',
+    profileTab:       'Profile',
+    historyTab:       'History',
+    designsTab:       'Designs',
+    footerTagline:    'AI-powered fashion design from sketch to styled look.',
+    toastSaved:       'Design saved!',
+    toastSignedOut:   'Signed out. See you soon!',
+    toastUploading:   'Analysing your design…',
+    errorOverloaded:  'The AI is currently overloaded — please wait a moment and try again.',
+    errorConnection:  'Connection error — please check your internet and try again.',
   },
   ar: {
-    heroTitle:   'صمّم بلا حدود.',
-    heroSub:     'صف رؤيتك — VOGX يجسّدها بتوصيات أقمشة مدعومة بالذكاء الاصطناعي، وأدلة خياطة، ورؤى أسلوبية.',
-    chatPlaceholder: 'صف تصميم أحلامك…',
-    navNew:      'تصميم جديد',
-    navFabric:   'دليل الأقمشة',
-    navVideo:    'درس فيديو',
-    navWho:      'لمن هو',
-    langBtn:     'EN',
+    heroTitle:        'صمّم بلا حدود.',
+    heroSub:          'صف رؤيتك — VOGX يجسّدها بتوصيات أقمشة مدعومة بالذكاء الاصطناعي، وأدلة خياطة، ورؤى أسلوبية.',
+    chatPlaceholder:  'صف تصميم أحلامك…',
+    navNew:           'تصميم جديد',
+    navFabric:        'دليل الأقمشة',
+    navVideo:         'درس فيديو',
+    navWho:           'لمن هو',
+    langBtn:          'EN',
+    uploadTitle:      'أسقط تصميم فستانك هنا',
+    uploadHint:       'أو تصفح الملفات من جهازك',
+    uploadBtn:        'رفع التصميم',
+    howTitle:         'كيف يعمل',
+    fabricTitle:      'توصيات الأقمشة',
+    videoTitle:       'منشئ مقاطع الخياطة',
+    audienceTitle:    'لمن صُمِّم VOGX؟',
+    signIn:           'تسجيل الدخول',
+    signOut:          'تسجيل الخروج',
+    saveDesign:       'حفظ التصميم',
+    generateVideo:    'إنشاء فيديو الخياطة',
+    chatSend:         'إرسال',
+    profileTab:       'الملف الشخصي',
+    historyTab:       'السجل',
+    designsTab:       'التصاميم',
+    footerTagline:    'تصميم أزياء بالذكاء الاصطناعي من الرسم إلى المظهر المكتمل.',
+    toastSaved:       'تم حفظ التصميم!',
+    toastSignedOut:   'تم تسجيل الخروج. نراك قريباً!',
+    toastUploading:   'جارٍ تحليل تصميمك…',
+    errorOverloaded:  'الذكاء الاصطناعي مشغول حالياً — يرجى الانتظار لحظة والمحاولة مجدداً.',
+    errorConnection:  'خطأ في الاتصال — يرجى التحقق من الإنترنت والمحاولة مجدداً.',
   }
 };
 
@@ -2807,6 +2907,47 @@ function applyLanguage(lang) {
   var navLinks = document.querySelectorAll('nav .nav-links a');
   var keys = ['navNew','navFabric','navVideo','navWho'];
   navLinks.forEach(function(a,i){ if(keys[i]) a.textContent = s[keys[i]]; });
+
+  // Upload zone title and hint
+  var ut = document.querySelector('.upload-title');
+  if (ut && !ut.closest('#upload-zone').querySelector('.progress-bar')) {
+    ut.textContent = s.uploadTitle;
+  }
+  var uh = document.querySelector('#upload-zone .upload-hint');
+  if (uh) uh.innerHTML = s.uploadHint;
+
+  // Section headings
+  var howH = document.querySelector('#how-it-works h2');
+  if (howH) howH.textContent = s.howTitle;
+  var fabH = document.querySelector('#fabric-section h2');
+  if (fabH) fabH.textContent = s.fabricTitle;
+  var vidH = document.querySelector('#video-guide h2');
+  if (vidH) vidH.textContent = s.videoTitle;
+  var audH = document.querySelector('#audience h2');
+  if (audH) audH.textContent = s.audienceTitle;
+
+  // Footer tagline
+  var ftag = document.querySelector('.footer-brand p');
+  if (ftag) ftag.textContent = s.footerTagline;
+
+  // Account panel tabs
+  var tabP = document.getElementById('tab-profile'); if (tabP) tabP.textContent = s.profileTab;
+  var tabH = document.getElementById('tab-history'); if (tabH) tabH.textContent = s.historyTab;
+  var tabD = document.getElementById('tab-designs'); if (tabD) tabD.textContent = s.designsTab;
+
+  // Chat send buttons
+  document.querySelectorAll('.chat-send-btn, #float-chat-send').forEach(function(b){
+    if (b.tagName === 'BUTTON' && b.textContent.match(/send|إرسال/i)) b.textContent = s.chatSend;
+  });
+
+  // Generate video button
+  var genBtn = document.querySelector('[onclick="generateVideo()"]');
+  if (genBtn) genBtn.textContent = s.generateVideo;
+
+  // Font family for Arabic
+  document.body.style.fontFamily = isRTL
+    ? "'Noto Sans Arabic', 'DM Sans', system-ui, sans-serif"
+    : "'DM Sans', system-ui, sans-serif";
 }
 
 function toggleLanguage() {
