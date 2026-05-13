@@ -1503,103 +1503,103 @@ async function processFile(file) {
   var fabricRec = 'Silk Chiffon', fabricPct = '97';
   try {
     if (file.type.startsWith('image/')) {
-      var buf = await file.arrayBuffer();
-      // Send candidate labels to CLIP for zero-shot classification
-      var candidateLabels = [
-        'evening gown dress','male pants trousers','men suit blazer jacket',
-        'casual dress','skirt midi maxi','shirt blouse top','ball gown bridal',
-        'coat jacket outerwear','sweater knit knitwear','jeans denim shorts',
-        'sportswear activewear','wrap dress','cocktail dress'
-      ];
-      var hfRes = await fetch('https://corsproxy.io/?https://api-inference.huggingface.co/models/openai/clip-vit-base-patch32',
-        { method:'POST',
-          headers:{'Authorization':'Bearer '+HF_TOKEN,'Content-Type':'application/json'},
-          body: JSON.stringify({ inputs: { image: Array.from(new Uint8Array(buf)), candidate_labels: candidateLabels } })
-        });
-      var hfData = await hfRes.json();
-      // Fallback: if JSON format fails, try raw binary
-      if (!Array.isArray(hfData)) {
-        var hfRes2 = await fetch('https://corsproxy.io/?https://api-inference.huggingface.co/models/openai/clip-vit-base-patch32',
-          { method:'POST', headers:{'Authorization':'Bearer '+HF_TOKEN,'Content-Type':file.type}, body:buf });
-        hfData = await hfRes2.json();
-      }
-      if (Array.isArray(hfData) && hfData.length > 0) {
-        var top = hfData[0].label||'', score = Math.round((hfData[0].score||0.8)*100);
-        detectedDetails = 'Detected: ' + top + ' (' + score + '% confidence) · Structure analysed';
-        var lbl = top.toLowerCase();
-        // ── Comprehensive garment type detection ──
-        // Evening / Formal gowns
-        if (lbl.includes('evening gown')||lbl.includes('ball gown')||lbl.includes('wedding')||lbl.includes('bride')||lbl.includes('bridal')) {
-          fabricRec='Silk Chiffon'; fabricPct='97';
+      // ── Use Gemini Vision for accurate design detection ──
+      var reader3 = new FileReader();
+      var base64Data = await new Promise(function(resolve) {
+        reader3.onload = function(e) { resolve(e.target.result.split(',')[1]); };
+        reader3.readAsDataURL(file);
+      });
+
+      var geminiKey = '';
+      try {
+        var { getRemoteConfig, fetchAndActivate, getString } =
+          await import('https://www.gstatic.com/firebasejs/12.10.0/firebase-remote-config.js');
+        var rc2 = getRemoteConfig(window._fbApp);
+        rc2.settings = { minimumFetchIntervalMillis: 43200000 };
+        await fetchAndActivate(rc2);
+        geminiKey = getString(rc2, 'GEMINI_KEY');
+      } catch(e2) {}
+
+      if (geminiKey) {
+        var visionRes = await fetch(
+          'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + geminiKey,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{
+                parts: [
+                  { inline_data: { mime_type: file.type, data: base64Data } },
+                  { text: 'Analyze this fashion design image. Respond ONLY with a valid JSON object in this exact format, no markdown, no extra text: {"garmentType":"e.g. Tailored Trousers","gender":"Male or Female or Unisex","fabric":"e.g. Denim","confidence":92,"details":"brief description"}. Identify the garment type accurately - pants, suit, dress, shirt, skirt, coat etc.' }
+                ]
+              }],
+              generationConfig: { maxOutputTokens: 200, temperature: 0.1 }
+            })
+          }
+        );
+        var visionData = await visionRes.json();
+        var visionText = visionData.candidates && visionData.candidates[0] && visionData.candidates[0].content.parts[0].text || '';
+        // Clean JSON from response
+        visionText = visionText.replace(/```json|```/g, '').trim();
+        try {
+          var parsed = JSON.parse(visionText);
+          var gType = (parsed.garmentType || '').toLowerCase();
+          var gFabric = parsed.fabric || '';
+          var gConf = parsed.confidence || 85;
+          var gDetails = parsed.details || '';
+          var gGender = parsed.gender || '';
+
+          detectedDetails = 'Detected: ' + parsed.garmentType + ' (' + gConf + '% confidence) · ' + gGender + ' · ' + gDetails;
+
+          // Map garment type to fabric recommendation
+          if (gFabric && gFabric.length > 2) {
+            fabricRec = gFabric; fabricPct = String(gConf);
+          } else if (gType.includes('pant')||gType.includes('trouser')||gType.includes('jean')||gType.includes('short')||gType.includes('chino')) {
+            fabricRec='Denim'; fabricPct='91';
+          } else if (gType.includes('suit')||gType.includes('blazer')||gType.includes('tuxedo')) {
+            fabricRec='Wool Suiting'; fabricPct='95';
+          } else if (gType.includes('shirt')||gType.includes('blouse')||gType.includes('top')) {
+            fabricRec='Cotton Poplin'; fabricPct='92';
+          } else if (gType.includes('evening')||gType.includes('gown')||gType.includes('bridal')||gType.includes('ball')) {
+            fabricRec='Silk Chiffon'; fabricPct='97';
+          } else if (gType.includes('casual dress')||gType.includes('wrap')||gType.includes('sundress')) {
+            fabricRec='Cotton Lawn'; fabricPct='90';
+          } else if (gType.includes('skirt')) {
+            fabricRec='Crepe'; fabricPct='89';
+          } else if (gType.includes('coat')||gType.includes('trench')||gType.includes('jacket')) {
+            fabricRec='Cotton Gabardine'; fabricPct='88';
+          } else if (gType.includes('knit')||gType.includes('sweater')||gType.includes('cardigan')) {
+            fabricRec='Jersey Knit'; fabricPct='87';
+          } else if (gType.includes('dress')) {
+            fabricRec='Crepe'; fabricPct='86';
+          }
+
+          // Map to vDesign
+          if (gType.includes('pant')||gType.includes('trouser')||gType.includes('jean')||gType.includes('short')) { vDesign='Tailored Trousers'; }
+          else if (gType.includes('suit')||gType.includes('blazer')||gType.includes('tuxedo')) { vDesign='Tailored Suit'; }
+          else if (gType.includes('shirt')||gType.includes('blouse')) { vDesign='Tailored Shirt'; }
+          else if (gType.includes('evening gown')||gType.includes('ball gown')||gType.includes('bridal')) { vDesign='A-Line Gown'; }
+          else if (gType.includes('skirt')) { vDesign='Midi Skirt'; }
+          else if (gType.includes('coat')||gType.includes('trench')) { vDesign='Overcoat'; }
+          else if (gType.includes('knit')||gType.includes('sweater')) { vDesign='Knitwear'; }
+          else if (gType.includes('dress')) { vDesign='Casual Dress'; }
+          else { vDesign = parsed.garmentType || 'Custom Design'; }
+
+        } catch(parseErr) {
+          // Gemini returned non-JSON — extract key info from plain text
+          var txt = visionText.toLowerCase();
+          if (txt.includes('pant')||txt.includes('trouser')||txt.includes('jean')) {
+            detectedDetails='Detected: Trousers · Male garment'; fabricRec='Denim'; fabricPct='91'; vDesign='Tailored Trousers';
+          } else if (txt.includes('suit')||txt.includes('blazer')) {
+            detectedDetails='Detected: Suit · Formal garment'; fabricRec='Wool Suiting'; fabricPct='93'; vDesign='Tailored Suit';
+          } else if (txt.includes('shirt')) {
+            detectedDetails='Detected: Shirt · Top garment'; fabricRec='Cotton Poplin'; fabricPct='90'; vDesign='Tailored Shirt';
+          } else if (txt.includes('skirt')) {
+            detectedDetails='Detected: Skirt'; fabricRec='Crepe'; fabricPct='89'; vDesign='Midi Skirt';
+          } else {
+            detectedDetails='Detected: Fashion garment · Structure analysed';
+          }
         }
-        // Casual / Summer dresses
-        else if (lbl.includes('sundress')||lbl.includes('casual dress')||lbl.includes('day dress')||lbl.includes('wrap dress')) {
-          fabricRec='Cotton Lawn'; fabricPct='94';
-        }
-        // Formal / Structured dresses
-        else if (lbl.includes('cocktail')||lbl.includes('formal dress')||lbl.includes('sheath')) {
-          fabricRec='Duchess Satin'; fabricPct='93';
-        }
-        // Pants / Trousers / Male bottoms
-        else if (lbl.includes('pants')||lbl.includes('trousers')||lbl.includes('slacks')||lbl.includes('jeans')||lbl.includes('chinos')||lbl.includes('shorts')) {
-          fabricRec='Denim'; fabricPct='91';
-        }
-        // Suits / Blazers / Male formal
-        else if (lbl.includes('suit')||lbl.includes('blazer')||lbl.includes('tuxedo')||lbl.includes('jacket')||lbl.includes('coat')) {
-          fabricRec='Wool Suiting'; fabricPct='95';
-        }
-        // Shirts / Blouses / Tops
-        else if (lbl.includes('shirt')||lbl.includes('blouse')||lbl.includes('top')||lbl.includes('button')) {
-          fabricRec='Cotton Poplin'; fabricPct='92';
-        }
-        // Skirts
-        else if (lbl.includes('skirt')||lbl.includes('midi')||lbl.includes('maxi skirt')||lbl.includes('mini skirt')) {
-          fabricRec='Crepe'; fabricPct='90';
-        }
-        // Outerwear / Coats
-        else if (lbl.includes('overcoat')||lbl.includes('trench')||lbl.includes('parka')||lbl.includes('hoodie')||lbl.includes('sweatshirt')) {
-          fabricRec='Melton Wool'; fabricPct='88';
-        }
-        // Knitwear / Sweaters
-        else if (lbl.includes('sweater')||lbl.includes('knit')||lbl.includes('cardigan')||lbl.includes('pullover')) {
-          fabricRec='Jersey Knit'; fabricPct='90';
-        }
-        // Swimwear / Activewear
-        else if (lbl.includes('swimwear')||lbl.includes('bikini')||lbl.includes('activewear')||lbl.includes('sportswear')||lbl.includes('leggings')) {
-          fabricRec='Lycra Spandex'; fabricPct='93';
-        }
-        // Lingerie / Nightwear
-        else if (lbl.includes('lingerie')||lbl.includes('nightgown')||lbl.includes('pajama')||lbl.includes('robe')) {
-          fabricRec='Silk Satin'; fabricPct='91';
-        }
-        // Sheer / Layered
-        else if (lbl.includes('sheer')||lbl.includes('layer')||lbl.includes('tulle')||lbl.includes('organza')) {
-          fabricRec='Organza'; fabricPct='89';
-        }
-        // Generic dress fallback (not A-Line specifically)
-        else if (lbl.includes('dress')) {
-          fabricRec='Crepe'; fabricPct='87';
-        }
-        // Male clothing general
-        else if (lbl.includes('male')||lbl.includes('men')||lbl.includes('man')||lbl.includes('masculine')) {
-          fabricRec='Cotton Poplin'; fabricPct='86';
-        }
-        // Generic fashion / clothing fallback
-        else if (lbl.includes('fashion')||lbl.includes('cloth')||lbl.includes('garment')||lbl.includes('wear')||lbl.includes('apparel')) {
-          fabricRec='Crepe'; fabricPct='85';
-        }
-        // Unknown — use image-based smart default instead of always A-Line
-        else {
-          // Pick based on confidence score spread across options
-          var opts = [
-            {f:'Cotton Poplin',p:'84'}, {f:'Crepe',p:'83'}, {f:'Linen',p:'82'},
-            {f:'Denim',p:'81'}, {f:'Jersey Knit',p:'80'}
-          ];
-          var pick = opts[score % opts.length];
-          fabricRec = pick.f; fabricPct = pick.p;
-        }
-      } else if (hfData && hfData.error && hfData.error.includes('loading')) {
-        detectedDetails = 'AI vision warming up — using smart defaults';
       }
     }
   } catch(e) {}
