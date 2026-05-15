@@ -853,8 +853,8 @@ body:not(.dark-mode) .nav-logo-light { display: inline-block !important; }
         <div class="fab-desc">Smooth, heavy satin with beautiful sheen. Ideal for formal and bridal designs.</div>
         <div class="fab-match">✦ 91% Match · Medium · Dry clean</div>
       </div>
-      <div class="fab-card" data-fabric="Crepe">
-        <div class="fab-swatch" style="background:linear-gradient(135deg,#d8d0ca,#bfb4ae)" onclick="rcSelect(this)"></div>
+      <div class="fab-card" data-fabric="Crepe" onclick="rcSelect(this)">
+        <div class="fab-swatch" style="background:linear-gradient(135deg,#d8d0ca,#bfb4ae)"></div>
         <div class="fab-name">Crepe</div>
         <div class="fab-desc">Matte, fluid fabric with subtle texture. Great for everyday and office wear.</div>
         <div class="fab-match">✦ 84% Match · Easy · Machine wash</div>
@@ -896,11 +896,15 @@ body:not(.dark-mode) .nav-logo-light { display: inline-block !important; }
             <p style="font-size:.78rem;color:var(--muted);margin-bottom:14px">Choose your garment type:</p>
             <div class="vdesign-grid">
               <div class="vdesign-opt selected" id="vd-aline" onclick="selectDesign(this,'A-Line Gown')">👗 A-Line Gown</div>
-              <div class="vdesign-opt" id="vd-pencil" onclick="selectDesign(this,'Pencil Skirt')">👔 Pencil Skirt</div>
+              <div class="vdesign-opt" id="vd-pencil" onclick="selectDesign(this,'Pencil Skirt')">🩱 Pencil Skirt</div>
               <div class="vdesign-opt" id="vd-maxi" onclick="selectDesign(this,'Boho Maxi')">🌸 Boho Maxi</div>
               <div class="vdesign-opt" id="vd-cocktail" onclick="selectDesign(this,'Cocktail Dress')">✨ Cocktail Dress</div>
-              <div class="vdesign-opt" id="vd-wrap" onclick="selectDesign(this,'Wrap Dress')">🎀 Wrap Dress</div>
+              <div class="vdesign-opt" id="vd-wrap" onclick="selectDesign(this,'Casual Dress')">🎀 Casual Dress</div>
               <div class="vdesign-opt" id="vd-ballgown" onclick="selectDesign(this,'Ball Gown')">👑 Ball Gown</div>
+              <div class="vdesign-opt" id="vd-midiskirt" onclick="selectDesign(this,'Midi Skirt')">🩳 Midi Skirt</div>
+              <div class="vdesign-opt" id="vd-trousers" onclick="selectDesign(this,'Tailored Trousers')">👖 Tailored Trousers</div>
+              <div class="vdesign-opt" id="vd-suit" onclick="selectDesign(this,'Tailored Suit')">🤵 Tailored Suit</div>
+              <div class="vdesign-opt" id="vd-shirt" onclick="selectDesign(this,'Tailored Shirt')">👔 Tailored Shirt</div>
             </div>
             <button class="btn-primary" style="width:100%;margin-top:16px" onclick="setVStep(2)">Next: Choose Fabric →</button>
           </div>
@@ -1194,6 +1198,84 @@ var vSteps = [
   { title:'Step 4 — Drape & Attach Skirt', desc:'Gather the skirt panel evenly. Pin to the bodice waist seam every 2 cm. Baste first, check fit on mannequin, then sew with a standard straight stitch.', safety:'📌 Remove pins as you sew. Never sew over pins — it can break your needle.', duration:50 },
   { title:'Step 5 — Hem & Press', desc:'Use a narrow rolled hem for chiffon. Press lightly using a pressing cloth between the iron and fabric. Set iron to silk temperature only.', safety:'🔥 Low heat only on chiffon. Never place iron directly on fabric — use a pressing cloth always.', duration:40 }
 ];
+
+function rebuildVSteps() {
+  var d = vDesign, f = vFabric, sk = vSkill;
+  // Seam technique per fabric
+  var seamTech = {
+    'Silk Chiffon':    'Silk Chiffon frays easily. Sew wrong sides together at 0.5 cm, trim, fold and sew right sides at 1 cm to fully enclose all raw edges. Use a fine needle (size 9/65).',
+    'Duchess Satin':   'Satin slips on the machine. Use silk pins and sew with the grain. Plain seams at 1.5 cm with serged edges work best. Press lightly with a pressing cloth.',
+    'Crepe':           'Crepe is forgiving. Use a standard 1.5 cm seam allowance. Serge or zigzag edges to prevent fraying. Press seams open for a clean finish.',
+    'Organza':         'Organza is stiff and sheer. Use French seams for all structural seams. A sharp needle (size 9/65) prevents snags. Press very lightly.',
+    'Denim':           'Denim is thick. Use a size 16/100 denim needle and topstitch seams at 6 mm. Double-stitch stress points (pockets, belt loops). Flat-felled seams for durability.',
+    'Wool Suiting':    'Use a tailor\'s ham and sleeve board for pressing. Hand-pad-stitch lapels for structure. Plain seams at 1.5 cm; press open on the bias. Catch-stitch all hems.',
+    'Cotton Poplin':   'Easy to sew. Plain seams at 1.5 cm. Press seams open or to one side. Flat-felled seams work well for shirts. Top-stitch collar and cuffs at 2 mm.',
+    'Cotton Gabardine':'Straight grain is essential — gabardine shows off-grain easily. Welt seams add structure to coats. Press firmly with a damp cloth.',
+    'Jersey Knit':     'Use a ballpoint needle and stretch stitch (or narrow zigzag). Do not backstitch — it breaks the stretch. Serger gives the neatest finish for knits.',
+    'Cotton Lawn':     'Very fine fabric. Use a size 9/65 needle. French seams are ideal for sheer lawn. Roll hems work beautifully for flowy edges.'
+  };
+  var seam = seamTech[f] || 'Use a 1.5 cm seam allowance and finish edges with a serger or zigzag stitch. Press seams open for a clean finish.';
+
+  // Design-specific step sets
+  var stepSets = {
+    'A-Line Gown': [
+      { title:'Step 1 — Take Measurements (A-Line Gown)', desc:'Measure bust, natural waist, high hip, full hip, and front/back bodice length. Mark all notches. Add 2 cm seam allowance on all edges.', safety:'📏 Measure twice, cut once. A-line gowns require precise bodice fit.', duration:33 },
+      { title:'Step 2 — Cut Bodice & Skirt Panels', desc:'Cut bodice front and back on the straight grain. Cut skirt panels on the bias for maximum flare. Use sharp shears and cut in a single smooth motion.', safety:'✂️ Never cut skirt panels in a hurry — bias cut is unforgiving.', duration:45 },
+      { title:'Step 3 — Construct Bodice (' + f + ')', desc:seam + ' Sew bodice darts first, then side seams. Install invisible zip at centre back.', safety:'🪡 Test tension on a fabric scrap before sewing the garment.', duration:60 },
+      { title:'Step 4 — Gather & Attach Skirt', desc:'Gather the skirt waist to match bodice waist width. Pin every 2 cm, baste first, then sew. Check fit before finishing the seam.', safety:'📌 Remove pins as you sew. Even gathering gives a professional result.', duration:50 },
+      { title:'Step 5 — Hem & Press', desc:'Use a narrow rolled hem or a faced hem for the gown length. Press all seams with a pressing cloth. Steam lightly for the final finish.', safety:'🔥 Use a pressing cloth always — direct iron damages most formal fabrics.', duration:40 }
+    ],
+    'Pencil Skirt': [
+      { title:'Step 1 — Take Measurements (Pencil Skirt)', desc:'Measure natural waist, high hip (7 cm below waist), full hip (20 cm below waist), and desired skirt length. Add 1.5 cm seam allowance.', safety:'📏 Hip ease is critical — add at least 2 cm ease for movement.', duration:30 },
+      { title:'Step 2 — Cut Front & Back Panels', desc:'Cut on straight grain. Mark centre front fold, centre back seam, and side seam notches. Mark dart positions with tailor\'s chalk.', safety:'✂️ Use pattern weights instead of pins to avoid distorting the fabric.', duration:40 },
+      { title:'Step 3 — Sew Darts (' + f + ')', desc:seam + ' Sew back darts first, pointing towards centre back. Press darts towards centre. Sew waistband interfacing to waistband wrong side.', safety:'🪡 Press darts flat before attaching the waistband.', duration:50 },
+      { title:'Step 4 — Install Zip & Sew Side Seams', desc:'Install a 20 cm invisible zip at the left side seam. Sew remaining side seams. Sew waistband to skirt waist. Understitch waistband.', safety:'📌 Always baste the zip placement first and check before final stitching.', duration:55 },
+      { title:'Step 5 — Hem & Finish', desc:'Measure and mark a 2 cm hem allowance. Press, then slip-stitch or machine hem. Press the finished skirt on the correct temperature setting.', safety:'🔥 Press firmly but carefully — crepe and satin can develop shine marks.', duration:35 }
+    ],
+    'Tailored Trousers': [
+      { title:'Step 1 — Take Measurements (Trousers)', desc:'Measure waist, seat (hips), crotch depth (seated), inseam, and outseam. Add 2 cm seam + 3 cm hem allowance. Draft front and back trouser block.', safety:'📏 Crotch length is the most common source of fit errors — measure carefully.', duration:35 },
+      { title:'Step 2 — Cut Fabric on Grain', desc:'Cut trouser front and back on the straight grain. Mark pleat positions, pocket placements, and fly extension. Notch all matching points.', safety:'✂️ Fold fabric precisely — even 1 mm off-grain shows in finished trousers.', duration:45 },
+      { title:'Step 3 — Sew Pockets & Fly (' + f + ')', desc:seam + ' Sew front pocket bags. Interface the fly front and construct the trouser fly with a zip. Topstitch fly at 1.5 cm.', safety:'🪡 Reinforce all stress points — fly base, pocket corners — with a bartack.', duration:65 },
+      { title:'Step 4 — Assemble & Waistband', desc:'Sew crotch seam, inseam, and outseam. Press all seams open. Attach waistband, sew belt loops, attach hook-and-bar closure.', safety:'📌 Press the crotch seam carefully over a tailor\'s ham for the best shape.', duration:55 },
+      { title:'Step 5 — Hem & Press', desc:'Try on and pin hem to desired break point. Allow 3 cm hem. Machine or hand-stitch the hem. Press finished trousers with a damp pressing cloth.', safety:'🔥 Use a clapper or pounding block after pressing for a crisp trouser crease.', duration:35 }
+    ],
+    'Tailored Suit': [
+      { title:'Step 1 — Take Measurements (Suit)', desc:'Measure chest, natural waist, seat, back length, sleeve length, and shoulder width. Interface all suit pieces (front, collar, cuffs) before cutting.', safety:'📏 Interfacing prevents stretching — apply to the wrong side before cutting final pieces.', duration:40 },
+      { title:'Step 2 — Cut & Mark All Pieces', desc:'Cut jacket front, back, sleeves, and lining. Mark all notches, button positions, pocket placements, and dart positions.', safety:'✂️ Suit fabrics are expensive — check grain alignment twice before cutting.', duration:50 },
+      { title:'Step 3 — Construct Jacket Body (' + f + ')', desc:seam + ' Sew front darts, side seams, shoulder seams. Attach under-collar and under-lapel. Pad-stitch lapels for structure. Sew sleeve seams.', safety:'🪡 Hand pad-stitching creates professional lapel roll — don\'t skip this step.', duration:80 },
+      { title:'Step 4 — Set Sleeves & Pockets', desc:'Ease sleeve cap and set sleeves. Sew patch or welt pockets. Attach the upper collar. Construct the lining and attach to jacket by hand at the hem.', safety:'📌 Ease distribution around the sleeve cap must be even — pin every 1 cm.', duration:70 },
+      { title:'Step 5 — Sew Buttons & Final Press', desc:'Hand-sew buttons and bound buttonholes (or machine-worked). Press entire jacket with steam and a tailor\'s ham. Hang on a dress form for 24 hours.', safety:'🔥 Never press directly on the finished jacket face — always use a press cloth.', duration:45 }
+    ],
+    'Midi Skirt': [
+      { title:'Step 1 — Take Measurements (Midi Skirt)', desc:'Measure waist, hips, and desired midi length (typically just below the knee to mid-calf). Add 1.5 cm seam allowance and 2.5 cm hem.', safety:'📏 Midi length flatters most figures — confirm length by measuring from natural waist.', duration:28 },
+      { title:'Step 2 — Cut & Interface Waistband', desc:'Cut front and back panels on straight grain. Interface the waistband piece. Mark all notches and dart positions.', safety:'✂️ Use fabric weights to avoid distorting lightweight midi fabrics.', duration:38 },
+      { title:'Step 3 — Sew Seams & Darts (' + f + ')', desc:seam + ' Sew any front/back darts. Sew side seams. Press seams open. Attach the waistband with interfacing.', safety:'🪡 Sew darts precisely — they create the waist shape.', duration:48 },
+      { title:'Step 4 — Install Elastic or Zip', desc:'For elastic waist: thread 2.5 cm elastic through casing. For zip waist: install invisible zip at centre back, then attach waistband.', safety:'📌 Stretch elastic to fit the body when stitching the casing shut.', duration:42 },
+      { title:'Step 5 — Hem & Final Press', desc:'Measure and fold hem to desired length. Machine or slip-stitch hem. Press the finished skirt, using a pressing cloth for delicate fabrics.', safety:'🔥 Crepe and satin can shine under a hot iron — always use a pressing cloth.', duration:30 }
+    ]
+  };
+
+  // Default step set for unlisted designs
+  var defaultSteps = [
+    { title:'Step 1 — Take Measurements (' + d + ')', desc:'Measure all key body points for ' + d + '. Add 2 cm seam allowance on all edges. Mark all notches with tailor\'s chalk.', safety:'📏 Double-check all measurements. Measure twice, cut once.', duration:33 },
+    { title:'Step 2 — Cut the Fabric', desc:'Pin pattern pieces on ' + f + ' with correct grain. Use sharp fabric shears. Cut smoothly without stopping mid-stroke.', safety:'✂️ Keep fingers clear of scissor blades. Use a cutting mat for safety.', duration:45 },
+    { title:'Step 3 — Sew Seams (' + f + ')', desc:seam, safety:'🪡 Test machine tension on a fabric scrap before sewing the garment.', duration:60 },
+    { title:'Step 4 — Assemble & Fit Check', desc:'Assemble the ' + d + ' according to the pattern sequence. Baste first, then check the fit on a dress form or the wearer before final stitching.', safety:'📌 Always baste and check fit before final stitching to avoid costly mistakes.', duration:50 },
+    { title:'Step 5 — Hem & Press', desc:'Measure and mark the hem. Allow for the correct hem depth for ' + d + '. Press all seams and the final garment with a pressing cloth.', safety:'🔥 Use a pressing cloth for all fabrics. Check iron temperature per fabric type.', duration:40 }
+  ];
+
+  vSteps = stepSets[d] || defaultSteps;
+  // Skill-level adjustments
+  if (sk === 'Beginner') {
+    vSteps = vSteps.map(function(s) {
+      return { title:s.title, desc:s.desc + ' (Beginner tip: work slowly and press every seam before moving on.)', safety:s.safety, duration: Math.round(s.duration * 1.3) };
+    });
+  } else if (sk === 'Advanced') {
+    vSteps = vSteps.map(function(s) {
+      return { title:s.title, desc:s.desc + ' (Advanced: use hand-finishing techniques for a couture result.)', safety:s.safety, duration: Math.round(s.duration * 0.8) };
+    });
+  }
+}
 
 /* ════════════════════════════════════════════════════════════
    NAV SCROLL
@@ -1501,25 +1583,37 @@ async function processFile(file) {
         var gType = (gParsed.garmentType||'').toLowerCase();
         var gConf = gParsed.confidence||85;
         detectedDetails = 'Detected: ' + gParsed.garmentType + ' (' + gConf + '%) · ' + (gParsed.gender||'') + ' · ' + (gParsed.details||'');
-        // Map to fabric + design
-        if (gType.includes('pant')||gType.includes('trouser')||gType.includes('jean')||gType.includes('short')||gType.includes('chino')) {
+        // Map to fabric + design — check more specific types first
+        if (gType.includes('pant')||gType.includes('trouser')||gType.includes('jean')||gType.includes('chino')) {
           fabricRec='Denim'; fabricPct=String(gConf); vDesign='Tailored Trousers';
-        } else if (gType.includes('suit')||gType.includes('blazer')||gType.includes('tuxedo')) {
+        } else if (gType.includes('short')&&!gType.includes('dress')) {
+          fabricRec='Denim'; fabricPct=String(gConf); vDesign='Tailored Trousers';
+        } else if (gType.includes('suit')||gType.includes('tuxedo')) {
           fabricRec='Wool Suiting'; fabricPct=String(gConf); vDesign='Tailored Suit';
-        } else if (gType.includes('shirt')||gType.includes('blouse')||gType.includes('button')) {
+        } else if (gType.includes('blazer')||gType.includes('jacket')&&!gType.includes('dress')) {
+          fabricRec='Wool Suiting'; fabricPct=String(gConf); vDesign='Tailored Suit';
+        } else if (gType.includes('button')||gType.includes('blouse')) {
+          fabricRec='Cotton Poplin'; fabricPct=String(gConf); vDesign='Tailored Shirt';
+        } else if (gType.includes('shirt')&&!gType.includes('dress')) {
           fabricRec='Cotton Poplin'; fabricPct=String(gConf); vDesign='Tailored Shirt';
         } else if (gType.includes('coat')||gType.includes('trench')||gType.includes('overcoat')) {
           fabricRec='Cotton Gabardine'; fabricPct=String(gConf); vDesign='Overcoat';
         } else if (gType.includes('knit')||gType.includes('sweater')||gType.includes('cardigan')||gType.includes('hoodie')) {
           fabricRec='Jersey Knit'; fabricPct=String(gConf); vDesign='Knitwear';
-        } else if (gType.includes('skirt')) {
+        } else if (gType.includes('pencil skirt')) {
+          fabricRec='Crepe'; fabricPct=String(gConf); vDesign='Pencil Skirt';
+        } else if (gType.includes('midi skirt')||gType.includes('a-line skirt')||gType.includes('skirt')) {
           fabricRec='Crepe'; fabricPct=String(gConf); vDesign='Midi Skirt';
         } else if (gType.includes('evening gown')||gType.includes('ball gown')||gType.includes('bridal')||gType.includes('wedding')) {
           fabricRec='Silk Chiffon'; fabricPct=String(gConf); vDesign='A-Line Gown';
         } else if (gType.includes('cocktail')||gType.includes('formal dress')) {
           fabricRec='Duchess Satin'; fabricPct=String(gConf); vDesign='Mermaid Dress';
-        } else if (gType.includes('casual dress')||gType.includes('sundress')||gType.includes('wrap dress')) {
+        } else if (gType.includes('wrap dress')) {
           fabricRec='Cotton Lawn'; fabricPct=String(gConf); vDesign='Casual Dress';
+        } else if (gType.includes('casual dress')||gType.includes('sundress')) {
+          fabricRec='Cotton Lawn'; fabricPct=String(gConf); vDesign='Casual Dress';
+        } else if (gType.includes('maxi dress')||gType.includes('boho')) {
+          fabricRec='Cotton Lawn'; fabricPct=String(gConf); vDesign='Boho Maxi';
         } else if (gType.includes('dress')) {
           fabricRec='Crepe'; fabricPct=String(gConf); vDesign='Casual Dress';
         } else if (gType.includes('t-shirt')||gType.includes('tee')||gType.includes('top')) {
@@ -1574,11 +1668,17 @@ function launchVideoFromUpload(fabricChoice) {
   var el = document.getElementById('video-guide');
   if (el) el.scrollIntoView({ behavior: 'smooth' });
   setTimeout(function() {
-    // Step 1: select design
-    var dopt = document.getElementById('vd-aline');
-    if (dopt) selectDesign(dopt, 'A-Line Gown');
+    // Step 1: select the currently detected design
+    var designMap = {
+      'A-Line Gown':'vd-aline','Pencil Skirt':'vd-pencil','Boho Maxi':'vd-maxi',
+      'Cocktail Dress':'vd-cocktail','Casual Dress':'vd-wrap','Ball Gown':'vd-ballgown',
+      'Mermaid Dress':'vd-cocktail','Midi Skirt':'vd-midiskirt','Tailored Trousers':'vd-trousers',
+      'Tailored Suit':'vd-suit','Tailored Shirt':'vd-shirt','Overcoat':'vd-aline','Knitwear':'vd-aline'
+    };
+    var designEl = document.getElementById(designMap[vDesign] || 'vd-aline');
+    if (designEl) selectDesign(designEl, vDesign);
     // Step 2: select fabric from what was detected
-    var fab = fabricChoice || rcCurrent || 'Silk Chiffon';
+    var fab = fabricChoice || vFabric || rcCurrent || 'Silk Chiffon';
     document.querySelectorAll('.vfab-opt').forEach(function(el) { el.classList.remove('selected'); });
     var fabMap = { 'Silk Chiffon':'vf-chiffon', 'Duchess Satin':'vf-satin', 'Crepe':'vf-crepe', 'Organza':'vf-organza' };
     var fabEl = document.getElementById(fabMap[fab] || 'vf-chiffon');
@@ -1666,15 +1766,11 @@ function selectDesign(el, name) {
   document.querySelectorAll('.vdesign-opt').forEach(function(e) { e.classList.remove('selected'); });
   el.classList.add('selected');
   vDesign = name;
-  // Update step descriptions for the selected design
-  vSteps[0].title = 'Step 1 — Take Measurements (' + name + ')';
 }
 function selectFabric(el, name) {
   document.querySelectorAll('.vfab-opt').forEach(function(e) { e.classList.remove('selected'); });
   el.classList.add('selected');
   vFabric = name;
-  // Update step 3 description to match fabric
-  vSteps[2].desc = name + ' requires careful seam finishing. Sew wrong sides together at 0.5 cm, trim, fold and sew right sides at 1 cm to enclose raw edges.';
 }
 function selectSkill(el, name) {
   document.querySelectorAll('.skill-btn[id^="sk-"]').forEach(function(e) { e.classList.remove('selected'); });
@@ -1687,6 +1783,7 @@ function selectFit(el, name) {
   vFit = name;
 }
 function generateVideo() {
+  rebuildVSteps(); // Rebuild steps based on current design/fabric/skill
   document.getElementById('vgen-ready').style.display   = 'none';
   document.getElementById('vgen-loading').style.display = 'block';
   document.getElementById('vgen-done').style.display    = 'none';
@@ -1720,7 +1817,8 @@ function generateVideo() {
         if (ov) {
           ov.style.display = 'flex';
           ov.style.opacity = '1';
-          ov.querySelector('div').textContent = 'Video ready — press Play';
+          var textDiv = ov.querySelector('div');
+          if (textDiv) textDiv.textContent = 'Video ready — press Play';
         }
         showToast('Sewing video generated! Press Play to watch.');
       }, 500);
@@ -1741,7 +1839,7 @@ function resetVideoGen() {
   var pb = document.getElementById('vplay-bar');
   if (pb) pb.style.width = '0%';
   var ov = document.getElementById('vplay-overlay');
-  if (ov) { ov.style.display = 'flex'; ov.style.opacity = '1'; ov.querySelector('div').textContent = 'Generate a video to begin'; }
+  if (ov) { ov.style.display = 'flex'; ov.style.opacity = '1'; var textDiv2 = ov.querySelector('div'); if (textDiv2) textDiv2.textContent = 'Generate a video to begin'; }
   document.getElementById('vstep-title').textContent = 'Generate a video to see steps';
   document.getElementById('vstep-desc').textContent  = '';
   document.getElementById('vstep-safety').textContent = '';
@@ -2206,10 +2304,26 @@ function loadSample(sample) {
       + '<button class="result-btn-outline" onclick="launchVideoFromUpload()" style="border-color:var(--gold);color:var(--gold)">🎬 Generate Video</button>'
       + '</div><p style="font-size:.73rem;color:var(--muted);margin-top:14px;cursor:pointer;text-decoration:underline" onclick="resetUpload()">Upload different design</p>';
     // Apply design + fabric from sample metadata
-    if (sample.design) vDesign = sample.design;
-    if (sample.fabric) { vFabric = sample.fabric; rcCurrent = sample.fabric; }
-    var vs = document.getElementById('vsum-design'); if (vs) vs.textContent = vDesign;
-    var vf2 = document.getElementById('vsum-fabric'); if (vf2) vf2.textContent = vFabric;
+    if (sample.design) {
+      vDesign = sample.design;
+      // Sync video wizard design option
+      var sampleDesignMap = {
+        'A-Line Gown':'vd-aline','Pencil Skirt':'vd-pencil','Boho Maxi':'vd-maxi',
+        'Cocktail Dress':'vd-cocktail','Casual Dress':'vd-wrap','Ball Gown':'vd-ballgown',
+        'Mermaid Dress':'vd-cocktail','Midi Skirt':'vd-midiskirt','Tailored Trousers':'vd-trousers',
+        'Tailored Suit':'vd-suit','Tailored Shirt':'vd-shirt'
+      };
+      var sEl = document.getElementById(sampleDesignMap[vDesign] || 'vd-aline');
+      if (sEl) selectDesign(sEl, vDesign);
+    }
+    if (sample.fabric) {
+      vFabric = sample.fabric; rcCurrent = sample.fabric;
+      var fabMap2 = { 'Silk Chiffon':'vf-chiffon', 'Duchess Satin':'vf-satin', 'Crepe':'vf-crepe', 'Organza':'vf-organza' };
+      var fabEl2 = document.getElementById(fabMap2[sample.fabric]);
+      if (fabEl2) selectFabric(fabEl2, sample.fabric);
+    }
+    var vs = document.getElementById('vsumm-design'); if (vs) vs.textContent = vDesign;
+    var vf2 = document.getElementById('vsumm-fabric'); if (vf2) vf2.textContent = vFabric;
     var rcBtn2 = document.getElementById('rc-btn');
     if (rcBtn2) rcBtn2.textContent = '✶ Use ' + vFabric + ' for My Design';
     window._uploadedDesignContext = 'Sample design: ' + sample.name + ', type: ' + vDesign + ', fabric: ' + vFabric;
@@ -2243,6 +2357,7 @@ function openModal(type) {
       + '<button class="modal-btn modal-btn-outline" onclick="document.getElementById(\'main-modal\').remove()">Close</button>'
       + '</div></div>';
   } else if (type === 'guide') {
+    rebuildVSteps(); // ensure steps match current design/fabric/skill
     content = '<div class="modal-header"><span class="modal-title">✂️ Sewing Guide — ' + vDesign + '</span><button class="modal-close" onclick="document.getElementById(\'main-modal\').remove()">✕</button></div>'
       + '<div class="modal-body">'
       + vSteps.map(function(s, i) {
@@ -2257,14 +2372,100 @@ function openModal(type) {
       + '<button class="modal-btn modal-btn-outline" onclick="document.getElementById(\'main-modal\').remove()">Close</button>'
       + '</div></div>';
   } else if (type === 'styling') {
-    content = '<div class="modal-header"><span class="modal-title">💍 Styling Guide</span><button class="modal-close" onclick="document.getElementById(\'main-modal\').remove()">✕</button></div>'
+    // Dynamic styling guide based on vDesign, vFabric, and user profile
+    var p = window._vogxProfile || {};
+    var gender = (p.gender || 'Women').toLowerCase();
+    var isMen = gender === 'men' || gender === 'male';
+    var design = vDesign || 'Casual Dress';
+    var fabric = vFabric || 'Silk Chiffon';
+
+    // Body type recommendations per design
+    var bodyTypeMap = {
+      'A-Line Gown':      { best:'Pear · Hourglass · Rectangle', why:'The flared skirt balances narrower shoulders and adds volume below the waist.' },
+      'Pencil Skirt':     { best:'Hourglass · Rectangle', why:'Hugs curves and elongates straight figures. Avoid if hip-to-waist ratio is very wide.' },
+      'Boho Maxi':        { best:'All body types', why:'Relaxed fit and tiered layers flatter every silhouette.' },
+      'Cocktail Dress':   { best:'Apple · Rectangle · Inverted Triangle', why:'Structured bodice defines the waist; knee length balances proportions.' },
+      'Casual Dress':     { best:'All body types', why:'Wrap style cinches the waist and works for every figure.' },
+      'Ball Gown':        { best:'Pear · Hourglass', why:'Full skirt balances shoulders with hips; corseted bodice defines waist.' },
+      'Mermaid Dress':    { best:'Hourglass only', why:'Requires defined curves through hips and thighs to drape correctly.' },
+      'Midi Skirt':       { best:'Rectangle · Pear · Inverted Triangle', why:'A-line midi lengthens legs and adds hip definition.' },
+      'Tailored Trousers':{ best:'Rectangle · Inverted Triangle · Apple', why:'High waist creates proportion; straight cut suits most figures.' },
+      'Tailored Suit':    { best:'All body types', why:'Structured jacket with defined shoulders creates a polished silhouette on every frame.' },
+      'Tailored Shirt':   { best:'All body types', why:'Fitted through the shoulder; works tucked in for all shapes.' },
+      'Overcoat':         { best:'All body types', why:'Belted version creates a waist; unbelted elongates the figure.' },
+      'Knitwear':         { best:'Rectangle · Inverted Triangle', why:'Relaxed ribbed knit adds visual warmth and softness to angular frames.' }
+    };
+    var bodyInfo = bodyTypeMap[design] || { best:'All body types', why:'This versatile silhouette flatters most figures.' };
+
+    // Fabric-specific care tips
+    var fabricCare = {
+      'Silk Chiffon':    '🌡️ Hand-wash cold or dry clean. Use silk cycle only. Never wring.',
+      'Duchess Satin':   '🌡️ Dry clean recommended. Steam gently; avoid direct iron contact.',
+      'Crepe':           '🌡️ Machine wash cold on gentle cycle. Lay flat to dry.',
+      'Organza':         '🌡️ Dry clean only. Never machine wash. Handle with care.',
+      'Denim':           '🌡️ Machine wash cold, inside-out. Tumble dry low.',
+      'Wool Suiting':    '🌡️ Dry clean or hand-wash cold. Steam press on wool setting.',
+      'Cotton Poplin':   '🌡️ Machine wash warm. Iron on cotton setting while slightly damp.',
+      'Cotton Gabardine':'🌡️ Machine wash warm or dry clean. Press with damp cloth.',
+      'Jersey Knit':     '🌡️ Machine wash cold. Lay flat to dry — never tumble dry stretch fabrics.',
+      'Cotton Lawn':     '🌡️ Machine wash cold on gentle. Iron on cotton setting.'
+    };
+    var care = fabricCare[fabric] || '🌡️ Check fabric care label. When in doubt, dry clean.';
+
+    var stylingHtml = '';
+    if (isMen) {
+      // Men's styling guide
+      var menStyling = {
+        'Tailored Suit':    { shoes:'Oxford or Derby shoes in black or dark brown', accessories:'Silk tie or pocket square, leather belt matching shoes', hair:'Clean cut — side part, fade, or textured quiff', fragrance:'Woody or aromatic cologne (Tom Ford, Bleu de Chanel)', occasion:'Business formal, gala, graduation' },
+        'Tailored Trousers':{ shoes:'Leather loafers, Derbys, or clean white sneakers for casual', accessories:'Classic watch, simple leather belt', hair:'Any — keep it neat and groomed', fragrance:'Fresh aquatic or citrus scent', occasion:'Office, smart-casual, evening out' },
+        'Tailored Shirt':   { shoes:'Clean white sneakers, loafers, or leather boots', accessories:'Minimalist watch, slim tie if dressed up', hair:'Textured natural or slicked back', fragrance:'Fresh or citrus daytime scent', occasion:'Office casual, weekend, date' },
+        'Knitwear':         { shoes:'Chelsea boots or loafers', accessories:'Watch, simple scarf in cooler months', hair:'Relaxed natural style', fragrance:'Warm spiced or wood scent', occasion:'Casual outings, weekend, travel' },
+        'Overcoat':         { shoes:'Leather Chelsea boots or Derbys', accessories:'Cashmere scarf, leather gloves', hair:'Any — coat is the statement piece', fragrance:'Warm amber or sandalwood', occasion:'Winter formal, city, travel' }
+      };
+      var mStyle = menStyling[design] || menStyling['Tailored Shirt'];
+      stylingHtml = '<div style="display:grid;gap:10px">'
+        + '<div style="background:var(--cream);border-radius:10px;padding:14px"><div style="font-weight:600;font-size:.82rem;margin-bottom:8px;color:var(--charcoal)">👞 Footwear</div><div style="font-size:.8rem;color:var(--muted)">' + mStyle.shoes + '</div></div>'
+        + '<div style="background:var(--cream);border-radius:10px;padding:14px"><div style="font-weight:600;font-size:.82rem;margin-bottom:8px;color:var(--charcoal)">⌚ Accessories</div><div style="font-size:.8rem;color:var(--muted)">' + mStyle.accessories + '</div></div>'
+        + '<div style="background:var(--cream);border-radius:10px;padding:14px"><div style="font-weight:600;font-size:.82rem;margin-bottom:8px;color:var(--charcoal)">💈 Hair & Grooming</div><div style="font-size:.8rem;color:var(--muted)">' + mStyle.hair + '</div></div>'
+        + '<div style="background:var(--cream);border-radius:10px;padding:14px"><div style="font-weight:600;font-size:.82rem;margin-bottom:8px;color:var(--charcoal)">🌿 Fragrance</div><div style="font-size:.8rem;color:var(--muted)">' + mStyle.fragrance + '</div></div>'
+        + '<div style="background:var(--cream);border-radius:10px;padding:14px"><div style="font-weight:600;font-size:.82rem;margin-bottom:8px;color:var(--charcoal)">📅 Best Occasion</div><div style="font-size:.8rem;color:var(--muted)">' + mStyle.occasion + '</div></div>'
+        + '</div>';
+    } else {
+      // Women's styling guide per design
+      var womenStyling = {
+        'A-Line Gown':    { shoes:'Strappy heeled sandals in nude or metallic gold', jewelry:'Delicate drop earrings — skip chunky necklaces with high necklines', bag:'Small satin clutch in champagne or antique gold', hair:'Soft updo or loose waves for an elegant finish', makeup:'Nude or rose lip, defined lashes, glowing skin', occasion:'Gala, wedding guest, formal dinner' },
+        'Pencil Skirt':   { shoes:'Classic stiletto pumps or block heels in black or nude', jewelry:'Simple gold studs or a sleek chain necklace', bag:'Structured top-handle bag or envelope clutch', hair:'Chignon, straight blow-dry, or sleek ponytail', makeup:'Bold lip (red or berry) with minimal eyes', occasion:'Office, business dinner, formal event' },
+        'Boho Maxi':      { shoes:'Leather sandals, wedges, or ankle boots for autumn', jewelry:'Layered necklaces, stacked bracelets, statement rings', bag:'Rattan or woven bag, fringed tote', hair:'Beach waves, loose braids, or flower crown', makeup:'Bronzed skin, earthy eyeshadow, tinted lip balm', occasion:'Festival, beach, brunch, outdoor event' },
+        'Cocktail Dress': { shoes:'Pointed-toe pumps or strappy block heels', jewelry:'Statement earrings or a bold cuff bracelet', bag:'Mini crossbody or embellished clutch', hair:'Half-up twist, sleek bob, or soft curls', makeup:'Smoky eye or bold lip — pick one focal point', occasion:'Cocktail party, birthday dinner, date night' },
+        'Casual Dress':   { shoes:'White sneakers, espadrilles, or block sandals', jewelry:'Hoop earrings, layered gold necklaces', bag:'Leather tote or crossbody', hair:'Effortless waves or a loose ponytail', makeup:'Light BB cream, mascara, tinted lip balm', occasion:'Brunch, shopping, casual outing, travel' },
+        'Ball Gown':      { shoes:'Embellished heels or satin pumps — they will peek below the hem', jewelry:'Pearl or crystal drop earrings; no necklace needed', bag:'Small beaded evening bag', hair:'Elegant updo — French twist or low chignon', makeup:'Classic red lip or soft glam with defined eyes', occasion:'Prom, masquerade, black-tie gala' },
+        'Mermaid Dress':  { shoes:'Stilettos add height; choose a closed toe for drama', jewelry:'Long pendant earrings; bare neck to elongate', bag:'Slim satin clutch', hair:'Sleek straight or sculpted updo', makeup:'Contoured cheekbones, sultry eye, nude lip', occasion:'Awards night, glamorous dinner, fashion show' },
+        'Midi Skirt':     { shoes:'Ankle boots, block heels, or strappy sandals', jewelry:'Delicate layered necklaces or gold hoops', bag:'Small structured bag or mini tote', hair:'Casual — textured waves or a messy bun', makeup:'Fresh natural face, swipe of mascara', occasion:'Work, lunch date, gallery opening' },
+        'Tailored Trousers':{ shoes:'Pointed mule heels or loafers for polish', jewelry:'Simple gold studs and a delicate bracelet', bag:'Structured tote or crossbody', hair:'Sleek blow-dry or low bun', makeup:'Clean base, defined brows, nude lip', occasion:'Office, business casual, smart dinner' },
+        'Tailored Shirt': { shoes:'Loafers, ballet flats, or low block heels', jewelry:'Minimalist watch, stud earrings', bag:'Leather tote or satchel', hair:'Any — ponytail, bun, or loose', makeup:'Natural "no makeup" look with mascara', occasion:'Work, café, weekend smart-casual' }
+      };
+      var wStyle = womenStyling[design] || womenStyling['Casual Dress'];
+      stylingHtml = '<div style="display:grid;gap:10px">'
+        + '<div style="background:var(--cream);border-radius:10px;padding:14px"><div style="font-weight:600;font-size:.82rem;margin-bottom:8px;color:var(--charcoal)">👠 Shoes</div><div style="font-size:.8rem;color:var(--muted)">' + wStyle.shoes + '</div></div>'
+        + '<div style="background:var(--cream);border-radius:10px;padding:14px"><div style="font-weight:600;font-size:.82rem;margin-bottom:8px;color:var(--charcoal)">💎 Jewellery</div><div style="font-size:.8rem;color:var(--muted)">' + wStyle.jewelry + '</div></div>'
+        + '<div style="background:var(--cream);border-radius:10px;padding:14px"><div style="font-weight:600;font-size:.82rem;margin-bottom:8px;color:var(--charcoal)">👜 Bag</div><div style="font-size:.8rem;color:var(--muted)">' + wStyle.bag + '</div></div>'
+        + '<div style="background:var(--cream);border-radius:10px;padding:14px"><div style="font-weight:600;font-size:.82rem;margin-bottom:8px;color:var(--charcoal)">🌸 Hair</div><div style="font-size:.8rem;color:var(--muted)">' + wStyle.hair + '</div></div>'
+        + '<div style="background:var(--cream);border-radius:10px;padding:14px"><div style="font-weight:600;font-size:.82rem;margin-bottom:8px;color:var(--charcoal)">💄 Makeup</div><div style="font-size:.8rem;color:var(--muted)">' + wStyle.makeup + '</div></div>'
+        + '<div style="background:var(--cream);border-radius:10px;padding:14px"><div style="font-weight:600;font-size:.82rem;margin-bottom:8px;color:var(--charcoal)">📅 Best Occasion</div><div style="font-size:.8rem;color:var(--muted)">' + wStyle.occasion + '</div></div>'
+        + '</div>';
+    }
+
+    content = '<div class="modal-header"><span class="modal-title">💍 Styling Guide — ' + design + ' (' + (isMen ? 'Men' : 'Women') + ')</span><button class="modal-close" onclick="document.getElementById(\'main-modal\').remove()">✕</button></div>'
       + '<div class="modal-body">'
-      + '<div style="background:var(--cream);border-radius:10px;padding:18px;line-height:1.9;font-size:.85rem">'
-      + '👠 Strappy heeled sandals in nude or metallic gold<br>'
-      + '💎 Delicate drop earrings — skip chunky necklaces<br>'
-      + '👜 Small satin clutch in champagne or antique gold<br>'
-      + '🌸 Soft updo or loose waves for an elegant finish<br>'
-      + '💄 Nude or rose lip, defined lashes, glowing skin'
+      + '<div style="background:rgba(184,154,106,.1);border:1px solid var(--gold-md);border-radius:10px;padding:12px 14px;margin-bottom:14px">'
+      + '<div style="font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:6px">🧬 Best Body Types for ' + design + '</div>'
+      + '<div style="font-size:.82rem;font-weight:500;color:var(--charcoal);margin-bottom:4px">' + bodyInfo.best + '</div>'
+      + '<div style="font-size:.75rem;color:var(--muted)">' + bodyInfo.why + '</div>'
+      + '</div>'
+      + stylingHtml
+      + '<div style="background:rgba(184,154,106,.08);border-radius:10px;padding:12px 14px;margin-top:12px">'
+      + '<div style="font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:4px">Fabric Care — ' + fabric + '</div>'
+      + '<div style="font-size:.78rem;color:var(--muted)">' + care + '</div>'
       + '</div>'
       + '<button class="modal-btn modal-btn-primary" style="width:100%;margin-top:16px" onclick="document.getElementById(\'main-modal\').remove()">Close</button>'
       + '</div>';
@@ -2281,24 +2482,111 @@ function openModal(type) {
 function closeLookModal() { var m = document.getElementById('look-modal'); if (m) m.remove(); }
 function openFinalLookModal() {
   closeLookModal();
-  var fabColors = { 'Silk Chiffon':'#e8d5c0','Duchess Satin':'#d4c5b8','Crepe':'#d8d0ca','Organza':'#eae4df','Denim':'#8fa3bf' };
-  var fc = fabColors[vFabric] || '#e8d5c0';
-  function makeDressSVG(label) {
-    return '<svg width="85" height="140" viewBox="0 0 85 140" xmlns="http://www.w3.org/2000/svg">'
-      + '<defs><linearGradient id="dg' + label + '" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="' + fc + '" stop-opacity=".9"/><stop offset="100%" stop-color="' + fc + '" stop-opacity=".5"/></linearGradient></defs>'
-      + '<path d="M42,7 Q56,9 55,22 Q63,30 60,44 L66,122 Q60,134 42,136 Q24,134 18,122 L24,44 Q21,30 29,22 Q28,9 42,7 Z" fill="url(#dg' + label + ')" stroke="rgba(184,154,106,.45)" stroke-width="1.1"/>'
-      + '<path d="M32,9 Q42,18 52,9" fill="none" stroke="rgba(184,154,106,.5)" stroke-width="1.1"/>'
-      + '<line x1="20" y1="46" x2="64" y2="46" stroke="rgba(184,154,106,.3)" stroke-width=".7" stroke-dasharray="3,3"/>'
-      + '<text x="42" y="140" font-size="7.5" fill="#8a8179" text-anchor="middle" font-family="Georgia">' + label + '</text>'
+  var p = window._vogxProfile || {};
+  var gender = (p.gender || 'Women').toLowerCase();
+  var isMen = gender === 'men' || gender === 'male';
+  var design = vDesign || 'A-Line Gown';
+  var fabric = vFabric || 'Silk Chiffon';
+  var fit    = vFit    || 'Standard';
+
+  var fabColors = {
+    'Silk Chiffon':'#e8d5c0','Duchess Satin':'#d4c5b8','Crepe':'#d8d0ca',
+    'Organza':'#eae4df','Denim':'#8fa3bf','Wool Suiting':'#9ca0aa',
+    'Cotton Poplin':'#e8f0e8','Cotton Gabardine':'#c8b89a','Jersey Knit':'#d4c8e8','Cotton Lawn':'#d8e8d8'
+  };
+  var fc = fabColors[fabric] || '#e8d5c0';
+
+  // Design-specific silhouette SVG
+  function makeGarmentSVG(label, design, fc) {
+    var paths = {
+      'A-Line Gown':      'M42,7 Q56,9 55,22 Q63,30 60,44 L72,130 Q58,138 42,139 Q26,138 12,130 L24,44 Q21,30 29,22 Q28,9 42,7 Z',
+      'Pencil Skirt':     'M30,4 Q42,6 54,4 L56,60 Q52,100 42,110 Q32,100 28,60 Z',
+      'Boho Maxi':        'M42,7 Q55,10 54,22 Q58,30 55,45 L70,130 Q56,140 42,141 Q28,140 14,130 L29,45 Q26,30 30,22 Q29,10 42,7 Z',
+      'Cocktail Dress':   'M42,7 Q55,9 54,20 Q60,28 58,40 L62,100 Q52,112 42,113 Q32,112 22,100 L26,40 Q24,28 30,20 Q29,9 42,7 Z',
+      'Casual Dress':     'M42,8 Q54,11 54,22 Q60,30 57,43 L65,125 Q53,135 42,136 Q31,135 19,125 L27,43 Q24,30 30,22 Q30,11 42,8 Z',
+      'Ball Gown':        'M42,7 Q56,9 55,22 Q63,28 60,40 L80,135 Q60,142 42,143 Q24,142 4,135 L24,40 Q21,28 29,22 Q28,9 42,7 Z',
+      'Mermaid Dress':    'M34,7 Q42,8 50,7 Q54,20 53,38 Q54,60 60,90 L65,130 Q50,140 42,141 Q34,140 19,130 L24,90 Q30,60 31,38 Q30,20 34,7 Z',
+      'Midi Skirt':       'M30,4 Q42,6 54,4 L60,55 Q60,100 42,108 Q24,100 24,55 Z',
+      'Tailored Trousers':'M28,2 Q42,4 56,2 L58,6 L50,70 Q46,100 46,130 L38,130 L38,70 Q36,50 36,70 L30,130 L22,130 L26,70 L18,6 Z',
+      'Tailored Suit':    'M20,4 Q42,2 64,4 L68,30 Q60,40 60,60 L60,130 L50,130 L50,70 L34,70 L34,130 L24,130 L24,60 Q24,40 16,30 Z',
+      'Tailored Shirt':   'M20,4 Q42,3 64,4 L70,30 Q62,38 62,55 L62,100 L22,100 L22,55 Q22,38 14,30 Z',
+      'Overcoat':         'M18,4 Q42,2 66,4 L72,35 Q62,44 62,65 L62,135 L22,135 L22,65 Q22,44 12,35 Z',
+      'Knitwear':         'M22,4 Q42,3 62,4 L68,28 Q60,36 60,52 L60,95 L24,95 L24,52 Q24,36 16,28 Z'
+    };
+    var necklines = {
+      'A-Line Gown':'M32,9 Q42,18 52,9','Pencil Skirt':'','Boho Maxi':'M32,9 Q42,22 52,9',
+      'Cocktail Dress':'M30,8 Q42,20 54,8','Casual Dress':'M30,10 Q42,22 54,10',
+      'Ball Gown':'M30,9 Q42,20 54,9','Mermaid Dress':'M34,9 Q42,15 50,9',
+      'Midi Skirt':'','Tailored Trousers':'M36,2 Q42,8 48,2','Tailored Suit':'M36,4 Q42,14 48,4',
+      'Tailored Shirt':'M36,4 Q42,16 48,4','Overcoat':'M35,4 Q42,16 49,4','Knitwear':'M34,4 Q42,14 50,4'
+    };
+    var d = paths[design] || paths['A-Line Gown'];
+    var neck = necklines[design] || '';
+    return '<svg width="85" height="145" viewBox="0 0 85 145" xmlns="http://www.w3.org/2000/svg">'
+      + '<defs><linearGradient id="dg' + label.replace(' ','') + '" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="' + fc + '" stop-opacity=".95"/><stop offset="100%" stop-color="' + fc + '" stop-opacity=".5"/></linearGradient></defs>'
+      + '<path d="' + d + '" fill="url(#dg' + label.replace(' ','') + ')" stroke="rgba(184,154,106,.5)" stroke-width="1.2"/>'
+      + (neck ? '<path d="' + neck + '" fill="none" stroke="rgba(184,154,106,.55)" stroke-width="1.1"/>' : '')
+      + '<line x1="10" y1="48" x2="74" y2="48" stroke="rgba(184,154,106,.2)" stroke-width=".7" stroke-dasharray="3,3"/>'
+      + '<text x="42" y="143" font-size="7" fill="#8a8179" text-anchor="middle" font-family="Georgia">' + label + '</text>'
       + '</svg>';
   }
+
+  // Colour palette per fabric
+  var colourPalettes = {
+    'Silk Chiffon':    ['Ivory','Blush Rose','Champagne','Powder Blue','Sage Green'],
+    'Duchess Satin':   ['Midnight Black','Ivory','Deep Burgundy','Royal Navy','Emerald'],
+    'Crepe':           ['Camel','Dove Grey','Ink Black','Rust','Forest Green'],
+    'Organza':         ['White','Pale Gold','Soft Pink','Lavender','Ice Blue'],
+    'Denim':           ['Indigo','Light Wash','Black','Mid-Wash Blue','Ecru'],
+    'Wool Suiting':    ['Charcoal','Navy','Camel','Heather Grey','Black'],
+    'Cotton Poplin':   ['White','Sky Blue','Pale Mint','Blush','Lemon Yellow'],
+    'Cotton Gabardine':['Khaki','Tan','Olive','Charcoal','Camel'],
+    'Jersey Knit':     ['Black','Charcoal','Burgundy','Dusty Rose','Teal'],
+    'Cotton Lawn':     ['White','Floral Print','Dusty Lavender','Mint','Peach']
+  };
+  var palette = colourPalettes[fabric] || ['Ivory','Black','Camel','Navy','Blush'];
+
+  // Gender-specific final styling
+  var finalStyling = isMen
+    ? { line1:'👞 Oxford or Chelsea boots in black or tan', line2:'⌚ Classic watch + matching leather belt', line3:'💈 Clean cut — side part or textured quiff', line4:'🌿 Woody or aromatic cologne' }
+    : {
+        'A-Line Gown':    { line1:'👠 Strappy heeled sandals — nude or gold', line2:'💎 Delicate drop earrings, no necklace', line3:'👜 Satin clutch in champagne', line4:'💄 Nude lip · defined lashes · glowing skin' },
+        'Pencil Skirt':   { line1:'👠 Stiletto pumps or block heels', line2:'💎 Simple gold studs + chain necklace', line3:'👜 Structured envelope clutch', line4:'💄 Bold lip (red or berry)' },
+        'Boho Maxi':      { line1:'👠 Leather sandals or ankle boots', line2:'💎 Layered necklaces + stacked bracelets', line3:'👜 Rattan or woven tote bag', line4:'💄 Bronzed skin · earthy eyeshadow' },
+        'Cocktail Dress': { line1:'👠 Pointed-toe pumps or strappy heels', line2:'💎 Statement earrings or bold cuff', line3:'👜 Mini crossbody or embellished clutch', line4:'💄 Smoky eye or bold lip — pick one' },
+        'Ball Gown':      { line1:'👠 Embellished heels or satin pumps', line2:'💎 Pearl or crystal drop earrings', line3:'👜 Small beaded evening bag', line4:'💄 Classic red lip or soft glam' },
+        'Mermaid Dress':  { line1:'👠 Stilettos — closed toe for drama', line2:'💎 Long pendant earrings; bare neck', line3:'👜 Slim satin clutch', line4:'💄 Contoured cheeks · sultry eye' }
+      }[(isMen ? '' : design)] || { line1:'👠 Block heels or ankle boots', line2:'💎 Gold hoops + layered necklace', line3:'👜 Leather tote or crossbody', line4:'💄 Fresh natural face with mascara' };
+
   var ov = document.createElement('div'); ov.id = 'look-modal'; ov.className = 'modal-overlay';
   var modal = document.createElement('div'); modal.className = 'modal-box';
-  modal.innerHTML = '<div class="modal-header"><span class="modal-title">✨ Final Look — AI Render</span><button class="modal-close" onclick="closeLookModal()">✕</button></div>'
+  modal.innerHTML = '<div class="modal-header"><span class="modal-title">✨ Final Look — ' + design + '</span><button class="modal-close" onclick="closeLookModal()">✕</button></div>'
     + '<div class="modal-body">'
-    + '<div style="display:flex;gap:14px;justify-content:center;background:var(--cream);border-radius:12px;padding:20px;margin-bottom:18px">' + makeDressSVG('Front') + makeDressSVG('Side') + makeDressSVG('Back') + '</div>'
-    + '<div style="margin-bottom:14px"><p style="font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Fabric Colour</p><div style="display:flex;align-items:center;gap:10px"><div style="width:26px;height:26px;border-radius:50%;background:' + fc + ';border:2px solid rgba(184,154,106,.4)"></div><span style="font-size:.82rem;color:var(--muted)">' + vFabric + ' natural tone</span></div></div>'
-    + '<div style="background:var(--cream);border-radius:10px;padding:14px;margin-bottom:16px;font-size:.82rem;line-height:1.75">👠 Strappy heeled sandals in nude or metallic gold<br>💎 Delicate drop earrings — skip chunky necklaces<br>👜 Small satin clutch in champagne or antique gold<br>🌸 Soft updo or loose waves</div>'
+    // Three-view silhouette
+    + '<div style="display:flex;gap:10px;justify-content:center;background:var(--cream);border-radius:12px;padding:18px;margin-bottom:16px">'
+    + makeGarmentSVG('Front', design, fc) + makeGarmentSVG('Side', design, fc) + makeGarmentSVG('Back', design, fc)
+    + '</div>'
+    // Design + Fabric + Fit summary
+    + '<div style="background:rgba(184,154,106,.08);border-radius:10px;padding:12px 14px;margin-bottom:12px;display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:.78rem">'
+    + '<div>🎨 <strong>Design:</strong> ' + design + '</div>'
+    + '<div>🧵 <strong>Fabric:</strong> ' + fabric + '</div>'
+    + '<div>📐 <strong>Fit:</strong> ' + fit + '</div>'
+    + '<div>👤 <strong>For:</strong> ' + (isMen ? 'Men' : 'Women') + '</div>'
+    + '</div>'
+    // Colour palette
+    + '<div style="margin-bottom:14px"><p style="font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Recommended Colour Palette</p>'
+    + '<div style="display:flex;gap:8px;flex-wrap:wrap">'
+    + palette.map(function(col, i) {
+        var swatchColors = ['#e8d5c0','#1a1714','#c8a880','#2a4068','#4a8060','#d4c5b8','#8fa3bf','#9ca0aa','#d4c8e8','#d8e8d8'];
+        return '<div style="display:flex;flex-direction:column;align-items:center;gap:4px"><div style="width:28px;height:28px;border-radius:50%;background:' + (swatchColors[i] || fc) + ';border:1.5px solid rgba(184,154,106,.3)"></div><span style="font-size:.6rem;color:var(--muted);white-space:nowrap">' + col + '</span></div>';
+      }).join('')
+    + '</div></div>'
+    // Styling tips
+    + '<div style="background:var(--cream);border-radius:10px;padding:14px;margin-bottom:16px;font-size:.8rem;line-height:2">'
+    + (isMen
+        ? finalStyling.line1 + '<br>' + finalStyling.line2 + '<br>' + finalStyling.line3 + '<br>' + finalStyling.line4
+        : (finalStyling.line1 + '<br>' + finalStyling.line2 + '<br>' + finalStyling.line3 + '<br>' + finalStyling.line4))
+    + '</div>'
     + '<div style="display:flex;gap:10px"><button class="modal-btn modal-btn-primary" style="flex:2" onclick="downloadFinalLook()">⬇ Download Render</button><button class="modal-btn modal-btn-outline" onclick="closeLookModal()">Close</button></div>'
     + '</div>';
   ov.appendChild(modal);
@@ -2828,24 +3116,50 @@ var _vogxLang = localStorage.getItem('vogx-lang') || 'en';
 
 var _vogxStrings = {
   en: {
-    heroTitle:   'Design Without Limits.',
-    heroSub:     'Describe your vision — VOGX brings it to life with AI-powered fabric recommendations, sewing guides, and style insights.',
-    chatPlaceholder: 'Describe your dream design…',
-    navNew:      'New Design',
-    navFabric:   'Fabric Guide',
-    navVideo:    'Video Tutorial',
+    heroTitle:   'Design the Future of Fashion with AI',
+    heroSub:     'Upload your sketch, get instant fabric recommendations, AI-generated sewing guides, and a step-by-step cutting & sewing video — all powered by intelligence.',
+    chatPlaceholder: 'Ask about fabrics, sewing, trends…',
+    navHow:      'How It Works',
+    navTry:      'Try It',
+    navVideo:    'Sewing Videos',
+    navFabric:   'Fabrics',
     navWho:      "Who It's For",
     langBtn:     'AR',
+    heroBtn1:    'Start Designing ✦',
+    heroBtn2:    'See How It Works',
+    secFabricTitle: 'AI Fabric Recommendations',
+    secFabricDesc:  'VOGX analyses your design\'s silhouette and recommends the best fabrics — ranked by compatibility, drape, and sewing difficulty.',
+    secVideoTitle:  'AI Sewing Video Generator',
+    secVideoDesc:   'VOGX generates a fully animated step-by-step sewing video showing real cutting, draping, and stitching scenes tailored to your design and fabric.',
+    secAudienceTitle: 'Built for Every Creator',
+    secAudienceDesc:  'Whether you\'re learning to sew or running a fashion label, VOGX adapts to your level and workflow.',
+    footerTagline:  'AI-powered fashion design assistant.',
+    uploadTitle:    'Upload Your Design',
+    uploadHint:     'Drop your design here',
+    uploadSub:      'Supports JPG, PNG, SVG, PDF · or choose an option below',
   },
   ar: {
-    heroTitle:   'صمّم بلا حدود.',
-    heroSub:     'صف رؤيتك — VOGX يجسّدها بتوصيات أقمشة مدعومة بالذكاء الاصطناعي، وأدلة خياطة، ورؤى أسلوبية.',
-    chatPlaceholder: 'صف تصميم أحلامك…',
-    navNew:      'تصميم جديد',
-    navFabric:   'دليل الأقمشة',
-    navVideo:    'درس فيديو',
+    heroTitle:   'صمّم مستقبل الموضة بالذكاء الاصطناعي',
+    heroSub:     'ارفع رسمتك، واحصل على توصيات أقمشة فورية وأدلة خياطة مدعومة بالذكاء الاصطناعي وفيديو تعليمي خطوة بخطوة.',
+    chatPlaceholder: 'اسأل عن الأقمشة والخياطة والأنماط…',
+    navHow:      'كيف يعمل',
+    navTry:      'جرّبه',
+    navVideo:    'فيديوهات الخياطة',
+    navFabric:   'الأقمشة',
     navWho:      'لمن هو',
     langBtn:     'EN',
+    heroBtn1:    'ابدأ التصميم ✦',
+    heroBtn2:    'شاهد كيف يعمل',
+    secFabricTitle: 'توصيات الأقمشة بالذكاء الاصطناعي',
+    secFabricDesc:  'يحلّل VOGX تصميمك ويوصي بأفضل الأقمشة مرتّبةً حسب التوافق والسقوط وصعوبة الخياطة.',
+    secVideoTitle:  'مولّد فيديو الخياطة بالذكاء الاصطناعي',
+    secVideoDesc:   'يولّد VOGX فيديو خياطة متحرّكاً خطوة بخطوة يعرض مشاهد القص والتدريب والتخييط المناسبة لتصميمك وقماشك.',
+    secAudienceTitle: 'مبني لكل مبدع',
+    secAudienceDesc:  'سواء كنت تتعلم الخياطة أو تدير ماركة أزياء، يتكيّف VOGX مع مستواك وأسلوب عملك.',
+    footerTagline:  'مساعد تصميم الأزياء بالذكاء الاصطناعي.',
+    uploadTitle:    'ارفع تصميمك',
+    uploadHint:     'أفلت تصميمك هنا',
+    uploadSub:      'يدعم JPG وPNG وSVG وPDF · أو اختر خياراً أدناه',
   }
 };
 
@@ -2854,17 +3168,25 @@ function applyLanguage(lang) {
   localStorage.setItem('vogx-lang', lang);
   var s = _vogxStrings[lang];
   var isRTL = lang === 'ar';
+  document.documentElement.lang = lang;
   document.body.setAttribute('dir', isRTL ? 'rtl' : 'ltr');
+  // Font size bump for Arabic readability
+  document.body.style.fontFamily = isRTL ? "'DM Sans','Segoe UI',system-ui,sans-serif" : '';
 
   // Update lang toggle button
   var btn = document.getElementById('lang-toggle');
   if (btn) btn.textContent = s.langBtn;
 
   // Hero title/subtitle
-  var ht = document.querySelector('#hero h1, .hero-title');
-  if (ht) ht.textContent = s.heroTitle;
-  var hs = document.querySelector('.hero-sub, #hero p');
-  if (hs) hs.textContent = s.heroSub;
+  var ht = document.querySelector('.hero-title');
+  if (ht) { ht.innerHTML = isRTL ? s.heroTitle : 'Design the Future<br>of <em>Fashion</em> with AI'; }
+  var hd = document.querySelector('.hero-desc');
+  if (hd) hd.textContent = s.heroSub;
+
+  // Hero buttons
+  var hb = document.querySelectorAll('.hero-actions button');
+  if (hb[0]) hb[0].textContent = s.heroBtn1;
+  if (hb[1]) hb[1].textContent = s.heroBtn2;
 
   // Chat placeholders
   ['hero-chat-input','float-chat-input'].forEach(function(id){
@@ -2872,10 +3194,44 @@ function applyLanguage(lang) {
     if (el) el.placeholder = s.chatPlaceholder;
   });
 
-  // Nav links
+  // Nav links — all 5
   var navLinks = document.querySelectorAll('nav .nav-links a');
-  var keys = ['navNew','navFabric','navVideo','navWho'];
-  navLinks.forEach(function(a,i){ if(keys[i]) a.textContent = s[keys[i]]; });
+  var navKeys = ['navHow','navTry','navVideo','navFabric','navWho'];
+  navLinks.forEach(function(a,i){ if(navKeys[i] && s[navKeys[i]]) a.textContent = s[navKeys[i]]; });
+
+  // Mobile menu links
+  var mLinks = document.querySelectorAll('.mobile-menu a');
+  mLinks.forEach(function(a,i){ if(navKeys[i] && s[navKeys[i]]) a.textContent = s[navKeys[i]]; });
+
+  // Section: Fabric Recommendations
+  var fabTitle = document.querySelector('#fabric-section .section-title');
+  if (fabTitle) fabTitle.textContent = s.secFabricTitle;
+  var fabDesc = document.querySelector('#fabric-section .section-desc');
+  if (fabDesc) fabDesc.textContent = s.secFabricDesc;
+
+  // Section: Video Generator
+  var vidTitle = document.querySelector('#video-guide .section-title');
+  if (vidTitle) vidTitle.textContent = s.secVideoTitle;
+  var vidDesc = document.querySelector('#video-guide .section-desc');
+  if (vidDesc) vidDesc.textContent = s.secVideoDesc;
+
+  // Section: Audience
+  var audTitle = document.querySelector('#audience .section-title');
+  if (audTitle) audTitle.textContent = s.secAudienceTitle;
+  var audDesc = document.querySelector('#audience .section-desc');
+  if (audDesc) audDesc.textContent = s.secAudienceDesc;
+
+  // Upload section
+  var upTitle = document.querySelector('#demo .section-title');
+  if (upTitle) upTitle.textContent = s.uploadTitle;
+  var upHint = document.querySelector('.upload-title');
+  if (upHint) upHint.textContent = s.uploadHint;
+  var upSub = document.querySelector('.upload-hint');
+  if (upSub) upSub.textContent = s.uploadSub;
+
+  // Footer tagline
+  var ftag = document.querySelector('.footer-brand p');
+  if (ftag) ftag.textContent = s.footerTagline;
 }
 
 function toggleLanguage() {
