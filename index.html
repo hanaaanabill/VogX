@@ -1461,46 +1461,78 @@ async function processFile(file) {
     };
     reader2.readAsDataURL(file);
   } else if (window._vogxUser) { saveDesignToAccount(fname, null, 'Upload'); }
-  var detectedDetails = 'Silhouette detected · Neckline identified · Structure analysed';
+  var detectedDetails = 'Silhouette detected · Structure analysed';
   var fabricRec = 'Silk Chiffon', fabricPct = '97';
   try {
     if (file.type.startsWith('image/')) {
-      var buf = await file.arrayBuffer();
-      var hfRes = await fetch('https://corsproxy.io/?https://api-inference.huggingface.co/models/openai/clip-vit-base-patch32',
-        { method:'POST', headers:{'Authorization':'Bearer '+HF_TOKEN,'Content-Type':file.type}, body:buf });
-      var hfData = await hfRes.json();
-      if (Array.isArray(hfData) && hfData.length > 0) {
-        var top = hfData[0].label||'', score = Math.round((hfData[0].score||0.8)*100);
-        detectedDetails = 'Detected: ' + top + ' (' + score + '% confidence) · Structure analysed';
-        var lbl = top.toLowerCase();
-        if (lbl.includes('pant')||lbl.includes('trouser')||lbl.includes('jean')||lbl.includes('short')||lbl.includes('chino')) {
-          fabricRec='Denim'; fabricPct='91'; vDesign='Tailored Trousers';
-        } else if (lbl.includes('suit')||lbl.includes('blazer')||lbl.includes('tuxedo')) {
-          fabricRec='Wool Suiting'; fabricPct='95'; vDesign='Tailored Suit';
-        } else if (lbl.includes('shirt')||lbl.includes('blouse')) {
-          fabricRec='Cotton Poplin'; fabricPct='92'; vDesign='Tailored Shirt';
-        } else if (lbl.includes('coat')||lbl.includes('trench')||lbl.includes('jacket')) {
-          fabricRec='Cotton Gabardine'; fabricPct='88'; vDesign='Overcoat';
-        } else if (lbl.includes('knit')||lbl.includes('sweater')||lbl.includes('cardigan')) {
-          fabricRec='Jersey Knit'; fabricPct='87'; vDesign='Knitwear';
-        } else if (lbl.includes('skirt')) {
-          fabricRec='Crepe'; fabricPct='89'; vDesign='Midi Skirt';
-        } else if (lbl.includes('evening')||lbl.includes('gown')||lbl.includes('bride')||lbl.includes('ball')) {
-          fabricRec='Silk Chiffon'; fabricPct='97'; vDesign='A-Line Gown';
-        } else if (lbl.includes('dress')||lbl.includes('casual')) {
-          fabricRec='Crepe'; fabricPct='86'; vDesign='Casual Dress';
-        } else if (lbl.includes('sheer')||lbl.includes('layer')) {
-          fabricRec='Organza'; fabricPct='85'; vDesign='A-Line Gown';
+      // Read image as base64
+      var base64Img = await new Promise(function(res, rej) {
+        var r = new FileReader();
+        r.onload = function(e) { res(e.target.result.split(',')[1]); };
+        r.onerror = rej;
+        r.readAsDataURL(file);
+      });
+      // Fetch GEMINI_KEY from Remote Config
+      var gKey = '';
+      try {
+        var rcMod = await import('https://www.gstatic.com/firebasejs/12.10.0/firebase-remote-config.js');
+        var rcInst = rcMod.getRemoteConfig(window._fbApp);
+        rcInst.settings = { minimumFetchIntervalMillis: 43200000 };
+        await rcMod.fetchAndActivate(rcInst);
+        gKey = rcMod.getString(rcInst, 'GEMINI_KEY');
+      } catch(rcE) {}
+      if (gKey) {
+        // Use Gemini Vision with 10s timeout
+        var ctrl = new AbortController();
+        var toid = setTimeout(function(){ ctrl.abort(); }, 10000);
+        var gRes = await fetch(
+          'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + gKey,
+          { method:'POST', signal: ctrl.signal,
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ contents:[{ parts:[
+              { inline_data:{ mime_type: file.type, data: base64Img }},
+              { text: 'You are a fashion expert. Analyze this clothing/fashion image. Reply ONLY with a JSON object, no markdown, no explanation: {"garmentType":"exact garment name e.g. Tailored Trousers or Evening Gown or Casual T-Shirt","gender":"Male or Female or Unisex","fabric":"recommended fabric e.g. Denim","confidence":90,"details":"one sentence description"}' }
+            ]}], generationConfig:{ maxOutputTokens:200, temperature:0.1 }}) });
+        clearTimeout(toid);
+        var gData = await gRes.json();
+        var gText = (gData.candidates&&gData.candidates[0]&&gData.candidates[0].content.parts[0].text)||'';
+        gText = gText.replace(/```json|```/g,'').trim();
+        var gParsed = JSON.parse(gText);
+        var gType = (gParsed.garmentType||'').toLowerCase();
+        var gConf = gParsed.confidence||85;
+        detectedDetails = 'Detected: ' + gParsed.garmentType + ' (' + gConf + '%) · ' + (gParsed.gender||'') + ' · ' + (gParsed.details||'');
+        // Map to fabric + design
+        if (gType.includes('pant')||gType.includes('trouser')||gType.includes('jean')||gType.includes('short')||gType.includes('chino')) {
+          fabricRec='Denim'; fabricPct=String(gConf); vDesign='Tailored Trousers';
+        } else if (gType.includes('suit')||gType.includes('blazer')||gType.includes('tuxedo')) {
+          fabricRec='Wool Suiting'; fabricPct=String(gConf); vDesign='Tailored Suit';
+        } else if (gType.includes('shirt')||gType.includes('blouse')||gType.includes('button')) {
+          fabricRec='Cotton Poplin'; fabricPct=String(gConf); vDesign='Tailored Shirt';
+        } else if (gType.includes('coat')||gType.includes('trench')||gType.includes('overcoat')) {
+          fabricRec='Cotton Gabardine'; fabricPct=String(gConf); vDesign='Overcoat';
+        } else if (gType.includes('knit')||gType.includes('sweater')||gType.includes('cardigan')||gType.includes('hoodie')) {
+          fabricRec='Jersey Knit'; fabricPct=String(gConf); vDesign='Knitwear';
+        } else if (gType.includes('skirt')) {
+          fabricRec='Crepe'; fabricPct=String(gConf); vDesign='Midi Skirt';
+        } else if (gType.includes('evening gown')||gType.includes('ball gown')||gType.includes('bridal')||gType.includes('wedding')) {
+          fabricRec='Silk Chiffon'; fabricPct=String(gConf); vDesign='A-Line Gown';
+        } else if (gType.includes('cocktail')||gType.includes('formal dress')) {
+          fabricRec='Duchess Satin'; fabricPct=String(gConf); vDesign='Mermaid Dress';
+        } else if (gType.includes('casual dress')||gType.includes('sundress')||gType.includes('wrap dress')) {
+          fabricRec='Cotton Lawn'; fabricPct=String(gConf); vDesign='Casual Dress';
+        } else if (gType.includes('dress')) {
+          fabricRec='Crepe'; fabricPct=String(gConf); vDesign='Casual Dress';
+        } else if (gType.includes('t-shirt')||gType.includes('tee')||gType.includes('top')) {
+          fabricRec='Jersey Knit'; fabricPct=String(gConf); vDesign='Tailored Shirt';
         } else {
-          // Unknown — vary fabric based on score so it doesn't always default to same thing
-          var fbOpts=[['Cotton Poplin','84'],['Crepe','83'],['Linen','82'],['Denim','81'],['Jersey Knit','80']];
-          var fp=fbOpts[score%fbOpts.length]; fabricRec=fp[0]; fabricPct=fp[1];
+          // Use Gemini's own fabric suggestion if available
+          if (gParsed.fabric) { fabricRec = gParsed.fabric; }
+          vDesign = gParsed.garmentType || 'Custom Design';
+          fabricPct = String(gConf);
         }
-      } else if (hfData && hfData.error && String(hfData.error).includes('loading')) {
-        detectedDetails = 'AI vision warming up — using smart defaults';
       }
     }
-  } catch(e) {}
+  } catch(e) { console.log('Vision detection skipped:', e.message); }
   clearInterval(barInt); if (bar) bar.style.width='100%';
   rcCurrent = fabricRec;
   var fabMap = {'Silk Chiffon':'vf-chiffon','Duchess Satin':'vf-satin','Crepe':'vf-crepe','Organza':'vf-organza'};
