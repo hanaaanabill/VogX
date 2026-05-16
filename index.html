@@ -2275,7 +2275,7 @@ function openSamplePicker() {
           + '<span style="position:absolute;top:6px;right:8px;background:rgba(42,38,33,.7);color:rgba(245,242,238,.85);font-size:.6rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:2px 7px;border-radius:10px">' + s.style + '</span>'
           + '</div>'
           + '<div style="padding:10px 12px"><div style="font-weight:500;font-size:.85rem">' + s.name + '</div><div style="font-size:.72rem;color:var(--muted);margin-top:2px">' + s.desc + '</div></div>'
-          + '<button style="width:100%;padding:8px;background:transparent;border:none;border-top:1px solid rgba(184,154,106,.12);font-family:inherit;font-size:.78rem;font-weight:500;color:var(--gold);cursor:pointer">Use This Design →</button>'
+          + '<button style="width:100%;padding:8px;background:transparent;border:none;border-top:1px solid rgba(184,154,106,.12);font-family:inherit;font-size:.78rem;font-weight:500;color:var(--gold);cursor:pointer" onclick="this.parentElement.click()">Use This Design →</button>'
           + '</div>';
       }).join('')
     + '</div>';
